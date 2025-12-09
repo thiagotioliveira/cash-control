@@ -18,6 +18,8 @@ public record ScheduledTransactionCreated(
     LocalDate dueDate,
     Recurrence recurrence,
     Integer totalInstallments,
+    UUID organizationId,
+    UUID userId,
     Instant occurredAt,
     int version)
     implements DomainEvent {

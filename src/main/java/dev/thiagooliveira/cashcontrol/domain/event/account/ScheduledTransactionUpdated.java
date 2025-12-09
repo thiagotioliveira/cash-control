@@ -12,6 +12,8 @@ public record ScheduledTransactionUpdated(
     BigDecimal amount,
     int dueDayOfMonth,
     LocalDate endDueDate,
+    UUID organizationId,
+    UUID userId,
     Instant occurredAt,
     int version)
     implements DomainEvent {

@@ -22,12 +22,12 @@ public class CreateDeposit {
   }
 
   public Account execute(CreateTransactionCommand command) {
-    //    if (command.occurredAt().isAfter(Instant.now())) {
+    //    if (command.occurredAt().isAfter(Instant.now())) { //TODO
     //      throw ApplicationException.badRequest("occurredAt must be before now");
     //    }
     var category =
         categoryRepository
-            .findById(command.categoryId())
+            .findByOrganizationIdAndId(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
     if (!TransactionType.CREDIT.equals(category.getType()))
       throw ApplicationException.badRequest("category must be credit");
@@ -39,6 +39,7 @@ public class CreateDeposit {
 
     var account = Account.rehydrate(pastEvents);
     account.credit(
+        command.userId(),
         command.occurredAt(),
         category.getId(),
         command.amount(),

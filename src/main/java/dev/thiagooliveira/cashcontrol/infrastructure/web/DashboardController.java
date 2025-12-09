@@ -26,6 +26,7 @@ public class DashboardController {
     var transactions =
         getTransactions.execute(
             new GetTransactionsCommand(
+                properties.getOrganizationId(),
                 properties.getAccountId(),
                 LocalDate.of(2025, Month.NOVEMBER, 25),
                 LocalDate.now().plusMonths(13)));

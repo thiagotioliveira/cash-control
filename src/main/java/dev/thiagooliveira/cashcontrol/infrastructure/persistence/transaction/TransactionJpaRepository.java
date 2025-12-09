@@ -13,7 +13,8 @@ public interface TransactionJpaRepository extends JpaRepository<TransactionEntit
   List<TransactionEntity> findAllByAccountIdAndDueDateBetweenOrderByDueDateAsc(
       UUID accountId, LocalDate startDate, LocalDate endDate);
 
-  Optional<TransactionEntity> findByIdAndAccountId(UUID id, UUID accountId);
+  Optional<TransactionEntity> findByOrganizationIdAndAccountIdAndId(
+      UUID organizationId, UUID accountId, UUID id);
 
   List<TransactionEntity> findAllByTransactionTemplateIdAndAccountId(
       UUID transactionTemplateId, UUID accountId);

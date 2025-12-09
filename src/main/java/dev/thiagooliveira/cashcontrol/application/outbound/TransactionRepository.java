@@ -8,8 +8,9 @@ import java.util.UUID;
 
 public interface TransactionRepository {
 
-  Optional<GetTransactionItem> findByIdAndAccountId(UUID id, UUID accountId);
+  Optional<GetTransactionItem> findByOrganizationIdAndAccountIdAndId(
+      UUID organizationId, UUID accountId, UUID id);
 
-  List<GetTransactionItem> findAllByAccountIdAndDueDateBetween(
-      UUID accountId, LocalDate startDate, LocalDate endDate);
+  List<GetTransactionItem> findAllByOrganizationIdAndAccountIdAndDueDateBetween(
+      UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate);
 }

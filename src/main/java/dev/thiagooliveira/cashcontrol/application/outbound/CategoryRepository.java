@@ -7,9 +7,8 @@ import java.util.UUID;
 
 public interface CategoryRepository {
 
-  Optional<Category> findById(UUID id);
+  Optional<Category> findByOrganizationIdAndId(UUID organizationId, UUID id);
 
-  Optional<Category> findByTypeAndDefaultCategoryIsTrue(TransactionType type);
-
-  boolean existsByNameAndType(String name, TransactionType type);
+  Optional<Category> findByOrganizationIdAndNameAndType(
+      UUID organizationId, String name, TransactionType type);
 }

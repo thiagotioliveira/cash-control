@@ -20,17 +20,20 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
   }
 
   @Override
-  public Optional<GetTransactionItem> findByIdAndAccountId(UUID id, UUID accountId) {
-    return this.repository.findByIdAndAccountId(id, accountId).map(TransactionEntity::toDomain);
+  public Optional<GetTransactionItem> findByOrganizationIdAndAccountIdAndId(
+      UUID organizationId, UUID id, UUID accountId) {
+    return this.repository
+        .findByOrganizationIdAndAccountIdAndId(organizationId, accountId, id)
+        .map(TransactionEntity::toDomain);
   }
 
   @Override
-  public List<GetTransactionItem> findAllByAccountIdAndDueDateBetween(
-      UUID accountId, LocalDate startDate, LocalDate endDate) {
+  public List<GetTransactionItem> findAllByOrganizationIdAndAccountIdAndDueDateBetween(
+      UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate) {
     var templates =
         this.templateRepository
-            .findAllByAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
-                accountId, startDate, endDate);
+            .findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
+                organizationId, accountId, startDate, endDate);
     templates.stream()
         //        .filter(t -> !t.getRecurrence().isNone())
         .forEach(

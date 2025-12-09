@@ -15,6 +15,7 @@ import java.util.UUID;
 
 public class Account {
   private UUID id;
+  private UUID organizationId;
   private String name;
   private UUID bankId;
   private BigDecimal balance;
@@ -22,22 +23,29 @@ public class Account {
   private int version = 0;
   private final List<DomainEvent> pendingEvents = new ArrayList<>();
 
-  private Account(UUID id, UUID bankId, String name) {
+  private Account(UUID id, UUID organizationId, UUID bankId, String name) {
     this.id = id;
+    this.organizationId = organizationId;
     this.bankId = bankId;
     this.name = name;
     this.balance = BigDecimal.ZERO;
   }
 
-  private Account(UUID bankId, String name) {
-    this(UUID.randomUUID(), bankId, name);
+  private Account(UUID organizationId, UUID bankId, String name) {
+    this(UUID.randomUUID(), organizationId, bankId, name);
   }
 
-  public static Account create(UUID bankId, String name) {
-    var account = new Account(bankId, name);
+  public static Account create(UUID organizationId, UUID bankId, String name) {
+    var account = new Account(organizationId, bankId, name);
     account.apply(
         new AccountCreated(
-            account.id, account.name, account.bankId, account.balance, Instant.now(), 1));
+            account.id,
+            account.name,
+            account.bankId,
+            account.balance,
+            organizationId,
+            Instant.now(),
+            1));
     return account;
   }
 
@@ -54,7 +62,8 @@ public class Account {
     return account;
   }
 
-  public void credit(Instant occurredAt, UUID categoryId, BigDecimal amount, String description) {
+  public void credit(
+      UUID userId, Instant occurredAt, UUID categoryId, BigDecimal amount, String description) {
     validate(amount);
     apply(
         new TransactionCreated(
@@ -64,18 +73,29 @@ public class Account {
             TransactionType.CREDIT,
             amount,
             description,
+            organizationId,
+            userId,
             occurredAt,
             version + 1));
   }
 
-  public void creditConfirmed(UUID transactionId, Instant occurredAt, BigDecimal amount) {
+  public void creditConfirmed(
+      UUID userId, UUID transactionId, Instant occurredAt, BigDecimal amount) {
     validate(amount);
     apply(
         new TransactionConfirmed(
-            id, transactionId, TransactionType.CREDIT, amount, occurredAt, version + 1));
+            organizationId,
+            userId,
+            id,
+            transactionId,
+            TransactionType.CREDIT,
+            amount,
+            occurredAt,
+            version + 1));
   }
 
-  public void debit(Instant occurredAt, UUID categoryId, BigDecimal amount, String description) {
+  public void debit(
+      UUID userId, Instant occurredAt, UUID categoryId, BigDecimal amount, String description) {
     validate(amount);
     apply(
         new TransactionCreated(
@@ -85,18 +105,29 @@ public class Account {
             TransactionType.DEBIT,
             amount,
             description,
+            organizationId,
+            userId,
             Instant.now(),
             version + 1));
   }
 
-  public void debitConfirmed(UUID transactionId, Instant occurredAt, BigDecimal amount) {
+  public void debitConfirmed(
+      UUID userId, UUID transactionId, Instant occurredAt, BigDecimal amount) {
     validate(amount);
     apply(
         new TransactionConfirmed(
-            id, transactionId, TransactionType.DEBIT, amount, occurredAt, version + 1));
+            organizationId,
+            userId,
+            id,
+            transactionId,
+            TransactionType.DEBIT,
+            amount,
+            occurredAt,
+            version + 1));
   }
 
   public void payable(
+      UUID userId,
       UUID categoryId,
       BigDecimal amount,
       String description,
@@ -116,11 +147,14 @@ public class Account {
             startDueDate,
             recurrence,
             installments.orElse(null),
+            organizationId,
+            userId,
             Instant.now(),
             version + 1));
   }
 
   public void receivable(
+      UUID userId,
       UUID categoryId,
       BigDecimal amount,
       String description,
@@ -140,12 +174,18 @@ public class Account {
             startDueDate,
             recurrence,
             installments.orElse(null),
+            organizationId,
+            userId,
             Instant.now(),
             version + 1));
   }
 
   public void updateScheduledTransaction(
-      UUID transactionId, BigDecimal amount, int dueDayOfMonth, Optional<LocalDate> endDueDate) {
+      UUID userId,
+      UUID transactionId,
+      BigDecimal amount,
+      int dueDayOfMonth,
+      Optional<LocalDate> endDueDate) {
     validate(amount);
     if (endDueDate.isPresent() && dueDayOfMonth != endDueDate.get().getDayOfMonth()) {
       throw DomainException.badRequest("Due date must be the same day of the month");
@@ -157,6 +197,8 @@ public class Account {
             amount,
             dueDayOfMonth,
             endDueDate.orElse(null),
+            organizationId,
+            userId,
             Instant.now(),
             version + 1));
   }
@@ -207,6 +249,7 @@ public class Account {
         bankId = ev.bankId();
         name = ev.name();
         balance = ev.balance();
+        organizationId = ev.organizationId();
       }
       case TransactionCreated ev -> {
         if (ev.getType().isCredit()) {

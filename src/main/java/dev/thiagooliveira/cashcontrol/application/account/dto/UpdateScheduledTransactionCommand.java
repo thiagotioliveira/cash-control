@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public record UpdateScheduledTransactionCommand(
+    UUID organizationId,
+    UUID userId,
     UUID accountId,
     UUID transactionId,
     BigDecimal amount,

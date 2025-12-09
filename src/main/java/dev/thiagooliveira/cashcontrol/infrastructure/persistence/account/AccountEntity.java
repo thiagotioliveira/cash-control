@@ -13,6 +13,9 @@ public class AccountEntity {
   @Id private UUID id;
 
   @Column(nullable = false)
+  private UUID organizationId;
+
+  @Column(nullable = false)
   private String name;
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -30,6 +33,7 @@ public class AccountEntity {
     this.balance = event.balance();
     this.bank = new BankEntity();
     this.bank.setId(event.bankId());
+    this.organizationId = event.organizationId();
   }
 
   public UUID getId() {
@@ -62,5 +66,13 @@ public class AccountEntity {
 
   public void setBalance(BigDecimal balance) {
     this.balance = balance;
+  }
+
+  public UUID getOrganizationId() {
+    return organizationId;
+  }
+
+  public void setOrganizationId(UUID organizationId) {
+    this.organizationId = organizationId;
   }
 }

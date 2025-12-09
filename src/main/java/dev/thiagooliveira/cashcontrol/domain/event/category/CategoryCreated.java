@@ -10,7 +10,7 @@ public record CategoryCreated(
     String name,
     String hashColor,
     TransactionType type,
-    boolean defaultCategory,
+    UUID organizationId,
     Instant occurredAt,
     int version)
     implements DomainEvent {

@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public record CreateScheduledTransactionCommand(
+    UUID organizationId,
+    UUID userId,
     UUID accountId,
     UUID categoryId,
     BigDecimal amount,

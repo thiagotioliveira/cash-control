@@ -12,6 +12,9 @@ public class BankEntity {
   @Id private UUID id;
 
   @Column(nullable = false)
+  private UUID organizationId;
+
+  @Column(nullable = false)
   private String name;
 
   @Enumerated(EnumType.STRING)
@@ -24,6 +27,7 @@ public class BankEntity {
     this.id = event.bankId();
     this.name = event.name();
     this.currency = event.currency();
+    this.organizationId = event.organizationId();
   }
 
   public Bank toDomain() {
@@ -52,5 +56,13 @@ public class BankEntity {
 
   public void setCurrency(Currency currency) {
     this.currency = currency;
+  }
+
+  public UUID getOrganizationId() {
+    return organizationId;
+  }
+
+  public void setOrganizationId(UUID organizationId) {
+    this.organizationId = organizationId;
   }
 }

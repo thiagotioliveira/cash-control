@@ -36,13 +36,14 @@ public class TransactionTemplateJpaRepository {
   }
 
   public List<TransactionTemplateEntity>
-      findAllByAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
-          UUID accountId, LocalDate startDate, LocalDate endDate) {
+      findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
+          UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate) {
     return em.createQuery(
             """
             SELECT t
             FROM TransactionTemplateEntity t
-            WHERE t.accountId = :accountId
+            WHERE t.organizationId = :organizationId
+              AND t.accountId = :accountId
               AND t.startDate <= :endDate
               AND (
                     t.endDate >= :startDate
@@ -50,6 +51,7 @@ public class TransactionTemplateJpaRepository {
                   )
             """,
             TransactionTemplateEntity.class)
+        .setParameter("organizationId", organizationId)
         .setParameter("accountId", accountId)
         .setParameter("startDate", startDate)
         .setParameter("endDate", endDate)

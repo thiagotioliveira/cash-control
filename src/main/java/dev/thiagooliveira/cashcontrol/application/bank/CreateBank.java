@@ -20,9 +20,9 @@ public class CreateBank {
   }
 
   public Bank execute(CreateBankCommand command) {
-    if (repository.existsByName(command.name()))
+    if (repository.existsByOrganizationIdAndName(command.organizationId(), command.name()))
       throw ApplicationException.badRequest("bank already exists");
-    var bank = Bank.create(command.name(), command.currency());
+    var bank = Bank.create(command.organizationId(), command.name(), command.currency());
     var events = bank.pendingEvents();
 
     eventStore.append(bank.getId(), events, bank.getVersion() - events.size());

@@ -6,18 +6,38 @@ import java.util.Optional;
 import java.util.UUID;
 
 public record CreateTransactionCommand(
+    UUID organizationId,
+    UUID userId,
     UUID accountId,
     Instant occurredAt,
     UUID categoryId,
     BigDecimal amount,
     Optional<String> description) {
   public CreateTransactionCommand(
-      UUID accountId, Instant occurredAt, UUID categoryId, BigDecimal amount) {
-    this(accountId, occurredAt, categoryId, amount, Optional.empty());
+      UUID organizationId,
+      UUID userId,
+      UUID accountId,
+      Instant occurredAt,
+      UUID categoryId,
+      BigDecimal amount) {
+    this(organizationId, userId, accountId, occurredAt, categoryId, amount, Optional.empty());
   }
 
   public CreateTransactionCommand(
-      UUID accountId, Instant occurredAt, UUID categoryId, BigDecimal amount, String description) {
-    this(accountId, occurredAt, categoryId, amount, Optional.of(description));
+      UUID organizationId,
+      UUID userId,
+      UUID accountId,
+      Instant occurredAt,
+      UUID categoryId,
+      BigDecimal amount,
+      String description) {
+    this(
+        organizationId,
+        userId,
+        accountId,
+        occurredAt,
+        categoryId,
+        amount,
+        Optional.of(description));
   }
 }

@@ -35,7 +35,8 @@ public class TransactionEventListener {
 
   @EventListener
   public void on(ScheduledTransactionUpdated event) {
-    var transaction = findByIdAndAccountId(event.transactionId(), event.accountId());
+    var transaction =
+        findByIdAndAccountId(event.organizationId(), event.accountId(), event.transactionId());
     if (!transaction.getStatus().isScheduled()) {
       throw InfrastructureException.badRequest("Transaction must be scheduled");
     }
@@ -68,14 +69,17 @@ public class TransactionEventListener {
 
   @EventListener
   public void on(TransactionConfirmed event) {
-    var transaction = findByIdAndAccountId(event.getTransactionId(), event.getAccountId());
+    var transaction =
+        findByIdAndAccountId(
+            event.getOrganizationId(), event.getAccountId(), event.getTransactionId());
     transaction.confirm(event);
     this.repository.save(transaction);
   }
 
-  private TransactionEntity findByIdAndAccountId(UUID transactionId, UUID accountId) {
+  private TransactionEntity findByIdAndAccountId(
+      UUID organizationId, UUID accountId, UUID transactionId) {
     return this.repository
-        .findByIdAndAccountId(transactionId, accountId)
+        .findByOrganizationIdAndAccountIdAndId(organizationId, accountId, transactionId)
         .orElseThrow(() -> InfrastructureException.notFound("Transaction not found"));
   }
 }

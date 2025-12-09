@@ -24,7 +24,7 @@ public class CreatePayable {
   public Account execute(CreateScheduledTransactionCommand command) {
     var category =
         categoryRepository
-            .findById(command.categoryId())
+            .findByOrganizationIdAndId(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
     if (!TransactionType.DEBIT.equals(category.getType()))
       throw ApplicationException.badRequest("category must be debit");
@@ -41,6 +41,7 @@ public class CreatePayable {
     var account = Account.rehydrate(pastEvents);
 
     account.payable(
+        command.userId(),
         category.getId(),
         command.amount(),
         category.getName(),

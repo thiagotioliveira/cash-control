@@ -15,6 +15,8 @@ public class TransactionCreated implements DomainEvent {
   private BigDecimal amount;
   private BigDecimal balance;
   private String description;
+  private UUID organizationId;
+  private UUID userId;
   private Instant occurredAt;
   private int version;
 
@@ -27,9 +29,13 @@ public class TransactionCreated implements DomainEvent {
       TransactionType type,
       BigDecimal amount,
       String description,
+      UUID organizationId,
+      UUID userId,
       Instant occurredAt,
       int version) {
     this.transactionId = transactionId;
+    this.organizationId = organizationId;
+    this.userId = userId;
     this.accountId = accountId;
     this.categoryId = categoryId;
     this.type = type;
@@ -92,5 +98,13 @@ public class TransactionCreated implements DomainEvent {
 
   public int getVersion() {
     return version;
+  }
+
+  public UUID getOrganizationId() {
+    return organizationId;
+  }
+
+  public UUID getUserId() {
+    return userId;
   }
 }

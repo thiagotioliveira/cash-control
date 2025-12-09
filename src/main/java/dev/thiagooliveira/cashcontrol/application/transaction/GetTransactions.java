@@ -14,7 +14,7 @@ public class GetTransactions {
   }
 
   public List<GetTransactionItem> execute(GetTransactionsCommand command) {
-    return this.repository.findAllByAccountIdAndDueDateBetween(
-        command.accountId(), command.startDate(), command.endDate());
+    return this.repository.findAllByOrganizationIdAndAccountIdAndDueDateBetween(
+        command.organizationId(), command.accountId(), command.startDate(), command.endDate());
   }
 }

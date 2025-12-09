@@ -5,4 +5,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record ConfirmTransactionCommand(
-    UUID accountId, UUID transactionId, Instant occurredAt, BigDecimal amount) {}
+    UUID organizationId,
+    UUID userId,
+    UUID accountId,
+    UUID transactionId,
+    Instant occurredAt,
+    BigDecimal amount) {}

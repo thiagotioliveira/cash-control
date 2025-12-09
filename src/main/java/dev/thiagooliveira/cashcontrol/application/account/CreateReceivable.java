@@ -24,7 +24,7 @@ public class CreateReceivable {
   public Account execute(CreateScheduledTransactionCommand command) {
     var category =
         categoryRepository
-            .findById(command.categoryId())
+            .findByOrganizationIdAndId(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
     if (!TransactionType.CREDIT.equals(category.getType()))
       throw ApplicationException.badRequest("category must be credit");
@@ -41,6 +41,7 @@ public class CreateReceivable {
     var account = Account.rehydrate(pastEvents);
 
     account.receivable(
+        command.userId(),
         category.getId(),
         command.amount(),
         category.getName(),

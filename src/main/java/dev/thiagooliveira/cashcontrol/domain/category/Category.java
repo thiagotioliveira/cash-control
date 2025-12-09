@@ -14,38 +14,35 @@ public class Category {
   private String name;
   private String hashColor;
   private TransactionType type;
-  private boolean defaultCategory = false;
 
   private int version = 0;
   private final List<DomainEvent> pendingEvents = new ArrayList<>();
 
-  private Category(
-      UUID id, String name, String hashColor, TransactionType type, boolean defaultCategory) {
+  private Category(UUID id, String name, String hashColor, TransactionType type) {
     this.id = id;
     this.name = name;
     this.hashColor = hashColor;
     this.type = type;
-    this.defaultCategory = defaultCategory;
   }
 
-  private Category(String name, String hashColor, TransactionType type, boolean defaultCategory) {
-    this(UUID.randomUUID(), name, hashColor, type, defaultCategory);
+  private Category(String name, String hashColor, TransactionType type) {
+    this(UUID.randomUUID(), name, hashColor, type);
   }
 
-  public static Category restore(
-      UUID id, String name, String hashColor, TransactionType type, boolean defaultCategory) {
-    return new Category(id, name, hashColor, type, defaultCategory);
+  public static Category restore(UUID id, String name, String hashColor, TransactionType type) {
+    return new Category(id, name, hashColor, type);
   }
 
-  public static Category create(String name, String hashColor, TransactionType type) {
-    var category = new Category(name, hashColor, type, false);
+  public static Category create(
+      UUID organizationId, String name, String hashColor, TransactionType type) {
+    var category = new Category(name, hashColor, type);
     category.apply(
         new CategoryCreated(
             category.id,
             category.name,
             category.hashColor,
             category.type,
-            category.defaultCategory,
+            organizationId,
             Instant.now(),
             1));
     return category;
@@ -65,10 +62,6 @@ public class Category {
 
   public TransactionType getType() {
     return type;
-  }
-
-  public boolean isDefaultCategory() {
-    return defaultCategory;
   }
 
   public List<DomainEvent> pendingEvents() {
@@ -101,7 +94,6 @@ public class Category {
         name = ev.name();
         hashColor = ev.hashColor();
         type = ev.type();
-        defaultCategory = ev.defaultCategory();
       }
       default -> throw DomainException.badRequest("unhandled event " + event);
     }

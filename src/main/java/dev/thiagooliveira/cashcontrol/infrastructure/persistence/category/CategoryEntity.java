@@ -13,6 +13,9 @@ public class CategoryEntity {
   @Id private UUID id;
 
   @Column(nullable = false)
+  private UUID organizationId;
+
+  @Column(nullable = false)
   private String name;
 
   @Column(nullable = false)
@@ -22,9 +25,6 @@ public class CategoryEntity {
   @Column(nullable = false)
   private TransactionType type;
 
-  @Column(nullable = false)
-  private boolean defaultCategory;
-
   public CategoryEntity() {}
 
   public CategoryEntity(CategoryCreated event) {
@@ -32,11 +32,11 @@ public class CategoryEntity {
     this.name = event.name();
     this.hashColor = event.hashColor();
     this.type = event.type();
-    this.defaultCategory = event.defaultCategory();
+    this.organizationId = event.organizationId();
   }
 
   public Category toDomain() {
-    return Category.restore(id, name, hashColor, type, defaultCategory);
+    return Category.restore(id, name, hashColor, type);
   }
 
   public UUID getId() {
@@ -71,11 +71,11 @@ public class CategoryEntity {
     this.type = type;
   }
 
-  public boolean isDefaultCategory() {
-    return defaultCategory;
+  public UUID getOrganizationId() {
+    return organizationId;
   }
 
-  public void setDefaultCategory(boolean defaultCategory) {
-    this.defaultCategory = defaultCategory;
+  public void setOrganizationId(UUID organizationId) {
+    this.organizationId = organizationId;
   }
 }

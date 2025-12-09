@@ -6,7 +6,13 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record AccountCreated(
-    UUID accountId, String name, UUID bankId, BigDecimal balance, Instant occurredAt, int version)
+    UUID accountId,
+    String name,
+    UUID bankId,
+    BigDecimal balance,
+    UUID organizationId,
+    Instant occurredAt,
+    int version)
     implements DomainEvent {
 
   @Override

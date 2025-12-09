@@ -15,17 +15,17 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   }
 
   @Override
-  public Optional<Category> findById(UUID id) {
-    return this.repository.findById(id).map(CategoryEntity::toDomain);
+  public Optional<Category> findByOrganizationIdAndId(UUID organizationId, UUID id) {
+    return this.repository
+        .findByOrganizationIdAndId(organizationId, id)
+        .map(CategoryEntity::toDomain);
   }
 
   @Override
-  public Optional<Category> findByTypeAndDefaultCategoryIsTrue(TransactionType type) {
-    return this.repository.findByTypeAndDefaultCategoryIsTrue(type).map(CategoryEntity::toDomain);
-  }
-
-  @Override
-  public boolean existsByNameAndType(String name, TransactionType type) {
-    return this.repository.existsByNameAndType(name, type);
+  public Optional<Category> findByOrganizationIdAndNameAndType(
+      UUID organizationId, String name, TransactionType type) {
+    return this.repository
+        .findByOrganizationIdAndNameAndType(organizationId, name, type)
+        .map(CategoryEntity::toDomain);
   }
 }

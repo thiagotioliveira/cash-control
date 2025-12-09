@@ -27,9 +27,10 @@ public class Bank {
     this(UUID.randomUUID(), name, currency);
   }
 
-  public static Bank create(String name, Currency currency) {
+  public static Bank create(UUID organizationId, String name, Currency currency) {
     var bank = new Bank(name, currency);
-    bank.apply(new BankCreated(bank.id, bank.name, bank.currency, Instant.now(), 1));
+    bank.apply(
+        new BankCreated(bank.id, bank.name, bank.currency, organizationId, Instant.now(), 1));
     return bank;
   }
 

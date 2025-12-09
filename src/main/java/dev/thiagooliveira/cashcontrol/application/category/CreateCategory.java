@@ -21,9 +21,15 @@ public class CreateCategory {
   }
 
   public Category execute(CreateCategoryCommand command) {
-    if (repository.existsByNameAndType(command.name(), command.type()))
+    if (repository
+        .findByOrganizationIdAndNameAndType(
+            command.organizationId(), command.name(), command.type())
+        .isPresent()) {
       throw ApplicationException.badRequest("category already exists");
-    var category = Category.create(command.name(), command.hashColor(), command.type());
+    }
+    var category =
+        Category.create(
+            command.organizationId(), command.name(), command.hashColor(), command.type());
     var events = category.pendingEvents();
 
     eventStore.append(category.getId(), events, category.getVersion() - events.size());

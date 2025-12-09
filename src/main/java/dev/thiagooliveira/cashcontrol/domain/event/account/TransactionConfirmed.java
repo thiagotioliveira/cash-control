@@ -7,6 +7,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class TransactionConfirmed implements DomainEvent {
+  private UUID organizationId;
+  private UUID userId;
   private UUID accountId;
   private UUID transactionId;
   private TransactionType type;
@@ -18,12 +20,16 @@ public class TransactionConfirmed implements DomainEvent {
   public TransactionConfirmed() {}
 
   public TransactionConfirmed(
+      UUID organizationId,
+      UUID userId,
       UUID accountId,
       UUID transactionId,
       TransactionType type,
       BigDecimal amount,
       Instant occurredAt,
       int version) {
+    this.organizationId = organizationId;
+    this.userId = userId;
     this.accountId = accountId;
     this.transactionId = transactionId;
     this.type = type;
@@ -77,5 +83,13 @@ public class TransactionConfirmed implements DomainEvent {
 
   public int getVersion() {
     return version;
+  }
+
+  public UUID getOrganizationId() {
+    return organizationId;
+  }
+
+  public UUID getUserId() {
+    return userId;
   }
 }

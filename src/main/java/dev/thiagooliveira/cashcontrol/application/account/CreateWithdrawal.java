@@ -28,7 +28,7 @@ public class CreateWithdrawal {
     }
     var category =
         categoryRepository
-            .findById(command.categoryId())
+            .findByOrganizationIdAndId(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
     if (!TransactionType.DEBIT.equals(category.getType()))
       throw ApplicationException.badRequest("category must be debit");
@@ -40,6 +40,7 @@ public class CreateWithdrawal {
 
     var account = Account.rehydrate(pastEvents);
     account.debit(
+        command.userId(),
         command.occurredAt(),
         category.getId(),
         command.amount(),

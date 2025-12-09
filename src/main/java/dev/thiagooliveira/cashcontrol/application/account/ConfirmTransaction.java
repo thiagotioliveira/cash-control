@@ -30,7 +30,8 @@ public class ConfirmTransaction {
 
     var transaction =
         this.transactionRepository
-            .findByIdAndAccountId(command.transactionId(), command.accountId())
+            .findByOrganizationIdAndAccountIdAndId(
+                command.organizationId(), command.accountId(), command.transactionId())
             .orElseThrow(() -> ApplicationException.notFound("transaction not found"));
 
     if (!transaction.status().isScheduled()) {
@@ -45,9 +46,11 @@ public class ConfirmTransaction {
 
     var account = Account.rehydrate(pastEvents);
     if (transaction.type().isDebit()) {
-      account.debitConfirmed(transaction.transactionId(), command.occurredAt(), command.amount());
+      account.debitConfirmed(
+          command.userId(), transaction.transactionId(), command.occurredAt(), command.amount());
     } else if (transaction.type().isCredit()) {
-      account.creditConfirmed(transaction.transactionId(), command.occurredAt(), command.amount());
+      account.creditConfirmed(
+          command.userId(), transaction.transactionId(), command.occurredAt(), command.amount());
     } else {
       throw ApplicationException.badRequest("transaction type not supported");
     }

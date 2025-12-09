@@ -25,7 +25,8 @@ public class UpdateScheduledTransaction {
   public Account execute(UpdateScheduledTransactionCommand command) {
     var transaction =
         this.transactionRepository
-            .findByIdAndAccountId(command.transactionId(), command.accountId())
+            .findByOrganizationIdAndAccountIdAndId(
+                command.organizationId(), command.accountId(), command.transactionId())
             .orElseThrow(() -> ApplicationException.notFound("transaction not found"));
 
     if (!transaction.status().isScheduled()) {
@@ -41,7 +42,11 @@ public class UpdateScheduledTransaction {
     var account = Account.rehydrate(pastEvents);
 
     account.updateScheduledTransaction(
-        command.transactionId(), command.amount(), command.dueDayOfMonth(), command.endDueDate());
+        command.userId(),
+        command.transactionId(),
+        command.amount(),
+        command.dueDayOfMonth(),
+        command.endDueDate());
 
     var newEvents = account.pendingEvents();
     eventStore.append(account.getId(), newEvents, account.getVersion() - newEvents.size());

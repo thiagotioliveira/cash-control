@@ -16,7 +16,7 @@ public class CreateAccount {
   }
 
   public Account execute(CreateAccountCommand command) {
-    var account = Account.create(command.bankId(), command.name());
+    var account = Account.create(command.organizationId(), command.bankId(), command.name());
     var events = account.pendingEvents();
 
     eventStore.append(account.getId(), events, account.getVersion() - events.size());

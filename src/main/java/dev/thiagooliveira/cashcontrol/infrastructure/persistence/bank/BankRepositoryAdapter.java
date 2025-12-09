@@ -1,6 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank;
 
 import dev.thiagooliveira.cashcontrol.application.outbound.BankRepository;
+import java.util.UUID;
 
 public class BankRepositoryAdapter implements BankRepository {
 
@@ -11,7 +12,7 @@ public class BankRepositoryAdapter implements BankRepository {
   }
 
   @Override
-  public boolean existsByName(String name) {
-    return this.repository.existsByName(name);
+  public boolean existsByOrganizationIdAndName(UUID organizationId, String name) {
+    return this.repository.existsByOrganizationIdAndName(organizationId, name);
   }
 }

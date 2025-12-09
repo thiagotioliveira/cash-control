@@ -132,6 +132,11 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
                   name: name
                   type: varchar(255)
                   constraints:
@@ -141,6 +146,12 @@ databaseChangeLog:
                   type: varchar(10)
                   constraints:
                     nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: banks
+            baseColumnNames: organization_id
+            referencedTableName: organizations
+            referencedColumnNames: id
+            constraintName: fk_banks_organizations
   - changeSet:
       id: create-accounts
       author: thiago
@@ -155,8 +166,8 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: name
-                  type: varchar(255)
+                  name: organization_id
+                  type: uuid
                   constraints:
                     nullable: false
               - column:
@@ -165,10 +176,21 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
                   name: balance
                   type: numeric(10,2)
                   constraints:
                     nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: accounts
+            baseColumnNames: organization_id
+            referencedTableName: organizations
+            referencedColumnNames: id
+            constraintName: fk_accounts_organizations
         - addForeignKeyConstraint:
             baseTableName: accounts
             baseColumnNames: bank_id
@@ -189,6 +211,11 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
                   name: name
                   type: varchar(255)
                   constraints:
@@ -203,52 +230,12 @@ databaseChangeLog:
                   type: varchar(10)
                   constraints:
                     nullable: false
-              - column:
-                  name: default_category
-                  type: boolean
-                  constraints:
-                    nullable: false
-                  defaultValueBoolean: false
-  - changeSet:
-      id: insert-default-categories
-      author: thiago
-      changes:
-        - insert:
-            tableName: categories
-            columns:
-              - column:
-                  name: id
-                  value: "00000000-0000-0000-0000-000000000000"
-              - column:
-                  name: name
-                  value: "Default"
-              - column:
-                  name: type
-                  value: "CREDIT"
-              - column:
-                  name: hash_color
-                  value: "#33C922"
-              - column:
-                  name: default_category
-                  valueBoolean: true
-        - insert:
-            tableName: categories
-            columns:
-              - column:
-                  name: id
-                  value: "00000000-0000-0000-0000-000000000001"
-              - column:
-                  name: name
-                  value: "Default"
-              - column:
-                  name: type
-                  value: "DEBIT"
-              - column:
-                  name: hash_color
-                  value: "#C92222"
-              - column:
-                  name: default_category
-                  valueBoolean: true
+        - addForeignKeyConstraint:
+            baseTableName: categories
+            baseColumnNames: organization_id
+            referencedTableName: organizations
+            referencedColumnNames: id
+            constraintName: fk_categories_organizations
   - changeSet:
       id: create-transaction-templates
       author: thiago
@@ -261,6 +248,11 @@ databaseChangeLog:
                   type: uuid
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
                     nullable: false
               - column:
                   name: account_id
@@ -309,6 +301,12 @@ databaseChangeLog:
                     nullable: true
         - addForeignKeyConstraint:
             baseTableName: transaction_templates
+            baseColumnNames: organization_id
+            referencedTableName: organizations
+            referencedColumnNames: id
+            constraintName: fk_transaction_templates_organizations
+        - addForeignKeyConstraint:
+            baseTableName: transaction_templates
             baseColumnNames: account_id
             referencedTableName: accounts
             referencedColumnNames: id
@@ -331,6 +329,11 @@ databaseChangeLog:
                   type: uuid
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
                     nullable: false
               - column:
                   name: account_id
@@ -380,6 +383,21 @@ databaseChangeLog:
                   type: varchar(15)
                   constraints:
                     nullable: false
+              - column:
+                  name: confirmed_by
+                  type: uuid
+        - addForeignKeyConstraint:
+            baseTableName: transactions
+            baseColumnNames: organization_id
+            referencedTableName: organizations
+            referencedColumnNames: id
+            constraintName: fk_transactions_organizations
+        - addForeignKeyConstraint:
+            baseTableName: transactions
+            baseColumnNames: confirmed_by
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_transactions_users
         - addForeignKeyConstraint:
             baseTableName: transactions
             baseColumnNames: account_id

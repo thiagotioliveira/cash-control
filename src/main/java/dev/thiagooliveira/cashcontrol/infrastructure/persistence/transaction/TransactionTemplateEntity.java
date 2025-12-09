@@ -17,6 +17,9 @@ public class TransactionTemplateEntity {
   @Id private UUID id;
 
   @Column(nullable = false)
+  private UUID organizationId;
+
+  @Column(nullable = false)
   private UUID accountId;
 
   @Column(nullable = false)
@@ -47,6 +50,7 @@ public class TransactionTemplateEntity {
 
   public TransactionTemplateEntity(ScheduledTransactionCreated event) {
     this.id = event.transactionId();
+    this.organizationId = event.organizationId();
     this.accountId = event.accountId();
     this.description = event.description();
     this.amount = event.amount();
@@ -148,5 +152,13 @@ public class TransactionTemplateEntity {
 
   public void setTotalInstallments(Integer totalInstallments) {
     this.totalInstallments = totalInstallments;
+  }
+
+  public UUID getOrganizationId() {
+    return organizationId;
+  }
+
+  public void setOrganizationId(UUID organizationId) {
+    this.organizationId = organizationId;
   }
 }

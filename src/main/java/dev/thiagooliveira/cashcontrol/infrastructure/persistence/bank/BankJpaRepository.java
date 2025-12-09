@@ -4,5 +4,5 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BankJpaRepository extends JpaRepository<BankEntity, UUID> {
-  boolean existsByName(String name);
+  boolean existsByOrganizationIdAndName(UUID organizationId, String name);
 }

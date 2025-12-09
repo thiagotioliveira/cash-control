@@ -6,6 +6,7 @@ import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryEntity;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserEntity;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import jakarta.persistence.*;
@@ -21,6 +22,13 @@ import java.util.UUID;
 public class TransactionEntity {
 
   @Id private UUID id;
+
+  @Column(nullable = false)
+  private UUID organizationId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "confirmed_by")
+  private UserEntity user;
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id", nullable = false)
@@ -58,6 +66,9 @@ public class TransactionEntity {
 
   public TransactionEntity(TransactionCreated event) {
     this.id = event.getTransactionId();
+    this.organizationId = event.getOrganizationId();
+    this.user = new UserEntity();
+    this.user.setId(event.getUserId());
     this.account = new AccountEntity();
     this.account.setId(event.getAccountId());
     this.transactionTemplateId = null;
@@ -74,6 +85,7 @@ public class TransactionEntity {
 
   public TransactionEntity(TransactionTemplateEntity template, LocalDate dueDate) {
     this.id = UUID.randomUUID();
+    this.organizationId = template.getOrganizationId();
     this.account = new AccountEntity();
     this.account.setId(template.getAccountId());
     this.transactionTemplateId = template.getId();
@@ -109,6 +121,8 @@ public class TransactionEntity {
     this.occurredAt = event.occurredAt();
     this.amount = event.getAmount();
     this.status = TransactionStatus.CONFIRMED;
+    this.user = new UserEntity();
+    this.user.setId(event.getUserId());
   }
 
   public void update(ScheduledTransactionUpdated event) {
