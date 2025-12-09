@@ -6,6 +6,7 @@ public class DueDateUtils {
 
   public static LocalDate nextDueDate(LocalDate dueDate, Recurrence recurrence) {
     return switch (recurrence) {
+      case WEEKLY -> dueDate.plusWeeks(1);
       case BIWEEKLY -> dueDate.plusWeeks(2);
       case MONTHLY -> dueDate.plusMonths(1);
       default ->
@@ -24,6 +25,7 @@ public class DueDateUtils {
     }
 
     return switch (recurrence) {
+      case WEEKLY -> (int) startDueDate.until(endDate).getDays() / 7 + 1;
       case BIWEEKLY -> (int) (startDueDate.until(endDate).getDays() / 14) + 1;
       case MONTHLY -> (int) startDueDate.until(endDate).toTotalMonths() + 1;
       default -> throw new IllegalArgumentException("Invalid recurrence");

@@ -29,7 +29,7 @@ public class DashboardController {
                 properties.getOrganizationId(),
                 properties.getAccountId(),
                 LocalDate.of(2025, Month.NOVEMBER, 25),
-                LocalDate.now().plusMonths(13)));
+                LocalDate.of(2026, Month.DECEMBER, 31)));
     model.addAttribute("mixedData", TransactionChartMapper.toBalanceData(transactions));
     model.addAttribute(
         "monthlyPieCharts", TransactionChartMapper.toMonthlyCategoryData(transactions));

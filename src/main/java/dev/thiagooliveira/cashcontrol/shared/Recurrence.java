@@ -2,6 +2,7 @@ package dev.thiagooliveira.cashcontrol.shared;
 
 public enum Recurrence {
   NONE,
+  WEEKLY,
   BIWEEKLY,
   MONTHLY;
 
