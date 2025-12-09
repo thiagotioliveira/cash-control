@@ -114,5 +114,9 @@ public class TransactionsModel {
     public TransactionStatus getStatus() {
       return status;
     }
+
+    public String getStatusFormatted() {
+      return this.status.isScheduled() ? "Agendado" : this.status.isConfirmed() ? "Confirmado" : "";
+    }
   }
 }

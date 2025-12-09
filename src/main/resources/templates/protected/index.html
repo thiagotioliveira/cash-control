@@ -83,8 +83,8 @@
                         <img th:src="@{/assets/img/1.jpg}" alt="img" class="image-block imaged w48">
                         <div>
                             <strong th:text="${t.description}"></strong>
-                            <p th:text="${t.occurredAt}" th:if="${t.status.isConfirmed()}"></p>
-                            <p th:text="${t.dueDate}" th:if="${t.status.isScheduled()}"></p>
+                            <p th:text="${t.statusFormatted + ' - ' + t.occurredAt}" th:if="${t.status.isConfirmed()}"></p>
+                            <p th:text="${t.statusFormatted + ' - ' + t.dueDate}" th:if="${t.status.isScheduled()}"></p>
                         </div>
                     </div>
                     <div class="right">
