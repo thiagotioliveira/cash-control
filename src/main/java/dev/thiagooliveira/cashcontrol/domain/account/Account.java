@@ -23,16 +23,16 @@ public class Account {
   private int version = 0;
   private final List<DomainEvent> pendingEvents = new ArrayList<>();
 
-  private Account(UUID id, UUID organizationId, UUID bankId, String name) {
+  private Account(UUID id, UUID organizationId, UUID bankId, String name, BigDecimal balance) {
     this.id = id;
     this.organizationId = organizationId;
     this.bankId = bankId;
     this.name = name;
-    this.balance = BigDecimal.ZERO;
+    this.balance = balance;
   }
 
   private Account(UUID organizationId, UUID bankId, String name) {
-    this(UUID.randomUUID(), organizationId, bankId, name);
+    this(UUID.randomUUID(), organizationId, bankId, name, BigDecimal.ZERO);
   }
 
   public static Account create(UUID organizationId, UUID bankId, String name) {
@@ -47,6 +47,11 @@ public class Account {
             Instant.now(),
             1));
     return account;
+  }
+
+  public static Account restore(
+      UUID id, UUID organizationId, UUID bankId, String name, BigDecimal balance) {
+    return new Account(id, organizationId, bankId, name, balance);
   }
 
   public static Account rehydrate(List<DomainEvent> events) {
@@ -205,6 +210,18 @@ public class Account {
 
   public UUID getId() {
     return id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public UUID getBankId() {
+    return bankId;
+  }
+
+  public BigDecimal getBalance() {
+    return balance;
   }
 
   public List<DomainEvent> pendingEvents() {

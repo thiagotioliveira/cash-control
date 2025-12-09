@@ -7,4 +7,8 @@ public enum TransactionStatus {
   public boolean isScheduled() {
     return this == SCHEDULED;
   }
+
+  public boolean isConfirmed() {
+    return this == CONFIRMED;
+  }
 }

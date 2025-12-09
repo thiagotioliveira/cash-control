@@ -1,9 +1,10 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web;
 
 import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
+import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsPageCommand;
 import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockDataProperties;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.mapper.TransactionChartMapper;
+import dev.thiagooliveira.cashcontrol.shared.Pageable;
 import java.time.LocalDate;
 import java.time.Month;
 import org.springframework.stereotype.Controller;
@@ -25,14 +26,15 @@ public class DashboardController {
   public String showChart(Model model) {
     var transactions =
         getTransactions.execute(
-            new GetTransactionsCommand(
+            new GetTransactionsPageCommand(
                 properties.getOrganizationId(),
                 properties.getAccountId(),
                 LocalDate.of(2025, Month.NOVEMBER, 25),
-                LocalDate.of(2026, Month.DECEMBER, 31)));
-    model.addAttribute("mixedData", TransactionChartMapper.toBalanceData(transactions));
+                LocalDate.of(2026, Month.DECEMBER, 31),
+                new Pageable(0, Integer.MAX_VALUE)));
+    model.addAttribute("mixedData", TransactionChartMapper.toBalanceData(transactions.content()));
     model.addAttribute(
-        "monthlyPieCharts", TransactionChartMapper.toMonthlyCategoryData(transactions));
+        "monthlyPieCharts", TransactionChartMapper.toMonthlyCategoryData(transactions.content()));
     return "dashboard";
   }
 }

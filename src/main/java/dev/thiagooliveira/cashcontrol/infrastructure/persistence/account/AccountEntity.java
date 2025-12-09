@@ -1,5 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.account;
 
+import dev.thiagooliveira.cashcontrol.domain.account.Account;
 import dev.thiagooliveira.cashcontrol.domain.event.account.AccountCreated;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankEntity;
 import jakarta.persistence.*;
@@ -34,6 +35,10 @@ public class AccountEntity {
     this.bank = new BankEntity();
     this.bank.setId(event.bankId());
     this.organizationId = event.organizationId();
+  }
+
+  public Account toDomain() {
+    return Account.restore(id, organizationId, bank.getId(), name, balance);
   }
 
   public UUID getId() {

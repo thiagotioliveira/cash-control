@@ -1,17 +1,20 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.config;
 
 import dev.thiagooliveira.cashcontrol.application.account.*;
-import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
-import dev.thiagooliveira.cashcontrol.application.outbound.EventPublisher;
-import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
-import dev.thiagooliveira.cashcontrol.application.outbound.TransactionRepository;
+import dev.thiagooliveira.cashcontrol.application.outbound.*;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.account.AccountEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountJpaRepository;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountRepositoryAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AccountConfig {
+
+  @Bean
+  AccountRepository accountRepository(AccountJpaRepository repository) {
+    return new AccountRepositoryAdapter(repository);
+  }
 
   @Bean
   AccountEventListener accountEventListener(AccountJpaRepository repository) {

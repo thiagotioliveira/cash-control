@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- App Bottom Menu -->
+<div class="appBottomMenu">
+    <a href="/protected/" class="item active">
+        <div class="col">
+            <ion-icon name="home-outline"></ion-icon>
+            <strong>Home</strong>
+        </div>
+    </a>
+    <a href="app-pages.html" class="item" th:if="${false}">
+        <div class="col">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <strong>Pages</strong>
+        </div>
+    </a>
+    <a href="app-components.html" class="item" th:if="${false}">
+        <div class="col">
+            <ion-icon name="apps-outline"></ion-icon>
+            <strong>Components</strong>
+        </div>
+    </a>
+    <a href="app-cards.html" class="item" th:if="${false}">
+        <div class="col">
+            <ion-icon name="card-outline"></ion-icon>
+            <strong>My Cards</strong>
+        </div>
+    </a>
+    <a href="app-settings.html" class="item" th:if="${false}">
+        <div class="col">
+            <ion-icon name="settings-outline"></ion-icon>
+            <strong>Settings</strong>
+        </div>
+    </a>
+</div>
+<!-- * App Bottom Menu -->
+</html>

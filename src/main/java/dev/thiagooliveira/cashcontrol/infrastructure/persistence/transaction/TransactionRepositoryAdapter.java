@@ -3,10 +3,13 @@ package dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction;
 import dev.thiagooliveira.cashcontrol.application.outbound.TransactionRepository;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.shared.DueDateUtils;
+import dev.thiagooliveira.cashcontrol.shared.Page;
+import dev.thiagooliveira.cashcontrol.shared.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.PageRequest;
 
 public class TransactionRepositoryAdapter implements TransactionRepository {
 
@@ -28,8 +31,12 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
   }
 
   @Override
-  public List<GetTransactionItem> findAllByOrganizationIdAndAccountIdAndDueDateBetween(
-      UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate) {
+  public Page<GetTransactionItem> findAllByOrganizationIdAndAccountIdAndDueDateBetween(
+      UUID organizationId,
+      UUID accountId,
+      LocalDate startDate,
+      LocalDate endDate,
+      Pageable pageable) {
     var templates =
         this.templateRepository
             .findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
@@ -48,8 +55,30 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
                 }
               }
             });
+    var page =
+        this.repository.findAllByAccountIdAndDueDateBetweenOrderByDueDateDesc(
+            accountId,
+            startDate,
+            endDate,
+            PageRequest.of(pageable.pageNumber(), pageable.pageSize()));
+
+    return new Page<GetTransactionItem>(
+        page.getContent().stream().map(TransactionEntity::toDomain).toList(),
+        page.getNumber(),
+        page.getSize(),
+        page.getTotalElements(),
+        page.getTotalPages(),
+        page.isFirst(),
+        page.isLast());
+  }
+
+  @Override
+  public List<GetTransactionItem>
+      findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
+          UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate) {
     return this.repository
-        .findAllByAccountIdAndDueDateBetweenOrderByDueDateAsc(accountId, startDate, endDate)
+        .findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
+            organizationId, accountId, startDate, endDate)
         .stream()
         .map(TransactionEntity::toDomain)
         .toList();

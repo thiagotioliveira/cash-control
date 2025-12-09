@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{protected/fragments/head}"></div>
+
+<body>
+
+    <div th:insert="~{protected/fragments/loader}"></div>
+
+    <div th:insert="~{protected/fragments/app-header}"></div>
+
+
+    <!-- App Capsule -->
+    <div id="appCapsule">
+
+        <!-- Wallet Card -->
+        <div class="section wallet-card-section pt-1">
+            <div class="wallet-card">
+                <!-- Balance -->
+                <div class="balance">
+                    <div class="left">
+                        <span class="title" th:text="${account.name}"></span>
+                        <h1 class="total" th:text="${account.balance}"></h1>
+                    </div>
+                    <div class="right" th:if="${false}">
+                        <a href="#" class="button" data-bs-toggle="modal" data-bs-target="#depositActionSheet">
+                            <ion-icon name="add-outline"></ion-icon>
+                        </a>
+                    </div>
+                </div>
+                <!-- * Balance -->
+                <!-- Wallet Footer -->
+                <div class="wallet-footer">
+                    <div class="item">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#withdrawActionSheet">
+                            <div class="icon-wrapper bg-danger">
+                                <ion-icon name="arrow-down-outline"></ion-icon>
+                            </div>
+                            <strong>Retirada</strong>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#sendActionSheet">
+                            <div class="icon-wrapper bg-success">
+                                <ion-icon name="arrow-up-outline"></ion-icon>
+                            </div>
+                            <strong>Deposito</strong>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="app-cards.html">
+                            <div class="icon-wrapper bg-warning">
+                                <ion-icon name="alert-outline"></ion-icon>
+                            </div>
+                            <strong>Contas a Pagar</strong>
+                        </a>
+                    </div>
+                    <div class="item">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#exchangeActionSheet">
+                            <div class="icon-wrapper bg-primary">
+                                <ion-icon name="wallet-outline"></ion-icon>
+                            </div>
+                            <strong>Contas a Receber</strong>
+                        </a>
+                    </div>
+
+                </div>
+                <!-- * Wallet Footer -->
+            </div>
+        </div>
+        <!-- Wallet Card -->
+
+        <!-- Transactions -->
+        <div class="section mt-4">
+            <div class="section-heading">
+                <h2 class="title">Transações</h2>
+                <a href="app-transactions.html" class="link">Ver todas</a>
+            </div>
+            <div class="transactions">
+                <!-- item -->
+                <a href="app-transaction-detail.html" class="item" th:each="t : ${transactions.content}">
+                    <div class="detail">
+                        <img th:src="@{/assets/img/1.jpg}" alt="img" class="image-block imaged w48">
+                        <div>
+                            <strong th:text="${t.description}"></strong>
+                            <p th:text="${t.occurredAt}" th:if="${t.status.isConfirmed()}"></p>
+                            <p th:text="${t.dueDate}" th:if="${t.status.isScheduled()}"></p>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="price"
+                             th:class="${t.status.isScheduled() ? 'text-secondary' : (t.type.isDebit() ? 'text-danger' : 'text-success')}"
+                             th:text="${t.amount}">
+                        </div>
+                    </div>
+                </a>
+                <!-- * item -->
+            </div>
+        </div>
+        <!-- * Transactions -->
+
+    </div>
+    <!-- * App Capsule -->
+
+    <div th:insert="~{protected/fragments/app-bottom-menu}"></div>
+
+    <div th:insert="~{protected/fragments/app-sidebar}"></div>
+
+    <div th:insert="~{protected/fragments/app-add-home-ios}"></div>
+
+    <div th:insert="~{protected/fragments/app-add-home-android}"></div>
+
+    <div th:insert="~{protected/fragments/app-cookiesbox}"></div>
+
+    <!-- ========= JS Files =========  -->
+    <!-- Bootstrap -->
+    <script th:src="@{/assets/js/lib/bootstrap.bundle.min.js}"></script>
+    <!-- Ionicons -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.esm.js"></script>
+    <!-- Base Js File -->
+    <script th:src="@{/assets/js/base.js}"></script>
+
+    <script>
+        // Add to Home with 2 seconds delay.
+        AddtoHome("2000", "once");
+    </script>
+
+</body>
+
+</html>
