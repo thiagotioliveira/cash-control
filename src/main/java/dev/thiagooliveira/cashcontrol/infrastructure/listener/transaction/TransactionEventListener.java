@@ -1,0 +1,81 @@
+package dev.thiagooliveira.cashcontrol.infrastructure.listener.transaction;
+
+import dev.thiagooliveira.cashcontrol.domain.event.account.ScheduledTransactionCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.account.ScheduledTransactionUpdated;
+import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
+import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
+import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionEntity;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionJpaRepository;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionTemplateEntity;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionTemplateJpaRepository;
+import java.util.UUID;
+import org.springframework.context.event.EventListener;
+
+public class TransactionEventListener {
+
+  private final TransactionTemplateJpaRepository templateRepository;
+  private final TransactionJpaRepository repository;
+
+  public TransactionEventListener(
+      TransactionTemplateJpaRepository templateRepository, TransactionJpaRepository repository) {
+    this.templateRepository = templateRepository;
+    this.repository = repository;
+  }
+
+  @EventListener
+  public void on(TransactionCreated event) {
+    repository.save(new TransactionEntity(event));
+  }
+
+  @EventListener
+  public void on(ScheduledTransactionCreated event) {
+    templateRepository.save(new TransactionTemplateEntity(event));
+  }
+
+  @EventListener
+  public void on(ScheduledTransactionUpdated event) {
+    var transaction = findByIdAndAccountId(event.transactionId(), event.accountId());
+    if (!transaction.getStatus().isScheduled()) {
+      throw InfrastructureException.badRequest("Transaction must be scheduled");
+    }
+    var template =
+        this.templateRepository
+            .findByIdAndAccountId(transaction.getTransactionTemplateId(), event.accountId())
+            .orElseThrow(() -> InfrastructureException.notFound("Transaction template not found"));
+
+    template.update(event);
+    this.templateRepository.save(template);
+    var transactions =
+        repository.findAllByTransactionTemplateIdAndAccountId(template.getId(), event.accountId());
+    transactions.stream()
+        .filter(t -> t.getStatus().isScheduled())
+        .filter(
+            t ->
+                t.getOriginalDueDate().isAfter(transaction.getDueDate())
+                    || t.getOriginalDueDate().equals(transactions.getFirst().getDueDate()))
+        .forEach(
+            (t -> {
+              t.update(event);
+              this.repository.save(t);
+            }));
+    if (event.endDueDate() != null) {
+      transactions.stream()
+          .filter(t -> t.getOriginalDueDate().isAfter(event.endDueDate()))
+          .forEach(t -> this.repository.deleteById(t.getId()));
+    }
+  }
+
+  @EventListener
+  public void on(TransactionConfirmed event) {
+    var transaction = findByIdAndAccountId(event.getTransactionId(), event.getAccountId());
+    transaction.confirm(event);
+    this.repository.save(transaction);
+  }
+
+  private TransactionEntity findByIdAndAccountId(UUID transactionId, UUID accountId) {
+    return this.repository
+        .findByIdAndAccountId(transactionId, accountId)
+        .orElseThrow(() -> InfrastructureException.notFound("Transaction not found"));
+  }
+}

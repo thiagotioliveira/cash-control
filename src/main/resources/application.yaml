@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: cash-control
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cash-control
+    driver-class-name: org.postgresql.Driver
+    username: admin
+    password: admin
+  h2:
+    console:
+      enabled: false
+  liquibase:
+    parameters:
+      jsonb.type: JSONB
+
+logging:
+  level:
+    ROOT: OFF
+    dev.thiagooliveira: INFO
+
+app:
+  mock-data:
+    enabled: false

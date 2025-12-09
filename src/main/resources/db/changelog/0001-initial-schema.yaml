@@ -1,0 +1,329 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-event-store
+      author: thiagooliveira
+      changes:
+        - createTable:
+            tableName: event_store
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: occurred_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: aggregate_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_type
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payload
+                  type: "${jsonb.type}"
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: event_store
+            columnNames: aggregate_id, version
+            constraintName: uq_event_store_aggregate_version
+        - createIndex:
+            tableName: event_store
+            indexName: idx_event_store_aggregate_id
+            columns:
+              - column:
+                  name: aggregate_id
+  - changeSet:
+      id: create-banks
+      author: thiago
+      changes:
+        - createTable:
+            tableName: banks
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: create-accounts
+      author: thiago
+      changes:
+        - createTable:
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bank_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: numeric(10,2)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: accounts
+            baseColumnNames: bank_id
+            referencedTableName: banks
+            referencedColumnNames: id
+            constraintName: fk_accounts_banks
+  - changeSet:
+      id: create-categories
+      author: thiago
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hash_color
+                  type: varchar(7)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_category
+                  type: boolean
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: false
+  - changeSet:
+      id: insert-default-categories
+      author: thiago
+      changes:
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  value: "00000000-0000-0000-0000-000000000000"
+              - column:
+                  name: name
+                  value: "Default"
+              - column:
+                  name: type
+                  value: "CREDIT"
+              - column:
+                  name: hash_color
+                  value: "#33C922"
+              - column:
+                  name: default_category
+                  valueBoolean: true
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: name
+                  value: "Default"
+              - column:
+                  name: type
+                  value: "DEBIT"
+              - column:
+                  name: hash_color
+                  value: "#C92222"
+              - column:
+                  name: default_category
+                  valueBoolean: true
+  - changeSet:
+      id: create-transaction-templates
+      author: thiago
+      changes:
+        - createTable:
+            tableName: transaction_templates
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: numeric(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recurrence
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: DATE
+                  constraints:
+                    nullable: true
+              - column:
+                  name: total_installments
+                  type: int
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: transaction_templates
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_transaction_templates_accounts
+        - addForeignKeyConstraint:
+            baseTableName: transaction_templates
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_transaction_templates_categories
+  - changeSet:
+      id: create-transactions
+      author: thiago
+      changes:
+        - createTable:
+            tableName: transactions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: transaction_template_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+              - column:
+                  name: occurred_at
+                  type: TIMESTAMP
+              - column:
+                  name: original_due_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: due_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: numeric(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: transactions
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_transactions_accounts
+        - addForeignKeyConstraint:
+            baseTableName: transactions
+            baseColumnNames: transaction_template_id
+            referencedTableName: transaction_templates
+            referencedColumnNames: id
+            constraintName: fk_transactions_transaction_templates
+        - addForeignKeyConstraint:
+            baseTableName: transactions
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_transactions_categories
