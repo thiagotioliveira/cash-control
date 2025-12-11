@@ -31,4 +31,19 @@ public class DueDateUtils {
       default -> throw new IllegalArgumentException("Invalid recurrence");
     };
   }
+
+  public static LocalDate nextDateForDayOfMonth(int day) {
+    if (day < 1 || day > 28) {
+      throw new IllegalArgumentException("day must be between 1 and 28");
+    }
+
+    LocalDate today = LocalDate.now();
+    int currentDay = today.getDayOfMonth();
+
+    if (currentDay <= day) {
+      return today.withDayOfMonth(day);
+    }
+
+    return today.plusMonths(1).withDayOfMonth(day);
+  }
 }

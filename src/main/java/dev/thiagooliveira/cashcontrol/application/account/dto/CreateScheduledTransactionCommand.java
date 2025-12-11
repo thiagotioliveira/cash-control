@@ -2,7 +2,6 @@ package dev.thiagooliveira.cashcontrol.application.account.dto;
 
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,6 +11,6 @@ public record CreateScheduledTransactionCommand(
     UUID accountId,
     UUID categoryId,
     BigDecimal amount,
-    LocalDate startDueDate,
+    int startDueDay,
     Recurrence recurrence,
     Optional<Integer> installments) {}

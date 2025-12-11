@@ -2,11 +2,9 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
-import dev.thiagooliveira.cashcontrol.application.account.ConfirmTransaction;
-import dev.thiagooliveira.cashcontrol.application.account.CreateDeposit;
-import dev.thiagooliveira.cashcontrol.application.account.CreateWithdrawal;
-import dev.thiagooliveira.cashcontrol.application.account.UpdateScheduledTransaction;
+import dev.thiagooliveira.cashcontrol.application.account.*;
 import dev.thiagooliveira.cashcontrol.application.account.dto.ConfirmTransactionCommand;
+import dev.thiagooliveira.cashcontrol.application.account.dto.CreateScheduledTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.account.dto.CreateTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.account.dto.UpdateScheduledTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
@@ -17,6 +15,7 @@ import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransaction
 import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockDataProperties;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
+import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.time.LocalDate;
@@ -38,6 +37,8 @@ public class TransactionController {
   private final ConfirmTransaction confirmTransaction;
   private final CreateDeposit createDeposit;
   private final CreateWithdrawal createWithdrawal;
+  private final CreateReceivable createReceivable;
+  private final CreatePayable createPayable;
 
   public TransactionController(
       MockDataProperties properties,
@@ -46,7 +47,9 @@ public class TransactionController {
       UpdateScheduledTransaction updateScheduledTransaction,
       ConfirmTransaction confirmTransaction,
       CreateDeposit createDeposit,
-      CreateWithdrawal createWithdrawal) {
+      CreateWithdrawal createWithdrawal,
+      CreateReceivable createReceivable,
+      CreatePayable createPayable) {
     this.properties = properties;
     this.getTransactions = getTransactions;
     this.categoryRepository = categoryRepository;
@@ -54,6 +57,8 @@ public class TransactionController {
     this.confirmTransaction = confirmTransaction;
     this.createDeposit = createDeposit;
     this.createWithdrawal = createWithdrawal;
+    this.createReceivable = createReceivable;
+    this.createPayable = createPayable;
   }
 
   @GetMapping
@@ -112,8 +117,13 @@ public class TransactionController {
             .findByOrganizationIdAndId(properties.getOrganizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     form.setCategoryName(categories.getName());
-    form.setDueDayOfMonth(
-        form.getOccurredAt() != null ? form.getOccurredAt().getDayOfMonth() : null);
+    if (form.getDescription() == null) {
+      form.setDescription(form.getCategoryName());
+    }
+    if (form.getDueDayOfMonth() == null) {
+      form.setDueDayOfMonth(
+          form.getOccurredAt() != null ? form.getOccurredAt().getDayOfMonth() : null);
+    }
     model.addAttribute("transaction", form);
     return "protected/transactions/transaction-review";
   }
@@ -126,25 +136,51 @@ public class TransactionController {
             .findByOrganizationIdAndId(properties.getOrganizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     if (categories.getType().isCredit()) {
-      createDeposit.execute(
-          new CreateTransactionCommand(
-              properties.getOrganizationId(),
-              properties.getUserId(),
-              properties.getAccountId(),
-              form.getOccurredAt().atZone(zoneId).toInstant(),
-              form.getCategoryId(),
-              form.getAmount(),
-              form.getDescription()));
+      if (form.getOccurredAt() != null) {
+        createDeposit.execute(
+            new CreateTransactionCommand(
+                properties.getOrganizationId(),
+                properties.getUserId(),
+                properties.getAccountId(),
+                form.getOccurredAt().atZone(zoneId).toInstant(),
+                form.getCategoryId(),
+                form.getAmount(),
+                form.getDescription()));
+      } else {
+        createReceivable.execute(
+            new CreateScheduledTransactionCommand(
+                properties.getOrganizationId(),
+                properties.getUserId(),
+                properties.getAccountId(),
+                form.getCategoryId(),
+                form.getAmount(),
+                form.getDueDayOfMonth(),
+                Recurrence.valueOf(form.getRecurrence()),
+                Optional.ofNullable(form.getDueDayOfMonth())));
+      }
     } else {
-      createWithdrawal.execute(
-          new CreateTransactionCommand(
-              properties.getOrganizationId(),
-              properties.getUserId(),
-              properties.getAccountId(),
-              form.getOccurredAt().atZone(zoneId).toInstant(),
-              form.getCategoryId(),
-              form.getAmount(),
-              form.getDescription()));
+      if (form.getOccurredAt() != null) {
+        createWithdrawal.execute(
+            new CreateTransactionCommand(
+                properties.getOrganizationId(),
+                properties.getUserId(),
+                properties.getAccountId(),
+                form.getOccurredAt().atZone(zoneId).toInstant(),
+                form.getCategoryId(),
+                form.getAmount(),
+                form.getDescription()));
+      } else {
+        createPayable.execute(
+            new CreateScheduledTransactionCommand(
+                properties.getOrganizationId(),
+                properties.getUserId(),
+                properties.getAccountId(),
+                form.getCategoryId(),
+                form.getAmount(),
+                form.getDueDayOfMonth(),
+                Recurrence.valueOf(form.getRecurrence()),
+                Optional.ofNullable(form.getDueDayOfMonth())));
+      }
     }
     return "redirect:/protected/transactions";
   }

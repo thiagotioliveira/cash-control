@@ -6,6 +6,7 @@ import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransaction
 import dev.thiagooliveira.cashcontrol.domain.category.Category;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
+import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +20,11 @@ public class TransactionActionSheetModel {
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
   private final boolean showDetailButton;
+  private final boolean showDueDayOfMonthInput;
+  private final boolean showOccurredAtInput;
   private final boolean showCategoryPicker;
+  private final boolean showRecurrenceInput;
+  private final boolean showInstallmentInput;
   private final String title;
   private final List<CategoryModel> categories;
   private final UUID id;
@@ -30,10 +35,16 @@ public class TransactionActionSheetModel {
   private final int dueDayOfMonth;
   private final String occurredAt;
   private final BigDecimal amount;
+  private final String recurrence;
+  private final Integer installments;
 
   public TransactionActionSheetModel(GetTransactionItem transaction, boolean showDetailButton) {
     this.showDetailButton = showDetailButton;
+    this.showDueDayOfMonthInput = true;
+    this.showOccurredAtInput = true;
     this.showCategoryPicker = false;
+    this.showRecurrenceInput = false;
+    this.showInstallmentInput = false;
     this.id = transaction.transactionId();
     this.currency = transaction.currency();
     this.categoryId = transaction.categoryId();
@@ -49,12 +60,24 @@ public class TransactionActionSheetModel {
     }
     this.amount = transaction.amount();
     this.categories = null;
+    this.recurrence = transaction.recurrence().map(Enum::name).orElse(null);
+    this.installments = transaction.installments().orElse(null);
   }
 
   public TransactionActionSheetModel(
-      String title, Currency currency, List<CategoryModel> categories) {
+      String title,
+      Currency currency,
+      List<CategoryModel> categories,
+      boolean showDueDayOfMonthInput,
+      boolean showOccurredAtInput,
+      boolean showRecurrenceInput,
+      boolean showInstallmentInput) {
     this.showDetailButton = false;
     this.showCategoryPicker = true;
+    this.showRecurrenceInput = showRecurrenceInput;
+    this.showInstallmentInput = showInstallmentInput;
+    this.showOccurredAtInput = showOccurredAtInput;
+    this.showDueDayOfMonthInput = showDueDayOfMonthInput;
     this.title = title;
     this.categories = categories;
     this.id = null;
@@ -65,6 +88,20 @@ public class TransactionActionSheetModel {
     this.dueDayOfMonth = 5;
     this.occurredAt = dtfHourOfDay.format(LocalDateTime.now(zoneId));
     this.amount = BigDecimal.TEN;
+    if (showRecurrenceInput) {
+      this.recurrence = Recurrence.NONE.name();
+    } else {
+      this.recurrence = null;
+    }
+    this.installments = null;
+  }
+
+  public String getRecurrence() {
+    return recurrence;
+  }
+
+  public Integer getInstallments() {
+    return installments;
   }
 
   public String getTitle() {
@@ -75,8 +112,24 @@ public class TransactionActionSheetModel {
     return showDetailButton;
   }
 
+  public boolean isShowOccurredAtInput() {
+    return showOccurredAtInput;
+  }
+
   public boolean isShowCategoryPicker() {
     return showCategoryPicker;
+  }
+
+  public boolean isShowRecurrenceInput() {
+    return showRecurrenceInput;
+  }
+
+  public boolean isShowInstallmentInput() {
+    return showInstallmentInput;
+  }
+
+  public boolean isShowDueDayOfMonthInput() {
+    return showDueDayOfMonthInput;
   }
 
   public UUID getId() {
@@ -122,7 +175,9 @@ public class TransactionActionSheetModel {
     private String symbol;
     private String description;
     private BigDecimal amount;
-    private int dueDayOfMonth;
+    private Integer dueDayOfMonth;
+    private String recurrence;
+    private Integer installments;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime occurredAt;
@@ -141,6 +196,8 @@ public class TransactionActionSheetModel {
           transaction.occurredAt().isPresent()
               ? LocalDateTime.ofInstant(transaction.occurredAt().get(), zoneId)
               : null;
+      this.recurrence = transaction.recurrence().map(Enum::name).orElse(null);
+      this.installments = transaction.installments().orElse(null);
     }
 
     public UUID getId() {
@@ -183,11 +240,11 @@ public class TransactionActionSheetModel {
       this.description = description;
     }
 
-    public int getDueDayOfMonth() {
+    public Integer getDueDayOfMonth() {
       return dueDayOfMonth;
     }
 
-    public void setDueDayOfMonth(int dueDayOfMonth) {
+    public void setDueDayOfMonth(Integer dueDayOfMonth) {
       this.dueDayOfMonth = dueDayOfMonth;
     }
 
@@ -216,6 +273,22 @@ public class TransactionActionSheetModel {
 
     public void setAmount(BigDecimal amount) {
       this.amount = amount;
+    }
+
+    public String getRecurrence() {
+      return recurrence;
+    }
+
+    public void setRecurrence(String recurrence) {
+      this.recurrence = recurrence;
+    }
+
+    public Integer getInstallments() {
+      return installments;
+    }
+
+    public void setInstallments(Integer installments) {
+      this.installments = installments;
     }
   }
 

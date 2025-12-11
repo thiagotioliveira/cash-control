@@ -260,6 +260,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }).mount());
 
+    // Multiple Carousel
+    document.querySelectorAll('.carousel-multiple-1').forEach(carousel => new Splide(carousel, {
+        perPage: 4,
+        rewind: false,
+        type: "slide",
+        gap: 16,
+        padding: 16,
+        arrows: false,
+        pagination: false,
+        breakpoints: {
+            768: {
+                perPage: 2
+            },
+            991: {
+                perPage: 3
+            }
+        }
+    }).mount());
+
     // Small Carousel
     document.querySelectorAll('.carousel-small').forEach(carousel => new Splide(carousel, {
         perPage: 9,

@@ -1,6 +1,7 @@
 package dev.thiagooliveira.cashcontrol.application.transaction.dto;
 
 import dev.thiagooliveira.cashcontrol.shared.Currency;
+import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;
@@ -23,4 +24,6 @@ public record GetTransactionItem(
     String categoryName,
     String categoryHashColor,
     TransactionType type,
-    TransactionStatus status) {}
+    TransactionStatus status,
+    Optional<Recurrence> recurrence,
+    Optional<Integer> installments) {}

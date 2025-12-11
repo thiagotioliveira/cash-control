@@ -5,7 +5,7 @@
 <div class="section mt-2" th:if="${transactionCarouselSlide.items.isEmpty()}">
     <p th:class="text-center">Não existe transação.</p>
 </div>
-<div class="carousel-multiple splide">
+<div class="carousel-multiple-1 splide">
     <div class="splide__track">
         <ul class="splide__list">
             <li class="splide__slide" th:each="t : ${transactionCarouselSlide.items}">

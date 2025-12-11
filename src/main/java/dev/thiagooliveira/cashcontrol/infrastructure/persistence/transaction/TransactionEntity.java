@@ -34,7 +34,9 @@ public class TransactionEntity {
   @JoinColumn(name = "account_id", nullable = false)
   private AccountEntity account;
 
-  @Column private UUID transactionTemplateId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "transaction_template_id")
+  private TransactionTemplateEntity transactionTemplate;
 
   @Column private Instant occurredAt;
 
@@ -71,7 +73,7 @@ public class TransactionEntity {
     this.user.setId(event.getUserId());
     this.account = new AccountEntity();
     this.account.setId(event.getAccountId());
-    this.transactionTemplateId = null;
+    this.transactionTemplate = null;
     this.occurredAt = event.occurredAt();
     this.originalDueDate = this.occurredAt.atZone(FormattersUtils.zoneId).toLocalDate();
     this.dueDate = this.originalDueDate;
@@ -88,7 +90,7 @@ public class TransactionEntity {
     this.organizationId = template.getOrganizationId();
     this.account = new AccountEntity();
     this.account.setId(template.getAccountId());
-    this.transactionTemplateId = template.getId();
+    this.transactionTemplate = template;
     this.occurredAt = null;
     this.originalDueDate = dueDate;
     this.dueDate = this.originalDueDate;
@@ -106,7 +108,9 @@ public class TransactionEntity {
         this.account.getId(),
         this.account.getName(),
         this.account.getBank().getCurrency(),
-        Optional.ofNullable(this.transactionTemplateId),
+        this.transactionTemplate != null
+            ? Optional.of(this.transactionTemplate.getId())
+            : Optional.empty(),
         Optional.ofNullable(this.occurredAt),
         this.dueDate,
         this.description,
@@ -115,7 +119,13 @@ public class TransactionEntity {
         this.category.getName(),
         this.category.getHashColor(),
         this.type,
-        this.status);
+        this.status,
+        this.transactionTemplate != null
+            ? Optional.ofNullable(this.transactionTemplate.getRecurrence())
+            : Optional.empty(),
+        this.transactionTemplate != null
+            ? Optional.ofNullable(this.transactionTemplate.getTotalInstallments())
+            : Optional.empty());
   }
 
   public void confirm(TransactionConfirmed event) {
@@ -196,12 +206,28 @@ public class TransactionEntity {
     this.category = category;
   }
 
-  public UUID getTransactionTemplateId() {
-    return transactionTemplateId;
+  public UUID getOrganizationId() {
+    return organizationId;
   }
 
-  public void setTransactionTemplateId(UUID transactionTemplateId) {
-    this.transactionTemplateId = transactionTemplateId;
+  public void setOrganizationId(UUID organizationId) {
+    this.organizationId = organizationId;
+  }
+
+  public UserEntity getUser() {
+    return user;
+  }
+
+  public void setUser(UserEntity user) {
+    this.user = user;
+  }
+
+  public TransactionTemplateEntity getTransactionTemplate() {
+    return transactionTemplate;
+  }
+
+  public void setTransactionTemplate(TransactionTemplateEntity transactionTemplate) {
+    this.transactionTemplate = transactionTemplate;
   }
 
   public AccountEntity getAccount() {

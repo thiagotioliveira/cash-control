@@ -1,5 +1,7 @@
 package dev.thiagooliveira.cashcontrol.application.account;
 
+import static dev.thiagooliveira.cashcontrol.shared.DueDateUtils.nextDateForDayOfMonth;
+
 import dev.thiagooliveira.cashcontrol.application.account.dto.CreateScheduledTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
@@ -45,7 +47,7 @@ public class CreatePayable {
         category.getId(),
         command.amount(),
         category.getName(),
-        command.startDueDate(),
+        nextDateForDayOfMonth(command.startDueDay()),
         command.recurrence(),
         command.installments());
 

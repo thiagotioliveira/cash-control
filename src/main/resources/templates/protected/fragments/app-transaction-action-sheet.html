@@ -37,18 +37,18 @@
                             </div>
                         </div>
 
-                        <div class="form-group basic" th:if="${t.showDetailButton}">
+                        <div class="form-group basic" th:if="${t.showDueDayOfMonthInput}">
                             <div class="input-wrapper">
                                 <label class="label" th:for="${prefixId + 'transaction-duedate-'+t.getId()}">Dia de Vencimento</label>
                                 <input type="number" class="form-control" th:id="${prefixId + 'transaction-duedate-'+t.getId()}"
-                                       th:name="dueDayOfMonth" th:value="${t.dueDayOfMonth}">
+                                       th:name="dueDayOfMonth" th:value="${t.dueDayOfMonth}" min="1" max="28">
                                 <i class="clear-input">
                                     <ion-icon name="close-circle"></ion-icon>
                                 </i>
                             </div>
                         </div>
 
-                        <div class="form-group basic">
+                        <div class="form-group basic" th:if="${t.showOccurredAtInput}">
                             <div class="input-wrapper">
                                 <label class="label" th:for="${prefixId + 'transaction-occurredAt-'+t.getId()}">Data de Pagamento</label>
                                 <input type="datetime-local" class="form-control" th:id="${prefixId + 'transaction-occurredAt-'+t.getId()}"
@@ -67,6 +67,31 @@
                                        th:name="amount" th:value="${t.amount}">
                             </div>
                         </div>
+
+                        <div class="form-group basic" th:if="${t.showRecurrenceInput}">
+                            <label class="label">Recorrência</label>
+                            <div class="input-group mb-2">
+                                <select class="form-control custom-select" th:id="${prefixId + 'transaction-recurrence-'+t.getId()}"
+                                        th:name="recurrence" th:value="${t.recurrence}">
+                                    <option selected value="NONE">Sem recorrência</option>
+                                    <option value="WEEKLY">Semanalmente</option>
+                                    <option value="BIWEEKLY">A cada duas semanas</option>
+                                    <option value="MONTHLY">Mensalmente</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group basic" th:if="${t.showInstallmentInput}">
+                            <div class="input-wrapper">
+                                <label class="label" th:for="${prefixId + 'transaction-installments-'+t.getId()}">Nº parcelas</label>
+                                <input type="number" class="form-control" th:id="${prefixId + 'transaction-installments-'+t.getId()}"
+                                       min="0" max="24" th:name="installments" th:value="${t.installments}">
+                                <i class="clear-input">
+                                    <ion-icon name="close-circle"></ion-icon>
+                                </i>
+                            </div>
+                        </div>
+
                         <div class="form-group basic" th:if="${t.showDetailButton}">
                             <a th:href="@{'/protected/transactions/' + ${t.id}}" class="btn btn-info btn-block btn-lg">
                                 <ion-icon name="search-outline"></ion-icon>

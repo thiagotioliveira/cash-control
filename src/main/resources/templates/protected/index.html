@@ -74,6 +74,10 @@
 
         <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${withdrawActionSheet}, 'withdrawActionSheet')}"></div>
 
+        <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${payableActionSheet}, 'payableActionSheet')}"></div>
+
+        <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${receivableActionSheet}, 'receivableActionSheet')}"></div>
+
         <!-- Stats -->
         <div class="section">
             <div class="row mt-2">

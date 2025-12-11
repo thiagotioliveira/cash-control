@@ -104,13 +104,41 @@ public class IndexController {
         new TransactionActionSheetModel(
             "Deposito",
             bank.getCurrency(),
-            new TransactionActionSheetModel.ListCategoryModel(categories).getCredit()));
+            new TransactionActionSheetModel.ListCategoryModel(categories).getCredit(),
+            false,
+            true,
+            false,
+            false));
     model.addAttribute(
         "withdrawActionSheet",
         new TransactionActionSheetModel(
             "Retirada",
             bank.getCurrency(),
-            new TransactionActionSheetModel.ListCategoryModel(categories).getDebit()));
+            new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
+            false,
+            true,
+            false,
+            false));
+    model.addAttribute(
+        "payableActionSheet",
+        new TransactionActionSheetModel(
+            "Pagamento",
+            bank.getCurrency(),
+            new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
+            true,
+            false,
+            true,
+            true));
+    model.addAttribute(
+        "receivableActionSheet",
+        new TransactionActionSheetModel(
+            "Recebimento",
+            bank.getCurrency(),
+            new TransactionActionSheetModel.ListCategoryModel(categories).getCredit(),
+            true,
+            false,
+            true,
+            true));
     return "protected/index";
   }
 }

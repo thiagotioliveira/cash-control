@@ -42,7 +42,7 @@ public class TransactionEventListener {
     }
     var template =
         this.templateRepository
-            .findByIdAndAccountId(transaction.getTransactionTemplateId(), event.accountId())
+            .findByIdAndAccountId(transaction.getTransactionTemplate().getId(), event.accountId())
             .orElseThrow(() -> InfrastructureException.notFound("Transaction template not found"));
 
     template.update(event);

@@ -1,0 +1,84 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  datasource:
+    url: jdbc:h2:mem:cash-control
+    driver-class-name: org.h2.Driver
+    username: admin
+    password: admin
+  h2:
+    console:
+      enabled: false
+  liquibase:
+    parameters:
+      jsonb.type: CLOB
+
+logging:
+  level:
+    ROOT: INFO
+    dev.thiagooliveira: DEBUG
+
+app:
+  mock-data:
+    enabled: true
+    users:
+      - name: Thiago
+        email: thiago@thiagoti.com
+      - name: Gabriela
+        email: gabrielamooraeess@gmail.com
+        organization: thiago@thiagoti.com
+    categories:
+      - name: Salario Thiago
+        hashColor: "#2acd17"
+        type: CREDIT
+      - name: Salario Gabriela
+        hashColor: "#21ac12"
+        type: CREDIT
+      - name: Outros
+        hashColor: "#148408"
+        type: CREDIT
+      - name: Aluguel
+        hashColor: "#db1e1e"
+        type: DEBIT
+      - name: Brasil Thiago
+        hashColor: "#c21010"
+        type: DEBIT
+      - name: Brasil Gabriela
+        hashColor: "#e21313"
+        type: DEBIT
+      - name: Energia Eletrica
+        hashColor: "#b50909"
+        type: DEBIT
+      - name: Internet
+        hashColor: "#ba1e1e"
+        type: DEBIT
+      - name: Faxina
+        hashColor: "#eb4848"
+        type: DEBIT
+      - name: Agua
+        hashColor: "#e05d5d"
+        type: DEBIT
+      - name: Marmitas Thiago
+        hashColor: "#e87c7c"
+        type: DEBIT
+      - name: Mesada Thiago
+        hashColor: "#ca6464"
+        type: DEBIT
+      - name: Mesada Gabriela
+        hashColor: "#ef7878"
+        type: DEBIT
+      - name: Cartao Credito Activo
+        hashColor: "#f76363"
+        type: DEBIT
+      - name: Outros
+        hashColor: "#cb4b4b"
+        type: DEBIT
+    banks:
+      - name: Millenium
+        currency: EUR
+    accounts:
+      - name: Millenium
+        bank: Millenium
