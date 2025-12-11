@@ -166,6 +166,11 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
                   name: organization_id
                   type: uuid
                   constraints:

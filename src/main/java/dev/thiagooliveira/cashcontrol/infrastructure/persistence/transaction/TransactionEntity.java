@@ -7,13 +7,13 @@ import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserEntity;
+import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -73,7 +73,7 @@ public class TransactionEntity {
     this.account.setId(event.getAccountId());
     this.transactionTemplateId = null;
     this.occurredAt = event.occurredAt();
-    this.originalDueDate = this.occurredAt.atZone(ZoneId.systemDefault()).toLocalDate();
+    this.originalDueDate = this.occurredAt.atZone(FormattersUtils.zoneId).toLocalDate();
     this.dueDate = this.originalDueDate;
     this.description = event.getDescription();
     this.amount = event.getAmount();

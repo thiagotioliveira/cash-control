@@ -3,19 +3,22 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
 import dev.thiagooliveira.cashcontrol.application.account.ConfirmTransaction;
+import dev.thiagooliveira.cashcontrol.application.account.CreateDeposit;
+import dev.thiagooliveira.cashcontrol.application.account.CreateWithdrawal;
 import dev.thiagooliveira.cashcontrol.application.account.UpdateScheduledTransaction;
 import dev.thiagooliveira.cashcontrol.application.account.dto.ConfirmTransactionCommand;
+import dev.thiagooliveira.cashcontrol.application.account.dto.CreateTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.account.dto.UpdateScheduledTransactionCommand;
+import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
 import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockDataProperties;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.AlertModel;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.TransactionItem;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.TransactionListModel;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.TransactionsModel;
+import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
+import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
+import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Optional;
@@ -30,22 +33,34 @@ public class TransactionController {
 
   private final MockDataProperties properties;
   private final GetTransactions getTransactions;
+  private final CategoryRepository categoryRepository;
   private final UpdateScheduledTransaction updateScheduledTransaction;
   private final ConfirmTransaction confirmTransaction;
+  private final CreateDeposit createDeposit;
+  private final CreateWithdrawal createWithdrawal;
 
   public TransactionController(
       MockDataProperties properties,
       GetTransactions getTransactions,
+      CategoryRepository categoryRepository,
       UpdateScheduledTransaction updateScheduledTransaction,
-      ConfirmTransaction confirmTransaction) {
+      ConfirmTransaction confirmTransaction,
+      CreateDeposit createDeposit,
+      CreateWithdrawal createWithdrawal) {
     this.properties = properties;
     this.getTransactions = getTransactions;
+    this.categoryRepository = categoryRepository;
     this.updateScheduledTransaction = updateScheduledTransaction;
     this.confirmTransaction = confirmTransaction;
+    this.createDeposit = createDeposit;
+    this.createWithdrawal = createWithdrawal;
   }
 
   @GetMapping
-  public String getTransactions(Model model) {
+  public String getTransactions(
+      @RequestParam(required = false) String type,
+      @RequestParam(required = false) String status,
+      Model model) {
     var today = LocalDate.now();
     var transactions =
         getTransactions.execute(
@@ -54,54 +69,117 @@ public class TransactionController {
                 properties.getAccountId(),
                 today.with(TemporalAdjusters.firstDayOfMonth()),
                 today.with(TemporalAdjusters.lastDayOfMonth())));
-    model.addAttribute("transactions", new TransactionListModel(transactions));
+    model.addAttribute(
+        "transactions",
+        new TransactionListModel(
+            transactions.stream()
+                .filter(
+                    t -> {
+                      if (type != null) {
+                        return t.type().equals(TransactionType.valueOf(type));
+                      }
+                      return true;
+                    })
+                .filter(
+                    t -> {
+                      if (status != null) {
+                        return t.status().equals(TransactionStatus.valueOf(status));
+                      }
+                      return true;
+                    })
+                .toList()));
     return "protected/transactions/transaction-list";
   }
 
   @PostMapping("/{transactionId}/review")
   public String postReviewTransaction(
       @PathVariable UUID transactionId,
-      @ModelAttribute TransactionsModel.UpdateTransactionModel transactionModel,
+      @ModelAttribute TransactionActionSheetModel.TransactionForm form,
       Model model) {
-    if (!transactionId.equals(transactionModel.getId())) {
+    if (!transactionId.equals(form.getId())) {
       throw InfrastructureException.badRequest("Invalid transaction id");
     }
-    var transaction = getTransactionItem(transactionId);
-    model.addAttribute("transaction", transactionModel);
+    //    var transaction = getTransactionItem(transactionId);
+    model.addAttribute("transaction", form);
     return "protected/transactions/transaction-review";
+  }
+
+  @PostMapping("/review")
+  public String postReviewTransaction(
+      @ModelAttribute TransactionActionSheetModel.TransactionForm form, Model model) {
+    var categories =
+        categoryRepository
+            .findByOrganizationIdAndId(properties.getOrganizationId(), form.getCategoryId())
+            .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
+    form.setCategoryName(categories.getName());
+    form.setDueDayOfMonth(
+        form.getOccurredAt() != null ? form.getOccurredAt().getDayOfMonth() : null);
+    model.addAttribute("transaction", form);
+    return "protected/transactions/transaction-review";
+  }
+
+  @PostMapping
+  public String postTransaction(
+      @ModelAttribute TransactionActionSheetModel.TransactionForm form, Model model) {
+    var categories =
+        categoryRepository
+            .findByOrganizationIdAndId(properties.getOrganizationId(), form.getCategoryId())
+            .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
+    if (categories.getType().isCredit()) {
+      createDeposit.execute(
+          new CreateTransactionCommand(
+              properties.getOrganizationId(),
+              properties.getUserId(),
+              properties.getAccountId(),
+              form.getOccurredAt().atZone(zoneId).toInstant(),
+              form.getCategoryId(),
+              form.getAmount(),
+              form.getDescription()));
+    } else {
+      createWithdrawal.execute(
+          new CreateTransactionCommand(
+              properties.getOrganizationId(),
+              properties.getUserId(),
+              properties.getAccountId(),
+              form.getOccurredAt().atZone(zoneId).toInstant(),
+              form.getCategoryId(),
+              form.getAmount(),
+              form.getDescription()));
+    }
+    return "redirect:/protected/transactions";
   }
 
   @GetMapping("/{transactionId}/review")
   public String getReviewTransaction(@PathVariable UUID transactionId, Model model) {
     var transaction = getTransactionItem(transactionId);
-    model.addAttribute("transaction", new TransactionsModel.UpdateTransactionModel(transaction));
+    model.addAttribute("transaction", new TransactionActionSheetModel.TransactionForm(transaction));
     return "protected/transactions/transaction-review";
   }
 
   @GetMapping("/{transactionId}")
   public String getTransaction(@PathVariable UUID transactionId, Model model) {
     var transaction = getTransactionItem(transactionId);
-    model.addAttribute("transaction", new TransactionItem(transaction));
+    model.addAttribute("transaction", new TransactionDetailsModel(transaction, "/protected/"));
     return "protected/transactions/transaction-details";
   }
 
   @PostMapping("/{transactionId}")
   public String postTransaction(
       @PathVariable UUID transactionId,
-      @ModelAttribute TransactionsModel.UpdateTransactionModel transactionModel,
+      @ModelAttribute TransactionActionSheetModel.TransactionForm form,
       Model model) {
-    if (!transactionId.equals(transactionModel.getId())) {
+    if (!transactionId.equals(form.getId())) {
       throw InfrastructureException.badRequest("Invalid transaction id");
     }
-    if (transactionModel.getOccurredAt() != null) {
+    if (form.getOccurredAt() != null) {
       confirmTransaction.execute(
           new ConfirmTransactionCommand(
               properties.getOrganizationId(),
               properties.getUserId(),
               properties.getAccountId(),
               transactionId,
-              transactionModel.getOccurredAt().atZone(zoneId).toInstant(),
-              transactionModel.getAmount()));
+              form.getOccurredAt().atZone(zoneId).toInstant(),
+              form.getAmount()));
     } else {
       updateScheduledTransaction.execute(
           new UpdateScheduledTransactionCommand(
@@ -109,13 +187,13 @@ public class TransactionController {
               properties.getUserId(),
               properties.getAccountId(),
               transactionId,
-              transactionModel.getDescription(),
-              transactionModel.getAmount(),
-              transactionModel.getDueDayOfMonth(),
+              form.getDescription(),
+              form.getAmount(),
+              form.getDueDayOfMonth(),
               Optional.empty()));
     }
     var transaction = getTransactionItem(transactionId);
-    model.addAttribute("transaction", new TransactionItem(transaction));
+    model.addAttribute("transaction", new TransactionDetailsModel(transaction, "/protected/"));
     model.addAttribute("alert", AlertModel.success("Transação atualizada com sucesso!"));
     return "protected/transactions/transaction-details";
   }

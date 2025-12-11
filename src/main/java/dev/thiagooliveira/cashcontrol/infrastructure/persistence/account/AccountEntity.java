@@ -5,6 +5,7 @@ import dev.thiagooliveira.cashcontrol.domain.event.account.AccountCreated;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -12,6 +13,8 @@ import java.util.UUID;
 public class AccountEntity {
 
   @Id private UUID id;
+
+  @Column private Instant updatedAt;
 
   @Column(nullable = false)
   private UUID organizationId;
@@ -35,10 +38,11 @@ public class AccountEntity {
     this.bank = new BankEntity();
     this.bank.setId(event.bankId());
     this.organizationId = event.organizationId();
+    this.updatedAt = event.occurredAt();
   }
 
   public Account toDomain() {
-    return Account.restore(id, organizationId, bank.getId(), name, balance);
+    return Account.restore(id, organizationId, bank.getId(), name, balance, this.updatedAt);
   }
 
   public UUID getId() {

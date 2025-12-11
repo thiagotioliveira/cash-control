@@ -7,7 +7,7 @@
 
     <div th:insert="~{protected/fragments/loader}"></div>
 
-    <div th:insert="~{protected/fragments/page-header :: pageHeader('Verificação de Transação', '/protected/')}"></div>
+    <div th:insert="~{protected/fragments/page-header :: pageHeader('Verificação de Transação', '/protected/', false, '')}"></div>
 
     <!-- App Capsule -->
     <div id="appCapsule">
@@ -23,7 +23,7 @@
                     </li>
                     <li>
                         <strong>Data de Pagamento</strong>
-                        <span th:text="${transaction.occurredAtFormatted}"></span>
+                        <span th:text="${transaction.getOccurredAtFormatted()}"></span>
                     </li>
                     <li>
                         <strong>Amount</strong>
@@ -46,9 +46,10 @@
                     <a th:href="${'/protected'}" class="btn btn-lg btn-outline-secondary btn-block">Cancel</a>
                 </div>
                 <div class="col-6">
-                    <form th:action="@{'/protected/transactions/' + ${transaction.id}}" method="post">
+                    <form th:action="@{${transaction.getId() == null ? '/protected/transactions' : '/protected/transactions/' + transaction.getId()}}" method="post">
                         <input type="hidden" th:name="id" th:value="${transaction.id}" />
                         <input type="hidden" th:name="symbol" th:value="${transaction.symbol}" />
+                        <input type="hidden" th:name="categoryId" th:value="${transaction.categoryId}" />
                         <input type="hidden" th:name="categoryName" th:value="${transaction.categoryName}" />
                         <input type="hidden" th:name="description" th:value="${transaction.description}" />
                         <input type="hidden" th:name="amount" th:value="${transaction.amount}" />

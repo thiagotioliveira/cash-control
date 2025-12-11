@@ -7,7 +7,7 @@
 
     <div th:insert="~{protected/fragments/loader}"></div>
 
-    <div th:insert="~{protected/fragments/page-header :: pageHeader('Transação', '/protected/')}"></div>
+    <div th:insert="~{protected/fragments/page-header :: pageHeader(${transaction.title}, ${transaction.backLink}, ${transaction.status.isScheduled()}, ${'#transactionActionSheet-'+transaction.getId()})}"></div>
 
     <!-- App Capsule -->
     <div id="appCapsule">
@@ -17,7 +17,7 @@
         <div class="section">
             <div class="splash-page mt-5 mb-5">
 
-                <h2 class="mb-2 mt-2" th:text="${transaction.description}"></h2>
+                <h2 class="mb-2 mt-2" th:text="${transaction.categoryName}"></h2>
                 <ul class="listview flush transparent simple-listview no-space mt-3">
                     <li>
                         <strong>Status</strong>
@@ -46,7 +46,7 @@
                 </ul>
             </div>
         </div>
-
+        <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${transaction.toActionSheetModel()}, 'transactionActionSheet-')}"></div>
     </div>
     <!-- * App Capsule -->
 

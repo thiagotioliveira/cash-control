@@ -10,10 +10,7 @@ import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransaction
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
 import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockDataProperties;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.AccountModel;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.ListCategoryModel;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.TransactionListModel;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.TransactionsModel;
+import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -99,9 +96,21 @@ public class IndexController {
                 .map(GetTransactionItem::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)));
     model.addAttribute("account", new AccountModel(df, account, bank));
-    model.addAttribute("categories", new ListCategoryModel(categories));
     model.addAttribute("transactions", new TransactionListModel(transactionsConfirmed));
-    model.addAttribute("bills", new TransactionsModel(transactionsScheduled));
+    model.addAttribute(
+        "transactionCarouselSlide", new TransactionCarouselSlideModel(transactionsScheduled));
+    model.addAttribute(
+        "depositActionSheet",
+        new TransactionActionSheetModel(
+            "Deposito",
+            bank.getCurrency(),
+            new TransactionActionSheetModel.ListCategoryModel(categories).getCredit()));
+    model.addAttribute(
+        "withdrawActionSheet",
+        new TransactionActionSheetModel(
+            "Retirada",
+            bank.getCurrency(),
+            new TransactionActionSheetModel.ListCategoryModel(categories).getDebit()));
     return "protected/index";
   }
 }

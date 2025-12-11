@@ -37,24 +37,7 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
       LocalDate startDate,
       LocalDate endDate,
       Pageable pageable) {
-    var templates =
-        this.templateRepository
-            .findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
-                organizationId, accountId, startDate, endDate);
-    templates.stream()
-        //        .filter(t -> !t.getRecurrence().isNone())
-        .forEach(
-            t -> {
-              var dueDate = t.getStartDate();
-              if (!this.repository.existsByTransactionTemplateIdAndOriginalDueDate(
-                  t.getId(), dueDate)) {
-                while (dueDate.isBefore(endDate)) {
-                  this.repository.save(new TransactionEntity(t, dueDate));
-                  if (t.getRecurrence().isNone()) break;
-                  dueDate = DueDateUtils.nextDueDate(dueDate, t.getRecurrence());
-                }
-              }
-            });
+    populateTransactions(organizationId, accountId, startDate, endDate);
     var page =
         this.repository.findAllByAccountIdAndDueDateBetweenOrderByDueDateDesc(
             accountId,
@@ -76,11 +59,34 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
   public List<GetTransactionItem>
       findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
           UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate) {
+    populateTransactions(organizationId, accountId, startDate, endDate);
     return this.repository
         .findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
             organizationId, accountId, startDate, endDate)
         .stream()
         .map(TransactionEntity::toDomain)
         .toList();
+  }
+
+  private void populateTransactions(
+      UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate) {
+    var templates =
+        this.templateRepository
+            .findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
+                organizationId, accountId, startDate, endDate);
+    templates.stream()
+        //        .filter(t -> !t.getRecurrence().isNone())
+        .forEach(
+            t -> {
+              var dueDate = t.getStartDate();
+              if (!this.repository.existsByTransactionTemplateIdAndOriginalDueDate(
+                  t.getId(), dueDate)) {
+                while (dueDate.isBefore(endDate)) {
+                  this.repository.save(new TransactionEntity(t, dueDate));
+                  if (t.getRecurrence().isNone()) break;
+                  dueDate = DueDateUtils.nextDueDate(dueDate, t.getRecurrence());
+                }
+              }
+            });
   }
 }

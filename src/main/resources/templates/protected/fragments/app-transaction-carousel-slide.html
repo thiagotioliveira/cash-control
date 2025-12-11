@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- carousel multiple -->
+<div class="section mt-2" th:if="${transactionCarouselSlide.items.isEmpty()}">
+    <p th:class="text-center">Não existe transação.</p>
+</div>
+<div class="carousel-multiple splide">
+    <div class="splide__track">
+        <ul class="splide__list">
+            <li class="splide__slide" th:each="t : ${transactionCarouselSlide.items}">
+                <div class="bill-box">
+                    <div class="price" th:classappend="${t.getType().isDebit() ? 'text-danger' : 'text-success'}"
+                         th:text="${t.getAmountFormatted()}"></div>
+                    <h3 class="title text-black" th:text="${t.getCategoryName()}"></h3>
+                    <h5 class="text-secondary" th:text="${t.getDueDateFormatted()}"></h5>
+                    <a href="#" class="btn btn-primary btn-block btn-sm"
+                       th:data-bs-toggle="modal" th:data-bs-target="${'#transactionActionSheet-'+t.getId()}">...</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- * carousel multiple -->
+<section th:each="t : ${transactionCarouselSlide.items}">
+    <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${t.toActionSheetModel()}, 'transactionActionSheet-')}"></div>
+</section>
+</html>

@@ -7,6 +7,7 @@ import dev.thiagooliveira.cashcontrol.application.outbound.EventPublisher;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
 import dev.thiagooliveira.cashcontrol.domain.account.Account;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import java.time.Instant;
 
 public class CreateDeposit {
 
@@ -22,9 +23,9 @@ public class CreateDeposit {
   }
 
   public Account execute(CreateTransactionCommand command) {
-    //    if (command.occurredAt().isAfter(Instant.now())) { //TODO
-    //      throw ApplicationException.badRequest("occurredAt must be before now");
-    //    }
+    if (command.occurredAt().isAfter(Instant.now())) {
+      throw ApplicationException.badRequest("occurredAt must be before now");
+    }
     var category =
         categoryRepository
             .findByOrganizationIdAndId(command.organizationId(), command.categoryId())

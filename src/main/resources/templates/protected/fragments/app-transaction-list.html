@@ -2,6 +2,9 @@
 
 <html xmlns:th="http://www.thymeleaf.org">
 <!-- Transactions -->
+<div class="section mt-2" th:if="${transactions.content.isEmpty()}">
+    <p th:class="text-center">Não existe transação.</p>
+</div>
 <div class="section mt-2" th:each="entry : ${transactions.content}">
     <div class="section-title" th:text="${transactions.keyFormatted(entry.key)}"></div>
     <div class="transactions" th:each="t : ${entry.value}">

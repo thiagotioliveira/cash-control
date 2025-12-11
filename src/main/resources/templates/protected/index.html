@@ -19,7 +19,7 @@
                 <!-- Balance -->
                 <div class="balance">
                     <div class="left">
-                        <span class="title" th:text="${account.name}"></span>
+                        <span class="title" th:text="${account.getNameFormatted()}"></span>
                         <h1 class="total" th:text="${account.balance}"></h1>
                     </div>
                     <div class="right" th:if="${false}">
@@ -70,95 +70,46 @@
         </div>
         <!-- Wallet Card -->
 
-        <!-- Deposit Action Sheet -->
-        <div class="modal fade action-sheet" id="depositActionSheet" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Deposito</h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="action-sheet-content">
-                            <form>
-                                <div class="form-group basic">
-                                    <div class="input-wrapper">
-                                        <label class="label" for="deposit-category">Categoria</label>
-                                        <select class="form-control custom-select" id="deposit-category">
-                                            <option th:each="c : ${categories.credit}" th:text="${c.name}" th:value="${c.id}">
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group basic">
-                                    <div class="input-wrapper">
-                                        <label class="label" for="deposit-description">Descrição</label>
-                                        <input type="text" class="form-control" id="deposit-description"
-                                               placeholder="Escreva uma descrição para esse deposito">
-                                        <i class="clear-input">
-                                            <ion-icon name="close-circle"></ion-icon>
-                                        </i>
-                                    </div>
-                                </div>
+        <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${depositActionSheet}, 'depositActionSheet')}"></div>
 
-                                <div class="form-group basic">
-                                    <div class="input-wrapper">
-                                        <label class="label" for="deposit-occurredAt">Data de Pagamento</label>
-                                        <input type="datetime-local" class="form-control" id="deposit-occurredAt"
-                                        >
-                                        <i class="clear-input">
-                                            <ion-icon name="close-circle"></ion-icon>
-                                        </i>
-                                    </div>
-                                </div>
-
-                                <div class="form-group basic">
-                                    <label class="label">Valor</label>
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text" th:text="${account.bank.symbol}"></span>
-                                        <input type="number" class="form-control" placeholder="Informe o valor">
-                                    </div>
-                                </div>
-
-                                <div class="form-group basic">
-                                    <button type="button" class="btn btn-primary btn-block btn-lg"
-                                            data-bs-dismiss="modal">Depositar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- * Deposit Action Sheet -->
+        <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${withdrawActionSheet}, 'withdrawActionSheet')}"></div>
 
         <!-- Stats -->
         <div class="section">
             <div class="row mt-2">
                 <div class="col-6">
-                    <div class="stat-box">
-                        <div class="title">Entradas</div>
-                        <div class="value text-success" th:text="${income}"></div>
-                    </div>
+                    <a th:href="@{'/protected/transactions?type=CREDIT&status=CONFIRMED'}">
+                        <div class="stat-box">
+                            <div class="title">Entradas</div>
+                            <div class="value text-success" th:text="${income}"></div>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-6">
-                    <div class="stat-box">
-                        <div class="title">Saídas</div>
-                        <div class="value text-danger" th:text="${expenses}"></div>
-                    </div>
+                    <a th:href="@{'/protected/transactions?type=DEBIT&status=CONFIRMED'}">
+                        <div class="stat-box">
+                            <div class="title">Saídas</div>
+                            <div class="value text-danger" th:text="${expenses}"></div>
+                        </div>
+                    </a>
                 </div>
             </div>
             <div class="row mt-2">
                 <div class="col-6">
-                    <div class="stat-box">
-                        <div class="title">Entradas Previstas</div>
-                        <div class="value" th:text="${incomePending}"></div>
-                    </div>
+                    <a th:href="@{'/protected/transactions?type=CREDIT&status=SCHEDULED'}">
+                        <div class="stat-box">
+                            <div class="title">Entradas Previstas</div>
+                            <div class="value" th:text="${incomePending}"></div>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-6">
-                    <div class="stat-box">
-                        <div class="title">Saídas Previstas</div>
-                        <div class="value" th:text="${expensesPending}"></div>
-                    </div>
+                    <a th:href="@{'/protected/transactions?type=DEBIT&status=SCHEDULED'}">
+                        <div class="stat-box">
+                            <div class="title">Saídas Previstas</div>
+                            <div class="value" th:text="${expensesPending}"></div>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -170,94 +121,7 @@
                 <h2 class="title">Contas do mês</h2>
                 <a href="#" class="link" th:if="${false}">Ver todas</a>
             </div>
-            <!-- carousel multiple -->
-            <div class="carousel-multiple splide">
-                <div class="splide__track">
-                    <ul class="splide__list">
-
-                        <li class="splide__slide" th:each="b : ${bills.content}">
-                            <div class="bill-box">
-                                <div class="price" th:classappend="${b.type.isDebit() ? 'text-danger' : 'text-success'}"
-                                     th:text="${b.amountFormatted}"></div>
-                                <h3 class="title text-black" th:text="${b.categoryName}"></h3>
-                                <h5 class="text-secondary" th:text="${b.dueDateFormatted}"></h5>
-                                <a href="#" class="btn btn-primary btn-block btn-sm"
-                                    th:data-bs-toggle="modal" th:data-bs-target="${'#billActionSheet-'+b.getId()}">Detalhe</a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <!-- * carousel multiple -->
-            <!-- Bill details Action Sheet-->
-            <div class="modal fade action-sheet" th:id="${'billActionSheet-'+b.getId()}" tabindex="-1" role="dialog" th:each="b : ${bills.content}">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" th:text="${b.description}"></h5>
-                        </div>
-                        <div class="modal-body">
-                            <div class="action-sheet-content">
-                                <form action="#" th:action="@{'/protected/transactions/' + ${b.id} + '/review'}" method="post">
-                                    <input type="hidden" th:name="id" th:value="${b.id}" />
-                                    <input type="hidden" th:name="categoryName" th:value="${b.categoryName}" />
-                                    <input type="hidden" th:name="symbol" th:value="${account.bank.symbol}" />
-                                    <div class="form-group basic">
-                                        <div class="input-wrapper">
-                                            <label class="label" th:for="${'bill-description-'+b.getId()}">Descrição</label>
-                                            <input type="text" class="form-control" th:id="${'bill-description-'+b.getId()}" placeholder="Escreva uma descrição para essa conta"
-                                                th:name="description" th:value="${b.description}">
-                                            <i class="clear-input">
-                                                <ion-icon name="close-circle"></ion-icon>
-                                            </i>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group basic">
-                                        <div class="input-wrapper">
-                                            <label class="label" th:for="${'bill-duedate-'+b.getId()}">Dia de Vencimento</label>
-                                            <input type="number" class="form-control" th:id="${'bill-duedate-'+b.getId()}"
-                                                   th:name="dueDayOfMonth" th:value="${b.dueDayOfMonth}">
-                                            <i class="clear-input">
-                                                <ion-icon name="close-circle"></ion-icon>
-                                            </i>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group basic">
-                                        <div class="input-wrapper">
-                                            <label class="label" th:for="${'bill-occurredAt-'+b.getId()}">Data de Pagamento</label>
-                                            <input type="datetime-local" class="form-control" th:id="${'bill-occurredAt-'+b.getId()}"
-                                                   th:name="occurredAt" th:value="${b.occurredAt}">
-                                            <i class="clear-input">
-                                                <ion-icon name="close-circle"></ion-icon>
-                                            </i>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group basic">
-                                        <label class="label">Valor</label>
-                                        <div class="input-group mb-2">
-                                            <span class="input-group-text" id="basic-addonb1" th:text="${account.bank.symbol}"></span>
-                                            <input type="number" class="form-control" placeholder="Informe o valor"
-                                                   th:name="amount" th:value="${b.amount}">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group basic">
-                                        <button type="submit" class="btn btn-primary btn-block btn-lg"
-                                                data-bs-dismiss="modal">
-                                            <ion-icon name="save-outline"></ion-icon>
-                                            Salvar
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- * Bill details Action Sheet -->
+            <section th:replace="~{protected/fragments/app-transaction-carousel-slide}"></section>
         </div>
         <!-- * Monthly Bills -->
 

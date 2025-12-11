@@ -19,24 +19,32 @@ public class Account {
   private String name;
   private UUID bankId;
   private BigDecimal balance;
+  private Instant updatedAt;
 
   private int version = 0;
   private final List<DomainEvent> pendingEvents = new ArrayList<>();
 
-  private Account(UUID id, UUID organizationId, UUID bankId, String name, BigDecimal balance) {
+  private Account(
+      UUID id,
+      UUID organizationId,
+      UUID bankId,
+      String name,
+      BigDecimal balance,
+      Instant updatedAt) {
     this.id = id;
     this.organizationId = organizationId;
     this.bankId = bankId;
     this.name = name;
     this.balance = balance;
+    this.updatedAt = updatedAt;
   }
 
-  private Account(UUID organizationId, UUID bankId, String name) {
-    this(UUID.randomUUID(), organizationId, bankId, name, BigDecimal.ZERO);
+  private Account(UUID organizationId, UUID bankId, String name, Instant updatedAt) {
+    this(UUID.randomUUID(), organizationId, bankId, name, BigDecimal.ZERO, updatedAt);
   }
 
   public static Account create(UUID organizationId, UUID bankId, String name) {
-    var account = new Account(organizationId, bankId, name);
+    var account = new Account(organizationId, bankId, name, Instant.now());
     account.apply(
         new AccountCreated(
             account.id,
@@ -44,21 +52,26 @@ public class Account {
             account.bankId,
             account.balance,
             organizationId,
-            Instant.now(),
+            account.updatedAt,
             1));
     return account;
   }
 
   public static Account restore(
-      UUID id, UUID organizationId, UUID bankId, String name, BigDecimal balance) {
-    return new Account(id, organizationId, bankId, name, balance);
+      UUID id,
+      UUID organizationId,
+      UUID bankId,
+      String name,
+      BigDecimal balance,
+      Instant updatedAt) {
+    return new Account(id, organizationId, bankId, name, balance, updatedAt);
   }
 
   public static Account rehydrate(List<DomainEvent> events) {
     Account account = null;
     for (DomainEvent event : events) {
       if (event instanceof AccountCreated ac) {
-        account = new Account(ac.accountId(), ac.bankId(), ac.name());
+        account = new Account(ac.accountId(), ac.bankId(), ac.name(), ac.occurredAt());
       } else if (account == null) {
         throw DomainException.badRequest("Account rehydration failed");
       }
@@ -214,6 +227,10 @@ public class Account {
     return id;
   }
 
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
+
   public String getName() {
     return name;
   }
@@ -269,27 +286,36 @@ public class Account {
         name = ev.name();
         balance = ev.balance();
         organizationId = ev.organizationId();
+        updatedAt = ev.occurredAt();
       }
       case TransactionCreated ev -> {
         if (ev.getType().isCredit()) {
           balance = balance.add(ev.getAmount());
           ev.setBalance(balance);
+          updatedAt = ev.occurredAt();
         } else if (ev.getType().isDebit()) {
           balance = balance.subtract(ev.getAmount());
           ev.setBalance(balance);
+          updatedAt = ev.occurredAt();
         } else throw DomainException.badRequest("unhandled transaction type " + ev.getType());
       }
-      case ScheduledTransactionCreated ev -> {}
+      case ScheduledTransactionCreated ev -> {
+        updatedAt = ev.occurredAt();
+      }
       case TransactionConfirmed ev -> {
         if (ev.getType().isCredit()) {
           balance = balance.add(ev.getAmount());
           ev.setBalance(balance);
+          updatedAt = ev.occurredAt();
         } else if (ev.getType().isDebit()) {
           balance = balance.subtract(ev.getAmount());
           ev.setBalance(balance);
+          updatedAt = ev.occurredAt();
         } else throw DomainException.badRequest("unhandled transaction type " + ev.getType());
       }
-      case ScheduledTransactionUpdated ev -> {}
+      case ScheduledTransactionUpdated ev -> {
+        updatedAt = ev.occurredAt();
+      }
       default -> throw DomainException.badRequest("unhandled event " + event);
     }
   }
