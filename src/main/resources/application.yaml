@@ -10,10 +10,10 @@ spring:
         format_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:postgresql://localhost:5432/cash-control
+    url: jdbc:postgresql://localhost:5432/cash_control
     driver-class-name: org.postgresql.Driver
-    username: admin
-    password: admin
+    username: cashuser
+    password: cashpass
   h2:
     console:
       enabled: false

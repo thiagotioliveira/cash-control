@@ -1,7 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata;
 
 import java.util.List;
-import java.util.UUID;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -10,40 +9,11 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "app.mock-data")
 @ConditionalOnProperty(prefix = "app.mock-data", name = "enabled", havingValue = "true")
 public class MockDataProperties {
-
-  private UUID organizationId;
-  private UUID accountId;
-  private UUID userId;
-
   private boolean enabled = false;
   private List<User> users;
   private List<Category> categories;
   private List<Bank> banks;
   private List<Account> accounts;
-
-  public UUID getAccountId() {
-    return accountId;
-  }
-
-  public void setAccountId(UUID accountId) {
-    this.accountId = accountId;
-  }
-
-  public UUID getOrganizationId() {
-    return organizationId;
-  }
-
-  public void setOrganizationId(UUID organizationId) {
-    this.organizationId = organizationId;
-  }
-
-  public UUID getUserId() {
-    return userId;
-  }
-
-  public void setUserId(UUID userId) {
-    this.userId = userId;
-  }
 
   public boolean isEnabled() {
     return enabled;

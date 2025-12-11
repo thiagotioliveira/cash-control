@@ -2,7 +2,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web;
 
 import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsPageCommand;
-import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockDataProperties;
+import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.mapper.TransactionChartMapper;
 import dev.thiagooliveira.cashcontrol.shared.Pageable;
 import java.time.LocalDate;
@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/dashboard")
 public class DashboardController {
 
-  private final MockDataProperties properties;
+  private final MockContext context;
   private final GetTransactions getTransactions;
 
-  public DashboardController(MockDataProperties properties, GetTransactions getTransactions) {
-    this.properties = properties;
+  public DashboardController(MockContext context, GetTransactions getTransactions) {
+    this.context = context;
     this.getTransactions = getTransactions;
   }
 
@@ -29,8 +29,8 @@ public class DashboardController {
     var transactions =
         getTransactions.execute(
             new GetTransactionsPageCommand(
-                properties.getOrganizationId(),
-                properties.getAccountId(),
+                context.getOrganizationId(),
+                context.getAccountId(),
                 LocalDate.of(2025, Month.NOVEMBER, 25),
                 LocalDate.of(2026, Month.DECEMBER, 31),
                 new Pageable(0, Integer.MAX_VALUE)));

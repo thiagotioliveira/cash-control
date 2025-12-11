@@ -1,0 +1,28 @@
+services:
+  app:
+    image: cash-control:latest
+    container_name: cashcontrol-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://cashcontrol-db:5432/cash_control
+    ports:
+      - "8080:8080"
+    networks:
+      - cashcontrol-network
+
+  db:
+    image: postgres:15
+    container_name: cashcontrol-db
+    environment:
+      POSTGRES_USER: cashuser
+      POSTGRES_PASSWORD: cashpass
+      POSTGRES_DB: cash_control
+    ports:
+      - "5432:5432"
+    volumes:
+      - /Users/thiago.oliveira/Dev/Personal/cash-control-prod/postgres-data:/var/lib/postgresql/data
+    networks:
+      - cashcontrol-network
+
+networks:
+  cashcontrol-network:
+    driver: bridge

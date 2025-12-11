@@ -8,7 +8,7 @@ import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
-import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockDataProperties;
+import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
 import java.math.BigDecimal;
@@ -22,19 +22,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/protected")
 public class IndexController {
-  private final MockDataProperties properties;
+  private final MockContext context;
   private final GetAccount getAccount;
   private final BankRepository bankRepository;
   private final CategoryRepository categoryRepository;
   private final GetTransactions getTransactions;
 
   public IndexController(
-      MockDataProperties properties,
+      MockContext context,
       GetAccount getAccount,
       BankRepository bankRepository,
       CategoryRepository categoryRepository,
       GetTransactions getTransactions) {
-    this.properties = properties;
+    this.context = context;
     this.getAccount = getAccount;
     this.bankRepository = bankRepository;
     this.categoryRepository = categoryRepository;
@@ -43,18 +43,18 @@ public class IndexController {
 
   @GetMapping
   public String index(Model model) {
-    var account = getAccount.execute(properties.getAccountId());
+    var account = getAccount.execute(context.getAccountId());
     var bank =
         bankRepository
-            .findByOrganizationIdAndId(properties.getOrganizationId(), account.bankId())
+            .findByOrganizationIdAndId(context.getOrganizationId(), account.bankId())
             .orElseThrow(() -> InfrastructureException.badRequest("something wrong"));
     var today = LocalDate.now();
-    var categories = categoryRepository.findAllByOrganizationId(properties.getOrganizationId());
+    var categories = categoryRepository.findAllByOrganizationId(context.getOrganizationId());
     var transactions =
         getTransactions.execute(
             new GetTransactionsCommand(
-                properties.getOrganizationId(),
-                properties.getAccountId(),
+                context.getOrganizationId(),
+                context.getAccountId(),
                 today.with(TemporalAdjusters.firstDayOfMonth()),
                 today.with(TemporalAdjusters.lastDayOfMonth())));
     var transactionsConfirmed =

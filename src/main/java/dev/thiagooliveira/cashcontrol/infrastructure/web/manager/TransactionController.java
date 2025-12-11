@@ -12,7 +12,7 @@ import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
-import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockDataProperties;
+import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/protected/transactions")
 public class TransactionController {
 
-  private final MockDataProperties properties;
+  private final MockContext context;
   private final GetTransactions getTransactions;
   private final CategoryRepository categoryRepository;
   private final UpdateScheduledTransaction updateScheduledTransaction;
@@ -41,7 +41,7 @@ public class TransactionController {
   private final CreatePayable createPayable;
 
   public TransactionController(
-      MockDataProperties properties,
+      MockContext context,
       GetTransactions getTransactions,
       CategoryRepository categoryRepository,
       UpdateScheduledTransaction updateScheduledTransaction,
@@ -50,7 +50,7 @@ public class TransactionController {
       CreateWithdrawal createWithdrawal,
       CreateReceivable createReceivable,
       CreatePayable createPayable) {
-    this.properties = properties;
+    this.context = context;
     this.getTransactions = getTransactions;
     this.categoryRepository = categoryRepository;
     this.updateScheduledTransaction = updateScheduledTransaction;
@@ -70,8 +70,8 @@ public class TransactionController {
     var transactions =
         getTransactions.execute(
             new GetTransactionsCommand(
-                properties.getOrganizationId(),
-                properties.getAccountId(),
+                context.getOrganizationId(),
+                context.getAccountId(),
                 today.with(TemporalAdjusters.firstDayOfMonth()),
                 today.with(TemporalAdjusters.lastDayOfMonth())));
     model.addAttribute(
@@ -114,7 +114,7 @@ public class TransactionController {
       @ModelAttribute TransactionActionSheetModel.TransactionForm form, Model model) {
     var categories =
         categoryRepository
-            .findByOrganizationIdAndId(properties.getOrganizationId(), form.getCategoryId())
+            .findByOrganizationIdAndId(context.getOrganizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     form.setCategoryName(categories.getName());
     if (form.getDescription() == null) {
@@ -133,15 +133,15 @@ public class TransactionController {
       @ModelAttribute TransactionActionSheetModel.TransactionForm form, Model model) {
     var categories =
         categoryRepository
-            .findByOrganizationIdAndId(properties.getOrganizationId(), form.getCategoryId())
+            .findByOrganizationIdAndId(context.getOrganizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     if (categories.getType().isCredit()) {
       if (form.getOccurredAt() != null) {
         createDeposit.execute(
             new CreateTransactionCommand(
-                properties.getOrganizationId(),
-                properties.getUserId(),
-                properties.getAccountId(),
+                context.getOrganizationId(),
+                context.getUserId(),
+                context.getAccountId(),
                 form.getOccurredAt().atZone(zoneId).toInstant(),
                 form.getCategoryId(),
                 form.getAmount(),
@@ -149,9 +149,9 @@ public class TransactionController {
       } else {
         createReceivable.execute(
             new CreateScheduledTransactionCommand(
-                properties.getOrganizationId(),
-                properties.getUserId(),
-                properties.getAccountId(),
+                context.getOrganizationId(),
+                context.getUserId(),
+                context.getAccountId(),
                 form.getCategoryId(),
                 form.getAmount(),
                 form.getDueDayOfMonth(),
@@ -162,9 +162,9 @@ public class TransactionController {
       if (form.getOccurredAt() != null) {
         createWithdrawal.execute(
             new CreateTransactionCommand(
-                properties.getOrganizationId(),
-                properties.getUserId(),
-                properties.getAccountId(),
+                context.getOrganizationId(),
+                context.getUserId(),
+                context.getAccountId(),
                 form.getOccurredAt().atZone(zoneId).toInstant(),
                 form.getCategoryId(),
                 form.getAmount(),
@@ -172,9 +172,9 @@ public class TransactionController {
       } else {
         createPayable.execute(
             new CreateScheduledTransactionCommand(
-                properties.getOrganizationId(),
-                properties.getUserId(),
-                properties.getAccountId(),
+                context.getOrganizationId(),
+                context.getUserId(),
+                context.getAccountId(),
                 form.getCategoryId(),
                 form.getAmount(),
                 form.getDueDayOfMonth(),
@@ -210,18 +210,18 @@ public class TransactionController {
     if (form.getOccurredAt() != null) {
       confirmTransaction.execute(
           new ConfirmTransactionCommand(
-              properties.getOrganizationId(),
-              properties.getUserId(),
-              properties.getAccountId(),
+              context.getOrganizationId(),
+              context.getUserId(),
+              context.getAccountId(),
               transactionId,
               form.getOccurredAt().atZone(zoneId).toInstant(),
               form.getAmount()));
     } else {
       updateScheduledTransaction.execute(
           new UpdateScheduledTransactionCommand(
-              properties.getOrganizationId(),
-              properties.getUserId(),
-              properties.getAccountId(),
+              context.getOrganizationId(),
+              context.getUserId(),
+              context.getAccountId(),
               transactionId,
               form.getDescription(),
               form.getAmount(),
@@ -238,7 +238,7 @@ public class TransactionController {
     return this.getTransactions
         .execute(
             new GetTransactionCommand(
-                properties.getOrganizationId(), properties.getAccountId(), transactionId))
+                context.getOrganizationId(), context.getAccountId(), transactionId))
         .orElseThrow(() -> InfrastructureException.notFound("Transaction not found"));
   }
 }
