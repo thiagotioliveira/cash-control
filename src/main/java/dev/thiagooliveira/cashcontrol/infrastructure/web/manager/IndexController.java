@@ -41,7 +41,7 @@ public class IndexController {
     this.getTransactions = getTransactions;
   }
 
-  @GetMapping({"", "/"})
+  @GetMapping
   public String index(Model model) {
     var account =
         accountRepository
