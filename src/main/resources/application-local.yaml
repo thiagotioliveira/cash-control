@@ -19,7 +19,7 @@ spring:
 logging:
   level:
     ROOT: INFO
-    dev.thiagooliveira: DEBUG
+    dev.thiagooliveira: INFO
 
 app:
   mock-data:
