@@ -2,7 +2,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
-import dev.thiagooliveira.cashcontrol.application.outbound.AccountRepository;
+import dev.thiagooliveira.cashcontrol.application.account.GetAccount;
 import dev.thiagooliveira.cashcontrol.application.outbound.BankRepository;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
@@ -23,19 +23,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/protected")
 public class IndexController {
   private final MockDataProperties properties;
-  private final AccountRepository accountRepository;
+  private final GetAccount getAccount;
   private final BankRepository bankRepository;
   private final CategoryRepository categoryRepository;
   private final GetTransactions getTransactions;
 
   public IndexController(
       MockDataProperties properties,
-      AccountRepository accountRepository,
+      GetAccount getAccount,
       BankRepository bankRepository,
       CategoryRepository categoryRepository,
       GetTransactions getTransactions) {
     this.properties = properties;
-    this.accountRepository = accountRepository;
+    this.getAccount = getAccount;
     this.bankRepository = bankRepository;
     this.categoryRepository = categoryRepository;
     this.getTransactions = getTransactions;
@@ -43,13 +43,10 @@ public class IndexController {
 
   @GetMapping
   public String index(Model model) {
-    var account =
-        accountRepository
-            .findByOrganizationIdAndId(properties.getOrganizationId(), properties.getAccountId())
-            .orElseThrow(() -> InfrastructureException.badRequest("something wrong"));
+    var account = getAccount.execute(properties.getAccountId());
     var bank =
         bankRepository
-            .findByOrganizationIdAndId(properties.getOrganizationId(), account.getBankId())
+            .findByOrganizationIdAndId(properties.getOrganizationId(), account.bankId())
             .orElseThrow(() -> InfrastructureException.badRequest("something wrong"));
     var today = LocalDate.now();
     var categories = categoryRepository.findAllByOrganizationId(properties.getOrganizationId());

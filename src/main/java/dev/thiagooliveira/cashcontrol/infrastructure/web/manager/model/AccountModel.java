@@ -3,7 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.dtfHourOfDay;
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.zoneId;
 
-import dev.thiagooliveira.cashcontrol.domain.account.Account;
+import dev.thiagooliveira.cashcontrol.application.account.dto.GetAccountItem;
 import dev.thiagooliveira.cashcontrol.domain.bank.Bank;
 import java.text.DecimalFormat;
 import java.time.Instant;
@@ -16,11 +16,11 @@ public class AccountModel {
   private final String balance;
   private final BankModel bank;
 
-  public AccountModel(DecimalFormat df, Account account, Bank bank) {
-    this.updatedAt = account.getUpdatedAt();
-    this.name = account.getName();
+  public AccountModel(DecimalFormat df, GetAccountItem account, Bank bank) {
+    this.updatedAt = account.updatedAt();
+    this.name = account.name();
     var symbol = bank.getCurrency().getSymbol();
-    this.balance = symbol + " " + df.format(account.getBalance());
+    this.balance = symbol + " " + df.format(account.balance());
     this.bank = new BankModel(bank);
   }
 

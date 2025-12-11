@@ -12,6 +12,11 @@ import org.springframework.context.annotation.Configuration;
 public class AccountConfig {
 
   @Bean
+  GetAccount getAccount(EventStore eventStore, EventPublisher publisher) {
+    return new GetAccount(eventStore, publisher);
+  }
+
+  @Bean
   AccountRepository accountRepository(AccountJpaRepository repository) {
     return new AccountRepositoryAdapter(repository);
   }

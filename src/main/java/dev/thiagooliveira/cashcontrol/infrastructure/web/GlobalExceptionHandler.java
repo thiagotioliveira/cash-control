@@ -8,12 +8,13 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public RedirectView handleNoHandlerFoundException() {
-        return new RedirectView("/protected");
-    }
-    @ExceptionHandler(NoResourceFoundException.class)
-    public RedirectView handleNoResourceFoundException() {
-        return new RedirectView("/protected");
-    }
+  @ExceptionHandler(NoHandlerFoundException.class)
+  public RedirectView handleNoHandlerFoundException() {
+    return new RedirectView("/protected");
+  }
+
+  @ExceptionHandler(NoResourceFoundException.class)
+  public RedirectView handleNoResourceFoundException() {
+    return new RedirectView("/protected");
+  }
 }
