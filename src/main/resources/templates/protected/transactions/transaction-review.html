@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{protected/fragments/head}"></div>
+
+<body>
+
+    <div th:insert="~{protected/fragments/loader}"></div>
+
+    <div th:insert="~{protected/fragments/page-header :: pageHeader('Verificação de Transação', '/protected/')}"></div>
+
+    <!-- App Capsule -->
+    <div id="appCapsule">
+
+        <div class="section">
+            <div class="splash-page mt-5 mb-5">
+
+                <h2 class="mb-2 mt-2" th:text="${transaction.categoryName}"></h2>
+                <ul class="listview flush transparent simple-listview no-space mt-3">
+                    <li>
+                        <strong>Dia de Vencimento</strong>
+                        <span th:text="${transaction.dueDayOfMonth}"></span>
+                    </li>
+                    <li>
+                        <strong>Data de Pagamento</strong>
+                        <span th:text="${transaction.occurredAtFormatted}"></span>
+                    </li>
+                    <li>
+                        <strong>Amount</strong>
+                        <h3 class="m-0" th:text="${transaction.getAmountFormatted()}"></h3>
+                    </li>
+                    <li>
+                        <strong>Descrição</strong>
+                        <span th:text="${transaction.description}"></span>
+                    </li>
+                </ul>
+                <p>
+                    Deseja salvar?
+                </p>
+            </div>
+        </div>
+
+        <div class="fixed-bar">
+            <div class="row">
+                <div class="col-6">
+                    <a th:href="${'/protected'}" class="btn btn-lg btn-outline-secondary btn-block">Cancel</a>
+                </div>
+                <div class="col-6">
+                    <form th:action="@{'/protected/transactions/' + ${transaction.id}}" method="post">
+                        <input type="hidden" th:name="id" th:value="${transaction.id}" />
+                        <input type="hidden" th:name="symbol" th:value="${transaction.symbol}" />
+                        <input type="hidden" th:name="categoryName" th:value="${transaction.categoryName}" />
+                        <input type="hidden" th:name="description" th:value="${transaction.description}" />
+                        <input type="hidden" th:name="amount" th:value="${transaction.amount}" />
+                        <input type="hidden" th:name="dueDayOfMonth" th:value="${transaction.dueDayOfMonth}" />
+                        <input type="hidden" th:name="occurredAt" th:value="${transaction.occurredAt}" />
+                        <button type="submit" class="btn btn-primary btn-block btn-lg"
+                                data-bs-dismiss="modal">
+                            Confirmar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- * App Capsule -->
+
+    <!-- ========= JS Files =========  -->
+    <!-- Bootstrap -->
+    <script th:src="@{/assets/js/lib/bootstrap.bundle.min.js}"></script>
+    <!-- Ionicons -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.esm.js"></script>
+    <!-- Splide -->
+    <script th:src="@{/assets/js/plugins/splide/splide.min.js}"></script>
+    <!-- Base Js File -->
+    <script th:src="@{/assets/js/base.js}"></script>
+
+</body>
+
+</html>

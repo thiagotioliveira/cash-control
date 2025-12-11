@@ -3,6 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.persistence.category;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.domain.category.Category;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,6 +13,13 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
 
   public CategoryRepositoryAdapter(CategoryJpaRepository repository) {
     this.repository = repository;
+  }
+
+  @Override
+  public List<Category> findAllByOrganizationId(UUID organizationId) {
+    return this.repository.findAllByOrganizationId(organizationId).stream()
+        .map(CategoryEntity::toDomain)
+        .toList();
   }
 
   @Override

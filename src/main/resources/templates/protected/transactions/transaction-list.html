@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{protected/fragments/head}"></div>
+
+<body>
+
+<div th:insert="~{protected/fragments/loader}"></div>
+
+<div th:insert="~{protected/fragments/page-header :: pageHeader('Transações', '/protected/')}"></div>
+
+<!-- App Capsule -->
+<div id="appCapsule">
+    <!-- Transactions -->
+    <div class="section mt-2" th:each="entry : ${transactions.content}">
+        <div class="section-title" th:text="${transactions.keyFormatted(entry.key)}"></div>
+        <div class="transactions" th:each="t : ${entry.value}">
+            <!-- item -->
+            <a th:href="@{'/protected/transactions/' + ${t.id}}" class="item mb-2">
+                <div class="detail">
+                    <img th:src="@{/assets/img/1.jpg}" alt="img" class="image-block imaged w48" th:if="${false}">
+                    <div>
+                        <strong th:text="${t.categoryName}"></strong>
+                        <p th:class="${t.status.isScheduled() ? 'text-warning' : ''}"
+                           th:text="${(t.status.isConfirmed() ? t.occurredAtFormatted : t.statusFormatted)}"></p>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="price"
+                         th:classappend="${t.type.isDebit() ? 'text-danger' : 'text-success'}"
+                         th:text="${t.amountFormatted}">
+                    </div>
+                </div>
+            </a>
+            <!-- * item -->
+        </div>
+    </div>
+    <!-- * Transactions -->
+</div>
+<!-- * App Capsule -->
+
+<!-- ========= JS Files =========  -->
+<!-- Bootstrap -->
+<script th:src="@{/assets/js/lib/bootstrap.bundle.min.js}"></script>
+<!-- Ionicons -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.esm.js"></script>
+<!-- Splide -->
+<script th:src="@{/assets/js/plugins/splide/splide.min.js}"></script>
+<!-- Base Js File -->
+<script th:src="@{/assets/js/base.js}"></script>
+
+</body>
+
+</html>

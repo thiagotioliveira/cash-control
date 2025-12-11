@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="alert mb-1" role="alert" th:if="${alert != null}"
+     th:classappend="${alert.getType() == 'success' ? 'alert-success' : (alert.getType() == 'error' ? 'alert-danger' : 'alert-warning')}"
+     th:text="${alert.getMessage()}">
+</div>
+
+</html>

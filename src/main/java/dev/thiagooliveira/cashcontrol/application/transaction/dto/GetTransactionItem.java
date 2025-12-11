@@ -1,5 +1,6 @@
 package dev.thiagooliveira.cashcontrol.application.transaction.dto;
 
+import dev.thiagooliveira.cashcontrol.shared.Currency;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ public record GetTransactionItem(
     UUID transactionId,
     UUID accountId,
     String accountName,
+    Currency currency,
     Optional<UUID> transactionTemplateId,
     Optional<Instant> occurredAt,
     LocalDate dueDate,

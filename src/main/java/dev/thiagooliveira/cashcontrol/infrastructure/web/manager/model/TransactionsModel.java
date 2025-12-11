@@ -1,122 +1,120 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
+import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
+
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
-import dev.thiagooliveira.cashcontrol.domain.bank.Bank;
-import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
-import java.text.DecimalFormat;
+import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class TransactionsModel {
 
   private final List<TransactionItem> content = new ArrayList<>();
 
-  public TransactionsModel(
-      DecimalFormat df,
-      DateTimeFormatter dtf,
-      DateTimeFormatter dtfHourOfDay,
-      Bank bank,
-      List<GetTransactionItem> transactions) {
-    transactions.forEach(
-        t ->
-            content.add(
-                new TransactionItem(t, df, dtf, dtfHourOfDay, bank.getCurrency().getSymbol())));
+  public TransactionsModel(List<GetTransactionItem> transactions) {
+    transactions.forEach(t -> content.add(new TransactionItem(t)));
   }
 
   public List<TransactionItem> getContent() {
     return content;
   }
 
-  public static class TransactionItem {
-    private final UUID id;
-    private final UUID transactionTemplateId;
-    private final String occurredAt;
-    private final String dueDate;
-    private final String description;
-    private final String amount;
-    private final UUID categoryId;
-    private final String categoryName;
-    private final String categoryHashColor;
-    private final TransactionType type;
-    private final TransactionStatus status;
+  public static class UpdateTransactionModel {
+    private UUID id;
+    private String symbol;
+    private String categoryName;
+    private String description;
+    private BigDecimal amount;
 
-    public TransactionItem(
-        GetTransactionItem transaction,
-        DecimalFormat df,
-        DateTimeFormatter dtf,
-        DateTimeFormatter dtfHourOfDay,
-        String symbol) {
+    private int dueDayOfMonth;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime occurredAt;
+
+    public UpdateTransactionModel() {}
+
+    public UpdateTransactionModel(GetTransactionItem transaction) {
       this.id = transaction.transactionId();
-      this.transactionTemplateId = transaction.transactionTemplateId().orElse(null);
+      this.symbol = transaction.currency().getSymbol();
+      this.categoryName = transaction.categoryName();
+      this.description = transaction.description();
+      this.amount = transaction.amount();
+      this.dueDayOfMonth = transaction.dueDate().getDayOfMonth();
       this.occurredAt =
           transaction.occurredAt().isPresent()
-              ? LocalDateTime.ofInstant(transaction.occurredAt().get(), ZoneId.systemDefault())
-                  .format(dtfHourOfDay)
-              : "";
-      this.dueDate = transaction.dueDate().format(dtf);
-      this.description = transaction.description();
-      this.categoryId = transaction.categoryId();
-      this.categoryName = transaction.categoryName();
-      this.categoryHashColor = transaction.categoryHashColor();
-      this.type = transaction.type();
-      this.status = transaction.status();
-      this.amount =
-          this.type.isCredit()
-              ? "+ " + symbol + " " + df.format(transaction.amount())
-              : "- " + symbol + " " + df.format(transaction.amount());
-    }
-
-    public UUID getId() {
-      return id;
-    }
-
-    public UUID getTransactionTemplateId() {
-      return transactionTemplateId;
-    }
-
-    public String getOccurredAt() {
-      return occurredAt;
-    }
-
-    public String getDueDate() {
-      return dueDate;
-    }
-
-    public String getDescription() {
-      return description;
-    }
-
-    public String getAmount() {
-      return amount;
-    }
-
-    public UUID getCategoryId() {
-      return categoryId;
+              ? LocalDateTime.ofInstant(transaction.occurredAt().get(), FormattersUtils.zoneId)
+              : null;
     }
 
     public String getCategoryName() {
       return categoryName;
     }
 
-    public String getCategoryHashColor() {
-      return categoryHashColor;
+    public void setCategoryName(String categoryName) {
+      this.categoryName = categoryName;
     }
 
-    public TransactionType getType() {
-      return type;
+    public String getSymbol() {
+      return symbol;
     }
 
-    public TransactionStatus getStatus() {
-      return status;
+    public void setSymbol(String symbol) {
+      this.symbol = symbol;
     }
 
-    public String getStatusFormatted() {
-      return this.status.isScheduled() ? "Agendado" : this.status.isConfirmed() ? "Confirmado" : "";
+    public UUID getId() {
+      return id;
+    }
+
+    public void setId(UUID id) {
+      this.id = id;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+
+    public BigDecimal getAmount() {
+      return amount;
+    }
+
+    public String getAmountFormatted() {
+      if (amount != null) {
+        return symbol + " " + df.format(amount);
+      }
+      return "";
+    }
+
+    public void setDescription(String description) {
+      this.description = description;
+    }
+
+    public void setAmount(BigDecimal amount) {
+      this.amount = amount;
+    }
+
+    public LocalDateTime getOccurredAt() {
+      return occurredAt;
+    }
+
+    public String getOccurredAtFormatted() {
+      return occurredAt != null ? dtfHourOfDay.format(occurredAt) : "-";
+    }
+
+    public void setOccurredAt(LocalDateTime occurredAt) {
+      this.occurredAt = occurredAt;
+    }
+
+    public int getDueDayOfMonth() {
+      return dueDayOfMonth;
+    }
+
+    public void setDueDayOfMonth(int dueDayOfMonth) {
+      this.dueDayOfMonth = dueDayOfMonth;
     }
   }
 }

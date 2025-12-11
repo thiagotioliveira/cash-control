@@ -10,6 +10,7 @@ public record ScheduledTransactionUpdated(
     UUID transactionId,
     UUID accountId,
     BigDecimal amount,
+    String description,
     int dueDayOfMonth,
     LocalDate endDueDate,
     UUID organizationId,

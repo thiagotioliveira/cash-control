@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{protected/fragments/head}"></div>
+
+<body>
+
+    <div th:insert="~{protected/fragments/loader}"></div>
+
+    <div th:insert="~{protected/fragments/page-header :: pageHeader('Transação', '/protected/')}"></div>
+
+    <!-- App Capsule -->
+    <div id="appCapsule">
+
+        <div th:insert="~{protected/fragments/alert}"></div>
+
+        <div class="section">
+            <div class="splash-page mt-5 mb-5">
+
+                <h2 class="mb-2 mt-2" th:text="${transaction.description}"></h2>
+                <ul class="listview flush transparent simple-listview no-space mt-3">
+                    <li>
+                        <strong>Status</strong>
+                        <span th:class="${transaction.status.isConfirmed() ? 'text-success' : 'text-warning'}" th:text="${transaction.statusFormatted}"></span>
+                    </li>
+                    <li>
+                        <strong>Categoria</strong>
+                        <span th:text="${transaction.categoryName}"></span>
+                    </li>
+                    <li>
+                        <strong>Data de Vencimento</strong>
+                        <span th:text="${transaction.dueDateFormatted}"></span>
+                    </li>
+                    <li>
+                        <strong>Data de Pagamento</strong>
+                        <span th:text="${transaction.occurredAtFormatted}"></span>
+                    </li>
+                    <li>
+                        <strong>Amount</strong>
+                        <h3 class="m-0" th:text="${transaction.getAmountFormatted()}"></h3>
+                    </li>
+                    <li>
+                        <strong>Descrição</strong>
+                        <span th:text="${transaction.description}"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <!-- * App Capsule -->
+
+    <div th:insert="~{protected/fragments/app-bottom-menu}"></div>
+
+    <!-- ========= JS Files =========  -->
+    <!-- Bootstrap -->
+    <script th:src="@{/assets/js/lib/bootstrap.bundle.min.js}"></script>
+    <!-- Ionicons -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.esm.js"></script>
+    <!-- Splide -->
+    <script th:src="@{/assets/js/plugins/splide/splide.min.js}"></script>
+    <!-- Base Js File -->
+    <script th:src="@{/assets/js/base.js}"></script>
+
+</body>
+
+</html>

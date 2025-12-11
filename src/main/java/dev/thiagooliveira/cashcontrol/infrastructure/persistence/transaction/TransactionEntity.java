@@ -105,6 +105,7 @@ public class TransactionEntity {
         this.id,
         this.account.getId(),
         this.account.getName(),
+        this.account.getBank().getCurrency(),
         Optional.ofNullable(this.transactionTemplateId),
         Optional.ofNullable(this.occurredAt),
         this.dueDate,
@@ -126,6 +127,7 @@ public class TransactionEntity {
   }
 
   public void update(ScheduledTransactionUpdated event) {
+    this.description = event.description();
     this.amount = event.amount();
     this.dueDate = this.dueDate.withDayOfMonth(event.dueDayOfMonth());
   }

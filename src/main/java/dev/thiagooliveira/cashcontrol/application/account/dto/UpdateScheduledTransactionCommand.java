@@ -10,6 +10,7 @@ public record UpdateScheduledTransactionCommand(
     UUID userId,
     UUID accountId,
     UUID transactionId,
+    String description,
     BigDecimal amount,
     int dueDayOfMonth,
     Optional<LocalDate> endDueDate) {}

@@ -189,6 +189,7 @@ public class Account {
       UUID userId,
       UUID transactionId,
       BigDecimal amount,
+      String description,
       int dueDayOfMonth,
       Optional<LocalDate> endDueDate) {
     validate(amount);
@@ -200,6 +201,7 @@ public class Account {
             transactionId,
             id,
             amount,
+            description,
             dueDayOfMonth,
             endDueDate.orElse(null),
             organizationId,

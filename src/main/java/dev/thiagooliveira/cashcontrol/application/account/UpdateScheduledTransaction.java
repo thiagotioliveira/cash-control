@@ -45,6 +45,7 @@ public class UpdateScheduledTransaction {
         command.userId(),
         command.transactionId(),
         command.amount(),
+        command.description(),
         command.dueDayOfMonth(),
         command.endDueDate());
 

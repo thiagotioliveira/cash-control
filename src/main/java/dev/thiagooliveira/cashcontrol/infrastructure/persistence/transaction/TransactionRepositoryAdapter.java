@@ -24,7 +24,7 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
 
   @Override
   public Optional<GetTransactionItem> findByOrganizationIdAndAccountIdAndId(
-      UUID organizationId, UUID id, UUID accountId) {
+      UUID organizationId, UUID accountId, UUID id) {
     return this.repository
         .findByOrganizationIdAndAccountIdAndId(organizationId, accountId, id)
         .map(TransactionEntity::toDomain);
