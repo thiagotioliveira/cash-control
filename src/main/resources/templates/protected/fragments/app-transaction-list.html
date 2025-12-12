@@ -23,6 +23,7 @@
                      th:classappend="${t.type.isDebit() ? 'text-danger' : 'text-success'}"
                      th:text="${t.amountFormatted}">
                 </div>
+                <p class="text-end" th:if="${t.status.isConfirmed()}" th:text="${'('+t.balanceBeforeFormatted+')'}"></p>
             </div>
         </a>
         <!-- * item -->

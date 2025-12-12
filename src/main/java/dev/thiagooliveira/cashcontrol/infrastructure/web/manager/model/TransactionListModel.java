@@ -74,6 +74,7 @@ public class TransactionListModel {
     private final String description;
     private final dev.thiagooliveira.cashcontrol.shared.Currency currency;
     private final BigDecimal amount;
+    private final String balanceBeforeFormatted;
     private final String amountFormatted;
     private final UUID categoryId;
     private final String categoryName;
@@ -104,6 +105,9 @@ public class TransactionListModel {
           this.type.isCredit()
               ? "+ " + this.currency.getSymbol() + " " + df.format(transaction.amount())
               : "- " + this.currency.getSymbol() + " " + df.format(transaction.amount());
+      this.balanceBeforeFormatted = transaction.accountBalanceBefore().isPresent() ?
+              this.currency.getSymbol() + " " + df.format(transaction.accountBalanceBefore().get())
+    : "";
     }
 
     public int getDueDayOfMonth() {
@@ -168,6 +172,10 @@ public class TransactionListModel {
 
     public TransactionStatus getStatus() {
       return status;
+    }
+
+    public String getBalanceBeforeFormatted() {
+      return balanceBeforeFormatted;
     }
 
     public String getStatusFormatted() {
