@@ -176,6 +176,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
                   name: name
                   type: varchar(255)
                   constraints:

@@ -128,7 +128,7 @@ public class Account {
             description,
             organizationId,
             userId,
-            Instant.now(),
+            occurredAt,
             version + 1));
   }
 

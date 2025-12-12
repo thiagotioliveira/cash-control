@@ -1,11 +1,8 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
-import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.dtfHourOfDay;
-import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.zoneId;
+import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
 import dev.thiagooliveira.cashcontrol.application.account.dto.GetAccountItem;
-import dev.thiagooliveira.cashcontrol.domain.bank.Bank;
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
@@ -14,14 +11,12 @@ public class AccountModel {
   private final Instant updatedAt;
   private final String name;
   private final String balance;
-  private final BankModel bank;
 
-  public AccountModel(DecimalFormat df, GetAccountItem account, Bank bank) {
+  public AccountModel(GetAccountItem account) {
     this.updatedAt = account.updatedAt();
     this.name = account.name();
-    var symbol = bank.getCurrency().getSymbol();
+    var symbol = account.currency().getSymbol();
     this.balance = symbol + " " + df.format(account.balance());
-    this.bank = new BankModel(bank);
   }
 
   public String getNameFormatted() {
@@ -34,33 +29,5 @@ public class AccountModel {
 
   public String getBalance() {
     return balance;
-  }
-
-  public BankModel getBank() {
-    return bank;
-  }
-
-  public static class BankModel {
-    private final String name;
-    private final String currency;
-    private final String symbol;
-
-    public BankModel(Bank bank) {
-      this.name = bank.getName();
-      this.currency = bank.getCurrency().getName();
-      this.symbol = bank.getCurrency().getSymbol();
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public String getCurrency() {
-      return currency;
-    }
-
-    public String getSymbol() {
-      return symbol;
-    }
   }
 }

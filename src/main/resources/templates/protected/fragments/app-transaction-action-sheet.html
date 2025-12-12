@@ -51,7 +51,7 @@
                         <div class="form-group basic" th:if="${t.showOccurredAtInput}">
                             <div class="input-wrapper">
                                 <label class="label" th:for="${prefixId + 'transaction-occurredAt-'+t.getId()}">Data de Pagamento</label>
-                                <input type="datetime-local" class="form-control" th:id="${prefixId + 'transaction-occurredAt-'+t.getId()}"
+                                <input type="datetime-local" step="1" class="form-control" th:id="${prefixId + 'transaction-occurredAt-'+t.getId()}"
                                        th:name="occurredAt" th:value="${t.occurredAt}">
                                 <i class="clear-input">
                                     <ion-icon name="close-circle"></ion-icon>

@@ -7,10 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
+// @Component
 public class TrailingSlashHandlerFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(

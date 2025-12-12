@@ -4,6 +4,7 @@ import dev.thiagooliveira.cashcontrol.application.account.*;
 import dev.thiagooliveira.cashcontrol.application.outbound.*;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.account.AccountEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountJpaRepository;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountRepositoryAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 public class AccountConfig {
 
   @Bean
-  GetAccount getAccount(EventStore eventStore, EventPublisher publisher) {
-    return new GetAccount(eventStore, publisher);
+  AccountRepository accountRepository(AccountJpaRepository repository) {
+    return new AccountRepositoryAdapter(repository);
   }
 
   @Bean
