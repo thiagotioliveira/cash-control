@@ -63,7 +63,7 @@
                             <label class="label">Valor</label>
                             <div class="input-group mb-2">
                                 <span class="input-group-text" th:text="${t.currency.symbol}"></span>
-                                <input type="number" class="form-control" placeholder="Informe o valor"
+                                <input type="number" step=".01" class="form-control" placeholder="Informe o valor"
                                        th:name="amount" th:value="${t.amount}">
                             </div>
                         </div>
