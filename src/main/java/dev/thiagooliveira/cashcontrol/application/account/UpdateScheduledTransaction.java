@@ -46,7 +46,7 @@ public class UpdateScheduledTransaction {
         command.transactionId(),
         command.amount(),
         command.description(),
-        command.dueDayOfMonth(),
+        command.dueDate(),
         command.endDueDate());
 
     var newEvents = account.pendingEvents();

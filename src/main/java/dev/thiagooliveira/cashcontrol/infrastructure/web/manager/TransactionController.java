@@ -7,11 +7,13 @@ import dev.thiagooliveira.cashcontrol.application.account.dto.ConfirmTransaction
 import dev.thiagooliveira.cashcontrol.application.account.dto.CreateScheduledTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.account.dto.CreateTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.account.dto.UpdateScheduledTransactionCommand;
+import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
+import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
@@ -27,6 +29,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/protected/transactions")
@@ -107,6 +110,13 @@ public class TransactionController {
     return "protected/transactions/transaction-review";
   }
 
+  @GetMapping("/review")
+  public String getReviewTransaction(
+      @ModelAttribute("transaction") TransactionActionSheetModel.TransactionForm form,
+      Model model) {
+    return postReviewTransaction(form, model);
+  }
+
   @PostMapping("/review")
   public String postReviewTransaction(
       @ModelAttribute TransactionActionSheetModel.TransactionForm form, Model model) {
@@ -128,59 +138,67 @@ public class TransactionController {
 
   @PostMapping
   public String postTransaction(
-      @ModelAttribute TransactionActionSheetModel.TransactionForm form, Model model) {
+      @ModelAttribute TransactionActionSheetModel.TransactionForm form,
+      Model model,
+      RedirectAttributes redirectAttributes) {
     var categories =
         categoryRepository
             .findByOrganizationIdAndId(context.getOrganizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
-    if (categories.getType().isCredit()) {
-      if (form.getOccurredAt() != null) {
-        createDeposit.execute(
-            new CreateTransactionCommand(
-                context.getOrganizationId(),
-                context.getUserId(),
-                context.getAccountId(),
-                form.getOccurredAt().atZone(zoneId).toInstant(),
-                form.getCategoryId(),
-                form.getAmount(),
-                form.getDescription()));
+    try {
+      if (categories.getType().isCredit()) {
+        if (form.getOccurredAt() != null) {
+          createDeposit.execute(
+              new CreateTransactionCommand(
+                  context.getOrganizationId(),
+                  context.getUserId(),
+                  context.getAccountId(),
+                  form.getOccurredAt().atZone(zoneId).toInstant(),
+                  form.getCategoryId(),
+                  form.getAmount(),
+                  form.getDescription()));
+        } else {
+          createReceivable.execute(
+              new CreateScheduledTransactionCommand(
+                  context.getOrganizationId(),
+                  context.getUserId(),
+                  context.getAccountId(),
+                  form.getCategoryId(),
+                  form.getAmount(),
+                  form.getStartDueDate(),
+                  Recurrence.valueOf(form.getRecurrence()),
+                  Optional.ofNullable(form.getInstallments())));
+        }
       } else {
-        createReceivable.execute(
-            new CreateScheduledTransactionCommand(
-                context.getOrganizationId(),
-                context.getUserId(),
-                context.getAccountId(),
-                form.getCategoryId(),
-                form.getAmount(),
-                form.getStartDueDate(),
-                Recurrence.valueOf(form.getRecurrence()),
-                Optional.ofNullable(form.getInstallments())));
+        if (form.getOccurredAt() != null) {
+          createWithdrawal.execute(
+              new CreateTransactionCommand(
+                  context.getOrganizationId(),
+                  context.getUserId(),
+                  context.getAccountId(),
+                  form.getOccurredAt().atZone(zoneId).toInstant(),
+                  form.getCategoryId(),
+                  form.getAmount(),
+                  form.getDescription()));
+        } else {
+          createPayable.execute(
+              new CreateScheduledTransactionCommand(
+                  context.getOrganizationId(),
+                  context.getUserId(),
+                  context.getAccountId(),
+                  form.getCategoryId(),
+                  form.getAmount(),
+                  form.getStartDueDate(),
+                  Recurrence.valueOf(form.getRecurrence()),
+                  Optional.ofNullable(form.getInstallments())));
+        }
       }
-    } else {
-      if (form.getOccurredAt() != null) {
-        createWithdrawal.execute(
-            new CreateTransactionCommand(
-                context.getOrganizationId(),
-                context.getUserId(),
-                context.getAccountId(),
-                form.getOccurredAt().atZone(zoneId).toInstant(),
-                form.getCategoryId(),
-                form.getAmount(),
-                form.getDescription()));
-      } else {
-        createPayable.execute(
-            new CreateScheduledTransactionCommand(
-                context.getOrganizationId(),
-                context.getUserId(),
-                context.getAccountId(),
-                form.getCategoryId(),
-                form.getAmount(),
-                form.getStartDueDate(),
-                Recurrence.valueOf(form.getRecurrence()),
-                Optional.ofNullable(form.getInstallments())));
-      }
+      return "redirect:/protected/transactions";
+    } catch (DomainException | ApplicationException e) {
+      redirectAttributes.addFlashAttribute("transaction", form);
+      redirectAttributes.addFlashAttribute("alert", AlertModel.error(e.getMessage()));
+      return "redirect:/protected/transactions/review";
     }
-    return "redirect:/protected/transactions";
   }
 
   @GetMapping("/{transactionId}/review")
@@ -201,35 +219,41 @@ public class TransactionController {
   public String postTransaction(
       @PathVariable UUID transactionId,
       @ModelAttribute TransactionActionSheetModel.TransactionForm form,
-      Model model) {
+      Model model,
+      RedirectAttributes redirectAttributes) {
     if (!transactionId.equals(form.getId())) {
       throw InfrastructureException.badRequest("Invalid transaction id");
     }
-    if (form.getOccurredAt() != null) {
-      confirmTransaction.execute(
-          new ConfirmTransactionCommand(
-              context.getOrganizationId(),
-              context.getUserId(),
-              context.getAccountId(),
-              transactionId,
-              form.getOccurredAt().atZone(zoneId).toInstant(),
-              form.getAmount()));
-    } else {
-      updateScheduledTransaction.execute(
-          new UpdateScheduledTransactionCommand(
-              context.getOrganizationId(),
-              context.getUserId(),
-              context.getAccountId(),
-              transactionId,
-              form.getDescription(),
-              form.getAmount(),
-              form.getStartDueDate().getDayOfMonth(),
-              Optional.empty()));
+    try {
+      if (form.getOccurredAt() != null) {
+        confirmTransaction.execute(
+            new ConfirmTransactionCommand(
+                context.getOrganizationId(),
+                context.getUserId(),
+                context.getAccountId(),
+                transactionId,
+                form.getOccurredAt().atZone(zoneId).toInstant(),
+                form.getAmount()));
+      } else {
+        updateScheduledTransaction.execute(
+            new UpdateScheduledTransactionCommand(
+                context.getOrganizationId(),
+                context.getUserId(),
+                context.getAccountId(),
+                transactionId,
+                form.getDescription(),
+                form.getAmount(),
+                form.getStartDueDate(),
+                Optional.empty()));
+      }
+      var transaction = getTransactionItem(transactionId);
+      model.addAttribute("transaction", new TransactionDetailsModel(transaction, "/protected/"));
+      model.addAttribute("alert", AlertModel.success("Transação atualizada com sucesso!"));
+      return "protected/transactions/transaction-details";
+    } catch (DomainException | ApplicationException e) {
+      redirectAttributes.addFlashAttribute("alert", AlertModel.error(e.getMessage()));
+      return "redirect:/protected/transactions/" + transactionId;
     }
-    var transaction = getTransactionItem(transactionId);
-    model.addAttribute("transaction", new TransactionDetailsModel(transaction, "/protected/"));
-    model.addAttribute("alert", AlertModel.success("Transação atualizada com sucesso!"));
-    return "protected/transactions/transaction-details";
   }
 
   private static String buildGetTransactionModel(

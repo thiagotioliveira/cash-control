@@ -1,25 +1,26 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction;
 
-import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface TransactionTemplateJpaRepository extends JpaRepository<TransactionTemplateEntity, UUID> {
+public interface TransactionTemplateJpaRepository
+    extends JpaRepository<TransactionTemplateEntity, UUID> {
 
-    @Query("""
+  @Query(
+      """
                               SELECT t
                               FROM TransactionTemplateEntity t
                               WHERE t.id = :id
                                 AND t.accountId = :accountId
                               """)
-    Optional<TransactionTemplateEntity> findByIdAndAccountId(UUID id, UUID accountId);
+  Optional<TransactionTemplateEntity> findByIdAndAccountId(UUID id, UUID accountId);
 
-    @Query("""
+  @Query(
+      """
             SELECT t
             FROM TransactionTemplateEntity t
             WHERE t.organizationId = :organizationId
@@ -30,8 +31,7 @@ public interface TransactionTemplateJpaRepository extends JpaRepository<Transact
                     OR t.endDate IS NULL
                   )
             """)
-    List<TransactionTemplateEntity>
-    findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
-            UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate);
-
+  List<TransactionTemplateEntity>
+      findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
+          UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate);
 }

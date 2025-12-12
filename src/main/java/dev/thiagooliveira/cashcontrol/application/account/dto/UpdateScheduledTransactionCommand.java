@@ -12,5 +12,5 @@ public record UpdateScheduledTransactionCommand(
     UUID transactionId,
     String description,
     BigDecimal amount,
-    int dueDayOfMonth,
+    LocalDate dueDate,
     Optional<LocalDate> endDueDate) {}

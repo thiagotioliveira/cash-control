@@ -139,7 +139,7 @@ public class TransactionEntity {
   public void update(ScheduledTransactionUpdated event) {
     this.description = event.description();
     this.amount = event.amount();
-    this.dueDate = this.dueDate.withDayOfMonth(event.dueDayOfMonth());
+    this.dueDate = event.dueDate();
   }
 
   public UUID getId() {

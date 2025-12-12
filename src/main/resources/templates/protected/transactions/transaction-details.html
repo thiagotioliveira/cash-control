@@ -44,6 +44,10 @@
                         <h3 class="m-0" th:text="${transaction.getRecurrenceFormatted()}"></h3>
                     </li>
                     <li>
+                        <strong>Nº Parcelas</strong>
+                        <h3 class="m-0" th:text="${transaction.getInstallmentsFormatted()}"></h3>
+                    </li>
+                    <li>
                         <strong>Descrição</strong>
                         <span th:text="${transaction.description}"></span>
                     </li>

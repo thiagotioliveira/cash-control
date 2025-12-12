@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class TransactionActionSheetModel {
@@ -247,9 +248,9 @@ public class TransactionActionSheetModel {
       return startDueDate;
     }
 
-      public String getStartDueDateFormatted() {
-          return startDueDate != null ? FormattersUtils.dtf.format(startDueDate) : "-";
-      }
+    public String getStartDueDateFormatted() {
+      return startDueDate != null ? FormattersUtils.dtf.format(startDueDate) : "-";
+    }
 
     public void setStartDueDate(LocalDate startDueDate) {
       this.startDueDate = startDueDate;
@@ -286,17 +287,22 @@ public class TransactionActionSheetModel {
       return recurrence;
     }
 
-      public String getRecurrenceFormatted() {
-        if (recurrence == null) return "-";
-        var r = Recurrence.valueOf(recurrence);
-        switch (r) {
-            case NONE: return "Nunca";
-            case WEEKLY: return "Semanalmente";
-            case BIWEEKLY: return "Bimestralmente";
-            case MONTHLY: return "Mensalmente";
-            default: return "-";
-        }
+    public String getRecurrenceFormatted() {
+      if (Strings.isBlank(recurrence)) return "-";
+      var r = Recurrence.valueOf(recurrence);
+      switch (r) {
+        case NONE:
+          return "Nunca";
+        case WEEKLY:
+          return "Semanalmente";
+        case BIWEEKLY:
+          return "Bimestralmente";
+        case MONTHLY:
+          return "Mensalmente";
+        default:
+          return "-";
       }
+    }
 
     public void setRecurrence(String recurrence) {
       this.recurrence = recurrence;
@@ -304,6 +310,10 @@ public class TransactionActionSheetModel {
 
     public Integer getInstallments() {
       return installments;
+    }
+
+    public String getInstallmentsFormatted() {
+      return installments != null ? installments.toString() : "-";
     }
 
     public void setInstallments(Integer installments) {

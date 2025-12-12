@@ -30,8 +30,8 @@ public class TransactionEventListener {
 
   @EventListener
   public void on(ScheduledTransactionCreated event) {
-      TransactionTemplateEntity entity = new TransactionTemplateEntity(event);
-      templateRepository.save(entity);
+    TransactionTemplateEntity entity = new TransactionTemplateEntity(event);
+    templateRepository.save(entity);
   }
 
   @EventListener
@@ -52,10 +52,11 @@ public class TransactionEventListener {
         repository.findAllByTransactionTemplateIdAndAccountId(template.getId(), event.accountId());
     transactions.stream()
         .filter(t -> t.getStatus().isScheduled())
-//        .filter(
-//            t ->
-//                t.getOriginalDueDate().isAfter(transaction.getDueDate())
-//                    || t.getOriginalDueDate().equals(transactions.getFirst().getDueDate()))
+        //        .filter(
+        //            t ->
+        //                t.getOriginalDueDate().isAfter(transaction.getDueDate())
+        //                    ||
+        // t.getOriginalDueDate().equals(transactions.getFirst().getDueDate()))
         .forEach(
             (t -> {
               t.update(event);

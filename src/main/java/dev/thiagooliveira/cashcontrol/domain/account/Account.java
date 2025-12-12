@@ -203,19 +203,20 @@ public class Account {
       UUID transactionId,
       BigDecimal amount,
       String description,
-      int dueDayOfMonth,
+      LocalDate dueDate,
       Optional<LocalDate> endDueDate) {
     validate(amount);
-    if (endDueDate.isPresent() && dueDayOfMonth != endDueDate.get().getDayOfMonth()) {
-      throw DomainException.badRequest("Due date must be the same day of the month");
-    }
+    validateDueDate(dueDate);
+    //    if (endDueDate.isPresent() && dueDayOfMonth != endDueDate.get().getDayOfMonth()) {
+    //      throw DomainException.badRequest("Due date must be the same day of the month");
+    //    }
     apply(
         new ScheduledTransactionUpdated(
             transactionId,
             id,
             amount,
             description,
-            dueDayOfMonth,
+            dueDate,
             endDueDate.orElse(null),
             organizationId,
             userId,

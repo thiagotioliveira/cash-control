@@ -24,6 +24,7 @@ public class TransactionDetailsModel {
   private final BigDecimal amount;
   private final GetTransactionItem transaction;
   private final Recurrence recurrence;
+  private final Integer installments;
 
   public TransactionDetailsModel(GetTransactionItem transaction, String backLink) {
     this.transaction = transaction;
@@ -37,6 +38,7 @@ public class TransactionDetailsModel {
     this.dueDate = transaction.dueDate();
     this.amount = transaction.amount();
     this.recurrence = transaction.recurrence().orElse(null);
+    this.installments = transaction.installments().orElse(null);
     this.occurredAt =
         transaction.occurredAt().isPresent()
             ? LocalDateTime.ofInstant(transaction.occurredAt().get(), zoneId)
@@ -102,14 +104,27 @@ public class TransactionDetailsModel {
     return "";
   }
 
-    public String getRecurrenceFormatted() {
-        if (recurrence == null) return "-";
-        switch (recurrence) {
-            case NONE: return "Nunca";
-            case WEEKLY: return "Semanalmente";
-            case BIWEEKLY: return "Bimestralmente";
-            case MONTHLY: return "Mensalmente";
-            default: return "-";
-        }
+  public String getRecurrenceFormatted() {
+    if (recurrence == null) return "-";
+    switch (recurrence) {
+      case NONE:
+        return "Nunca";
+      case WEEKLY:
+        return "Semanalmente";
+      case BIWEEKLY:
+        return "Bimestralmente";
+      case MONTHLY:
+        return "Mensalmente";
+      default:
+        return "-";
     }
+  }
+
+  public Integer getInstallments() {
+    return installments;
+  }
+
+  public String getInstallmentsFormatted() {
+    return installments != null ? installments.toString() : "-";
+  }
 }

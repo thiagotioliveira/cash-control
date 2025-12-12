@@ -42,8 +42,8 @@ public class TransactionTemplateEntity {
   @Column(nullable = false)
   private LocalDate originalStartDate;
 
-    @Column(nullable = false)
-    private LocalDate startDate;
+  @Column(nullable = false)
+  private LocalDate startDate;
 
   @Column private LocalDate endDate;
 
@@ -74,7 +74,7 @@ public class TransactionTemplateEntity {
 
   public void update(ScheduledTransactionUpdated event) {
     this.amount = event.amount();
-    this.startDate = this.startDate.withDayOfMonth(event.dueDayOfMonth());
+    this.startDate = event.dueDate();
     this.endDate = event.endDueDate();
   }
 
@@ -166,11 +166,11 @@ public class TransactionTemplateEntity {
     this.organizationId = organizationId;
   }
 
-    public LocalDate getOriginalStartDate() {
-        return originalStartDate;
-    }
+  public LocalDate getOriginalStartDate() {
+    return originalStartDate;
+  }
 
-    public void setOriginalStartDate(LocalDate originalStartDate) {
-        this.originalStartDate = originalStartDate;
-    }
+  public void setOriginalStartDate(LocalDate originalStartDate) {
+    this.originalStartDate = originalStartDate;
+  }
 }
