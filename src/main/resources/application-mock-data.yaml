@@ -51,6 +51,8 @@ app:
         type: DEBIT
       - name: Ginásio
         hashColor: "#cf4646"
+      - name: Casa - Mantimentos
+        hashColor: "#c22f2f"
         type: DEBIT
       - name: Outros
         hashColor: "#cb4b4b"
