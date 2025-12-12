@@ -19,6 +19,7 @@ public class TransactionDetailsModel {
   private final Currency currency;
   private final TransactionStatus status;
   private final String categoryName;
+  private final String userName;
   private final LocalDate dueDate;
   private final LocalDateTime occurredAt;
   private final BigDecimal amount;
@@ -35,6 +36,7 @@ public class TransactionDetailsModel {
     this.description = transaction.description();
     this.status = transaction.status();
     this.categoryName = transaction.categoryName();
+    this.userName = transaction.userName().orElse(null);
     this.dueDate = transaction.dueDate();
     this.amount = transaction.amount();
     this.recurrence = transaction.recurrence().orElse(null);
@@ -75,6 +77,10 @@ public class TransactionDetailsModel {
 
   public String getCategoryName() {
     return categoryName;
+  }
+
+  public String getUserName() {
+    return userName != null ? userName : "-";
   }
 
   public LocalDate getDueDate() {

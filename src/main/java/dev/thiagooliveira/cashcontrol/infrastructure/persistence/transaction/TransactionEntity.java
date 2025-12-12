@@ -110,6 +110,8 @@ public class TransactionEntity {
         this.id,
         this.account.getId(),
         this.account.getName(),
+        this.user != null ? Optional.of(this.user.getId()) : Optional.empty(),
+        this.user != null ? Optional.of(this.user.getName()) : Optional.empty(),
         this.account.getBank().getCurrency(),
         this.transactionTemplate != null
             ? Optional.of(this.transactionTemplate.getId())

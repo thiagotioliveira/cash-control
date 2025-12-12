@@ -24,8 +24,8 @@
                         <span th:class="${transaction.status.isConfirmed() ? 'text-success' : 'text-warning'}" th:text="${transaction.statusFormatted}"></span>
                     </li>
                     <li>
-                        <strong>Categoria</strong>
-                        <span th:text="${transaction.categoryName}"></span>
+                        <strong>Usuário</strong>
+                        <span th:text="${transaction.userName}"></span>
                     </li>
                     <li>
                         <strong>Data de Vencimento</strong>

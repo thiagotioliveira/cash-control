@@ -14,6 +14,8 @@ public record GetTransactionItem(
     UUID transactionId,
     UUID accountId,
     String accountName,
+    Optional<UUID> userId,
+    Optional<String> userName,
     Currency currency,
     Optional<UUID> transactionTemplateId,
     Optional<Instant> occurredAt,
