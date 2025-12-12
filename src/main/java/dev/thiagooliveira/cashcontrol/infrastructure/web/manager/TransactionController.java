@@ -19,7 +19,9 @@ import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Controller;
@@ -61,12 +63,27 @@ public class TransactionController {
     this.createPayable = createPayable;
   }
 
+  @GetMapping("/{yearMonth:\\d{4}-\\d{2}}")
+  public String getTransactions(
+      @RequestParam(required = false) TransactionType type,
+      @RequestParam(required = false) TransactionStatus status,
+      @PathVariable YearMonth yearMonth,
+      Model model) {
+    LocalDate startDate = yearMonth.atDay(1);
+    LocalDate endDate = yearMonth.atEndOfMonth();
+    var transactions =
+        getTransactions.execute(
+            new GetTransactionsCommand(
+                context.getOrganizationId(), context.getAccountId(), startDate, endDate));
+    return buildGetTransactionModel(transactions, type, status, model);
+  }
+
   @GetMapping
   public String getTransactions(
-      @RequestParam(required = false) String type,
-      @RequestParam(required = false) String status,
+      @RequestParam(required = false) TransactionType type,
+      @RequestParam(required = false) TransactionStatus status,
       Model model) {
-    var today = LocalDate.now();
+    var today = LocalDate.now(zoneId);
     var transactions =
         getTransactions.execute(
             new GetTransactionsCommand(
@@ -74,26 +91,7 @@ public class TransactionController {
                 context.getAccountId(),
                 today.with(TemporalAdjusters.firstDayOfMonth()),
                 today.with(TemporalAdjusters.lastDayOfMonth())));
-    model.addAttribute(
-        "transactions",
-        new TransactionListModel(
-            transactions.stream()
-                .filter(
-                    t -> {
-                      if (type != null) {
-                        return t.type().equals(TransactionType.valueOf(type));
-                      }
-                      return true;
-                    })
-                .filter(
-                    t -> {
-                      if (status != null) {
-                        return t.status().equals(TransactionStatus.valueOf(status));
-                      }
-                      return true;
-                    })
-                .toList()));
-    return "protected/transactions/transaction-list";
+    return buildGetTransactionModel(transactions, type, status, model);
   }
 
   @PostMapping("/{transactionId}/review")
@@ -192,7 +190,7 @@ public class TransactionController {
     return "protected/transactions/transaction-review";
   }
 
-  @GetMapping("/{transactionId}")
+  @GetMapping("/{transactionId:[0-9a-fA-F\\-]{36}}")
   public String getTransaction(@PathVariable UUID transactionId, Model model) {
     var transaction = getTransactionItem(transactionId);
     model.addAttribute("transaction", new TransactionDetailsModel(transaction, "/protected/"));
@@ -232,6 +230,33 @@ public class TransactionController {
     model.addAttribute("transaction", new TransactionDetailsModel(transaction, "/protected/"));
     model.addAttribute("alert", AlertModel.success("Transação atualizada com sucesso!"));
     return "protected/transactions/transaction-details";
+  }
+
+  private static String buildGetTransactionModel(
+      List<GetTransactionItem> transactions,
+      TransactionType type,
+      TransactionStatus status,
+      Model model) {
+    model.addAttribute(
+        "transactions",
+        new TransactionListModel(
+            transactions.stream()
+                .filter(
+                    t -> {
+                      if (type != null) {
+                        return t.type().equals(type);
+                      }
+                      return true;
+                    })
+                .filter(
+                    t -> {
+                      if (status != null) {
+                        return t.status().equals(status);
+                      }
+                      return true;
+                    })
+                .toList()));
+    return "protected/transactions/transaction-list";
   }
 
   public GetTransactionItem getTransactionItem(UUID transactionId) {
