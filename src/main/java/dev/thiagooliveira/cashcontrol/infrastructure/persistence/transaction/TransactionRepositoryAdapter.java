@@ -78,7 +78,7 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
         //        .filter(t -> !t.getRecurrence().isNone())
         .forEach(
             t -> {
-              var dueDate = t.getOriginalStartDate();
+              var dueDate = startDate.withDayOfMonth(t.getOriginalStartDate().getDayOfMonth());
               if (!this.repository.existsByTransactionTemplateIdAndOriginalDueDate(
                   t.getId(), dueDate)) {
                 while (dueDate.isBefore(endDate)) {
