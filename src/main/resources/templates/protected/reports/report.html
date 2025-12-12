@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{protected/fragments/head}"></div>
+
+<body>
+
+<div th:insert="~{protected/fragments/loader}"></div>
+
+<div th:insert="~{protected/fragments/page-header :: pageHeader(${title}, '/protected/', false, '')}"></div>
+
+<!-- App Capsule -->
+<div id="appCapsule">
+    <div class="section mt-2 mb-3">
+        <div class="section-title">Receita x Despesa</div>
+        <div class="card">
+            <div class="card-body">
+                <div id="monthly-income-expenses"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section mt-3">
+        <div class="section-title">Receita x Despesa (por Categoria)</div>
+        <div class="card">
+            <div class="card-body">
+                <div id="monthly-category"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- * App Capsule -->
+
+<!-- ========= JS Files =========  -->
+<!-- Bootstrap -->
+<script th:src="@{/assets/js/lib/bootstrap.bundle.min.js}"></script>
+<!-- Ionicons -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.esm.js"></script>
+<!-- Splide -->
+<script th:src="@{/assets/js/plugins/splide/splide.min.js}"></script>
+<!-- Apex Charts -->
+<script th:src="@{/assets/js/plugins/apexcharts/apexcharts.min.js}"></script>
+<!-- Base Js File -->
+<script th:src="@{/assets/js/base.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const monthlyIncomeExpensesData = /*[[${monthlyIncomeExpenses}]]*/ [];
+
+    const labels = monthlyIncomeExpensesData.map(d => {
+        const [year, month] = d.yearMonth.split("-");
+        return month + "/" + year;
+    });
+
+    const credit = monthlyIncomeExpensesData.map(d => d.credit);
+    const debit = monthlyIncomeExpensesData.map(d => d.debit);
+    const balance = monthlyIncomeExpensesData.map(d => d.balance);
+
+    // Formatter para Euro
+    const euroFormatter = new Intl.NumberFormat('pt-PT', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+
+    var mixedOptions = {
+        chart: { type: 'line', height: 450 },
+        stroke: { width: [0, 0, 3] },
+        dataLabels: { enabled: true, formatter: val => euroFormatter.format(val) },
+        series: [
+            { name: "Crédito", type: "column", data: credit },
+            { name: "Débito", type: "column", data: debit },
+            { name: "Balanço acumulado", type: "line", data: balance }
+        ],
+        colors: ['#28a745', '#dc3545', '#007bff'],
+        xaxis: { categories: labels },
+        yaxis: [
+            {
+                title: { text: "Valores" },
+                labels: { formatter: val => euroFormatter.format(val) }
+            }
+        ],
+        tooltip: { y: { formatter: val => euroFormatter.format(val) } }
+    };
+
+    var monthlyIncomeExpensesChart = new ApexCharts(document.querySelector("#monthly-income-expenses"), mixedOptions);
+    monthlyIncomeExpensesChart.render();
+
+    // ---
+
+    const monthlyCategoryData = /*[[${monthlyCategory}]]*/ [];
+
+    const monthlyCategoryContainer = document.querySelector("#monthly-category");
+
+    monthlyCategoryData.forEach(d => {
+        const pieDiv = document.createElement("div");
+        pieDiv.id = "pieChart-" + d.yearMonth;
+        pieDiv.style.height = "350px";
+        pieDiv.style.marginBottom = "30px";
+        monthlyCategoryContainer.appendChild(pieDiv);
+
+        const categories = d.transactions.map(t => t.categoryName);
+        const amounts = d.transactions.map(t => t.amount);
+        const colors = d.transactions.map(t => t.categoryHashColor);
+
+        var pieOptions = {
+            chart: { type: 'pie', height: 350 },
+            labels: categories,
+            series: amounts,
+            colors: colors,
+            tooltip: { y: { formatter: val => {
+                        const total = amounts.reduce((a, b) => a + b, 0);
+                        const percent = (val / total) * 100;
+                        return percent.toFixed(2) + '%';
+                    } } },
+            legend: { position: 'bottom' },
+            dataLabels: { formatter: val => val.toFixed(2) + '%' },
+            title: {
+                text: "",//"Distribuição por categoria - " + d.yearMonth,
+                align: 'center'
+            }
+        };
+
+        var monthlyCategoryChart = new ApexCharts(pieDiv, pieOptions);
+        monthlyCategoryChart.render();
+    });
+
+    /*]]>*/
+</script>
+
+</body>
+
+</html>
