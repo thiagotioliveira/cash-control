@@ -34,7 +34,7 @@ app:
       - name: Faxina
         hashColor: "#eb4848"
         type: DEBIT
-      - name: Agua
+      - name: Água
         hashColor: "#e05d5d"
         type: DEBIT
       - name: Marmitas Thiago
@@ -46,8 +46,11 @@ app:
       - name: Mesada Gabriela
         hashColor: "#ef7878"
         type: DEBIT
-      - name: Cartao Credito Activo
+      - name: Cartão Credito (Activo Black)
         hashColor: "#f76363"
+        type: DEBIT
+      - name: Ginásio
+        hashColor: "#cf4646"
         type: DEBIT
       - name: Outros
         hashColor: "#cb4b4b"
