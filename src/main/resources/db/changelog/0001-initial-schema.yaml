@@ -285,6 +285,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: original_start_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
                   name: start_date
                   type: DATE
                   constraints:

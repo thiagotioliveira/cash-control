@@ -11,7 +11,7 @@ spring:
     password: admin
   h2:
     console:
-      enabled: false
+      enabled: true
   liquibase:
     parameters:
       jsonb.type: CLOB
@@ -19,4 +19,4 @@ spring:
 logging:
   level:
     ROOT: INFO
-    dev.thiagooliveira: INFO
+    dev.thiagooliveira: DEBUG

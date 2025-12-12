@@ -4,6 +4,7 @@ import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.Formatte
 
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
+import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public class TransactionDetailsModel {
   private final LocalDateTime occurredAt;
   private final BigDecimal amount;
   private final GetTransactionItem transaction;
+  private final Recurrence recurrence;
 
   public TransactionDetailsModel(GetTransactionItem transaction, String backLink) {
     this.transaction = transaction;
@@ -34,6 +36,7 @@ public class TransactionDetailsModel {
     this.categoryName = transaction.categoryName();
     this.dueDate = transaction.dueDate();
     this.amount = transaction.amount();
+    this.recurrence = transaction.recurrence().orElse(null);
     this.occurredAt =
         transaction.occurredAt().isPresent()
             ? LocalDateTime.ofInstant(transaction.occurredAt().get(), zoneId)
@@ -98,4 +101,15 @@ public class TransactionDetailsModel {
     }
     return "";
   }
+
+    public String getRecurrenceFormatted() {
+        if (recurrence == null) return "-";
+        switch (recurrence) {
+            case NONE: return "Nunca";
+            case WEEKLY: return "Semanalmente";
+            case BIWEEKLY: return "Bimestralmente";
+            case MONTHLY: return "Mensalmente";
+            default: return "-";
+        }
+    }
 }

@@ -40,7 +40,10 @@ public class TransactionTemplateEntity {
   private Recurrence recurrence;
 
   @Column(nullable = false)
-  private LocalDate startDate;
+  private LocalDate originalStartDate;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
 
   @Column private LocalDate endDate;
 
@@ -57,7 +60,8 @@ public class TransactionTemplateEntity {
     this.categoryId = event.categoryId();
     this.type = event.type();
     this.recurrence = event.recurrence();
-    this.startDate = event.dueDate();
+    this.originalStartDate = event.dueDate();
+    this.startDate = this.originalStartDate;
     if (event.totalInstallments() != null) {
       this.totalInstallments = event.totalInstallments();
       var dueDate = event.dueDate();
@@ -161,4 +165,12 @@ public class TransactionTemplateEntity {
   public void setOrganizationId(UUID organizationId) {
     this.organizationId = organizationId;
   }
+
+    public LocalDate getOriginalStartDate() {
+        return originalStartDate;
+    }
+
+    public void setOriginalStartDate(LocalDate originalStartDate) {
+        this.originalStartDate = originalStartDate;
+    }
 }

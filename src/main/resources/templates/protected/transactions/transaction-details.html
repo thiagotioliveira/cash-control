@@ -36,8 +36,12 @@
                         <span th:text="${transaction.occurredAtFormatted}"></span>
                     </li>
                     <li>
-                        <strong>Amount</strong>
+                        <strong>Valor</strong>
                         <h3 class="m-0" th:text="${transaction.getAmountFormatted()}"></h3>
+                    </li>
+                    <li>
+                        <strong>Recorrencia</strong>
+                        <h3 class="m-0" th:text="${transaction.getRecurrenceFormatted()}"></h3>
                     </li>
                     <li>
                         <strong>Descrição</strong>

@@ -5,41 +5,21 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-public class TransactionTemplateJpaRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-  private final EntityManager em;
+public interface TransactionTemplateJpaRepository extends JpaRepository<TransactionTemplateEntity, UUID> {
 
-  public TransactionTemplateJpaRepository(EntityManager em) {
-    this.em = em;
-  }
-
-  public TransactionTemplateEntity save(TransactionTemplateEntity entity) {
-    return em.merge(entity);
-  }
-
-  public Optional<TransactionTemplateEntity> findByIdAndAccountId(UUID id, UUID accountId) {
-    return em.createQuery(
-            """
+    @Query("""
                               SELECT t
                               FROM TransactionTemplateEntity t
                               WHERE t.id = :id
                                 AND t.accountId = :accountId
-                              """,
-            TransactionTemplateEntity.class)
-        .setParameter("id", id)
-        .setParameter("accountId", accountId)
-        .getResultStream()
-        .findFirst();
-  }
+                              """)
+    Optional<TransactionTemplateEntity> findByIdAndAccountId(UUID id, UUID accountId);
 
-  public List<TransactionTemplateEntity>
-      findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
-          UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate) {
-    return em.createQuery(
-            """
+    @Query("""
             SELECT t
             FROM TransactionTemplateEntity t
             WHERE t.organizationId = :organizationId
@@ -49,12 +29,9 @@ public class TransactionTemplateJpaRepository {
                     t.endDate >= :startDate
                     OR t.endDate IS NULL
                   )
-            """,
-            TransactionTemplateEntity.class)
-        .setParameter("organizationId", organizationId)
-        .setParameter("accountId", accountId)
-        .setParameter("startDate", startDate)
-        .setParameter("endDate", endDate)
-        .getResultList();
-  }
+            """)
+    List<TransactionTemplateEntity>
+    findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
+            UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate);
+
 }

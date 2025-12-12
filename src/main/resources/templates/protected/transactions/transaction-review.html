@@ -18,16 +18,20 @@
                 <h2 class="mb-2 mt-2" th:text="${transaction.categoryName}"></h2>
                 <ul class="listview flush transparent simple-listview no-space mt-3">
                     <li>
-                        <strong>Dia de Vencimento</strong>
-                        <span th:text="${transaction.getDueDayOfMonth()}"></span>
+                        <strong>Data de Vencimento</strong>
+                        <span th:text="${transaction.getStartDueDateFormatted()}"></span>
                     </li>
                     <li>
                         <strong>Data de Pagamento</strong>
                         <span th:text="${transaction.getOccurredAtFormatted()}"></span>
                     </li>
                     <li>
-                        <strong>Amount</strong>
+                        <strong>Valor</strong>
                         <h3 class="m-0" th:text="${transaction.getAmountFormatted()}"></h3>
+                    </li>
+                    <li>
+                        <strong>Recorrencia</strong>
+                        <h3 class="m-0" th:text="${transaction.getRecurrenceFormatted()}"></h3>
                     </li>
                     <li>
                         <strong>Descrição</strong>
@@ -53,7 +57,7 @@
                         <input type="hidden" th:name="categoryName" th:value="${transaction.categoryName}" />
                         <input type="hidden" th:name="description" th:value="${transaction.description}" />
                         <input type="hidden" th:name="amount" th:value="${transaction.amount}" />
-                        <input type="hidden" th:name="dueDayOfMonth" th:value="${transaction.dueDayOfMonth}" />
+                        <input type="hidden" th:name="startDueDate" th:value="${transaction.startDueDate}" />
                         <input type="hidden" th:name="recurrence" th:value="${transaction.recurrence}" />
                         <input type="hidden" th:name="installments" th:value="${transaction.installments}" />
                         <input type="hidden" th:name="occurredAt" th:value="${transaction.occurredAt}" />

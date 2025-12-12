@@ -6,20 +6,11 @@ import dev.thiagooliveira.cashcontrol.infrastructure.listener.transaction.Transa
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionJpaRepository;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionRepositoryAdapter;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionTemplateJpaRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TransactionConfig {
-
-  @PersistenceContext private EntityManager em;
-
-  @Bean
-  TransactionTemplateJpaRepository transactionTemplateJpaRepository() {
-    return new TransactionTemplateJpaRepository(em);
-  }
 
   @Bean
   TransactionEventListener transactionEventListener(

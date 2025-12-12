@@ -118,9 +118,9 @@ public class TransactionController {
     if (form.getDescription() == null) {
       form.setDescription(form.getCategoryName());
     }
-    if (form.getDueDayOfMonth() == null) {
-      form.setDueDayOfMonth(
-          form.getOccurredAt() != null ? form.getOccurredAt().getDayOfMonth() : null);
+    if (form.getStartDueDate() == null) {
+      form.setStartDueDate(
+          form.getOccurredAt() != null ? form.getOccurredAt().toLocalDate() : null);
     }
     model.addAttribute("transaction", form);
     return "protected/transactions/transaction-review";
@@ -152,9 +152,9 @@ public class TransactionController {
                 context.getAccountId(),
                 form.getCategoryId(),
                 form.getAmount(),
-                form.getDueDayOfMonth(),
+                form.getStartDueDate(),
                 Recurrence.valueOf(form.getRecurrence()),
-                Optional.ofNullable(form.getDueDayOfMonth())));
+                Optional.ofNullable(form.getInstallments())));
       }
     } else {
       if (form.getOccurredAt() != null) {
@@ -175,9 +175,9 @@ public class TransactionController {
                 context.getAccountId(),
                 form.getCategoryId(),
                 form.getAmount(),
-                form.getDueDayOfMonth(),
+                form.getStartDueDate(),
                 Recurrence.valueOf(form.getRecurrence()),
-                Optional.ofNullable(form.getDueDayOfMonth())));
+                Optional.ofNullable(form.getInstallments())));
       }
     }
     return "redirect:/protected/transactions";
@@ -223,7 +223,7 @@ public class TransactionController {
               transactionId,
               form.getDescription(),
               form.getAmount(),
-              form.getDueDayOfMonth(),
+              form.getStartDueDate().getDayOfMonth(),
               Optional.empty()));
     }
     var transaction = getTransactionItem(transactionId);
