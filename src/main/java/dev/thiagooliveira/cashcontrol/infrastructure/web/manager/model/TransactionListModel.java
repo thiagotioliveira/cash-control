@@ -105,9 +105,12 @@ public class TransactionListModel {
           this.type.isCredit()
               ? "+ " + this.currency.getSymbol() + " " + df.format(transaction.amount())
               : "- " + this.currency.getSymbol() + " " + df.format(transaction.amount());
-      this.balanceBeforeFormatted = transaction.accountBalanceBefore().isPresent() ?
-              this.currency.getSymbol() + " " + df.format(transaction.accountBalanceBefore().get())
-    : "";
+      this.balanceBeforeFormatted =
+          transaction.accountBalanceBefore().isPresent()
+              ? this.currency.getSymbol()
+                  + " "
+                  + df.format(transaction.accountBalanceBefore().get())
+              : "";
     }
 
     public int getDueDayOfMonth() {
