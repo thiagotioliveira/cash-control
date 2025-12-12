@@ -1,27 +1,19 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata;
 
 import java.util.List;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("mock-data")
 @ConfigurationProperties(prefix = "app.mock-data")
-@ConditionalOnProperty(prefix = "app.mock-data", name = "enabled", havingValue = "true")
 public class MockDataProperties {
-  private boolean enabled = false;
   private List<User> users;
   private List<Category> categories;
   private List<Bank> banks;
   private List<Account> accounts;
-
-  public boolean isEnabled() {
-    return enabled;
-  }
-
-  public void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
 
   public List<Category> getCategories() {
     return categories;
