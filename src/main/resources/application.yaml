@@ -25,7 +25,3 @@ logging:
   level:
     ROOT: OFF
     dev.thiagooliveira: INFO
-
-app:
-  mock-data:
-    enabled: false
