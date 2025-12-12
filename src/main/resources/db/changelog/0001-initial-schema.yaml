@@ -374,6 +374,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: account_balance_before
+                  type: numeric(10,2)
+              - column:
                   name: category_id
                   type: uuid
                   constraints:

@@ -20,6 +20,7 @@ public record GetTransactionItem(
     LocalDate dueDate,
     String description,
     BigDecimal amount,
+    Optional<BigDecimal> accountBalanceBefore,
     UUID categoryId,
     String categoryName,
     String categoryHashColor,

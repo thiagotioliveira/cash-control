@@ -90,6 +90,7 @@ public class Account {
             categoryId,
             TransactionType.CREDIT,
             amount,
+            balance,
             description,
             organizationId,
             userId,
@@ -108,6 +109,7 @@ public class Account {
             transactionId,
             TransactionType.CREDIT,
             amount,
+            balance,
             occurredAt,
             version + 1));
   }
@@ -122,6 +124,7 @@ public class Account {
             categoryId,
             TransactionType.DEBIT,
             amount,
+            balance,
             description,
             organizationId,
             userId,
@@ -140,6 +143,7 @@ public class Account {
             transactionId,
             TransactionType.DEBIT,
             amount,
+            balance,
             occurredAt,
             version + 1));
   }
@@ -292,11 +296,11 @@ public class Account {
       case TransactionCreated ev -> {
         if (ev.getType().isCredit()) {
           balance = balance.add(ev.getAmount());
-          ev.setBalance(balance);
+          ev.setBalanceAfter(balance);
           updatedAt = ev.occurredAt();
         } else if (ev.getType().isDebit()) {
           balance = balance.subtract(ev.getAmount());
-          ev.setBalance(balance);
+          ev.setBalanceAfter(balance);
           updatedAt = ev.occurredAt();
         } else throw DomainException.badRequest("unhandled transaction type " + ev.getType());
       }
@@ -306,11 +310,11 @@ public class Account {
       case TransactionConfirmed ev -> {
         if (ev.getType().isCredit()) {
           balance = balance.add(ev.getAmount());
-          ev.setBalance(balance);
+          ev.setBalanceAfter(balance);
           updatedAt = ev.occurredAt();
         } else if (ev.getType().isDebit()) {
           balance = balance.subtract(ev.getAmount());
-          ev.setBalance(balance);
+          ev.setBalanceAfter(balance);
           updatedAt = ev.occurredAt();
         } else throw DomainException.badRequest("unhandled transaction type " + ev.getType());
       }

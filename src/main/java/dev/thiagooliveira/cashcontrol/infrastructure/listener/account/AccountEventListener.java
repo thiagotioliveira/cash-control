@@ -26,14 +26,14 @@ public class AccountEventListener {
   @EventListener
   public void on(TransactionCreated event) {
     var entity = findById(event.getAccountId());
-    entity.setBalance(event.getBalance());
+    entity.setBalance(event.getBalanceAfter());
     repository.save(entity);
   }
 
   @EventListener
   public void on(TransactionConfirmed event) {
     var entity = findById(event.getAccountId());
-    entity.setBalance(event.getBalance());
+    entity.setBalance(event.getBalanceAfter());
     repository.save(entity);
   }
 

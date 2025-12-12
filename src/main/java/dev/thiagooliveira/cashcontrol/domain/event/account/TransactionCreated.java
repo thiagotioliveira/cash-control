@@ -13,7 +13,8 @@ public class TransactionCreated implements DomainEvent {
   private UUID categoryId;
   private TransactionType type;
   private BigDecimal amount;
-  private BigDecimal balance;
+  private BigDecimal balanceBefore;
+  private BigDecimal balanceAfter;
   private String description;
   private UUID organizationId;
   private UUID userId;
@@ -28,6 +29,7 @@ public class TransactionCreated implements DomainEvent {
       UUID categoryId,
       TransactionType type,
       BigDecimal amount,
+      BigDecimal balanceBefore,
       String description,
       UUID organizationId,
       UUID userId,
@@ -43,6 +45,7 @@ public class TransactionCreated implements DomainEvent {
     this.description = description;
     this.occurredAt = occurredAt;
     this.version = version;
+    this.balanceBefore = balanceBefore;
   }
 
   @Override
@@ -80,12 +83,16 @@ public class TransactionCreated implements DomainEvent {
     return amount;
   }
 
-  public BigDecimal getBalance() {
-    return balance;
+  public BigDecimal getBalanceBefore() {
+    return balanceBefore;
   }
 
-  public void setBalance(BigDecimal balance) {
-    this.balance = balance;
+  public BigDecimal getBalanceAfter() {
+    return balanceAfter;
+  }
+
+  public void setBalanceAfter(BigDecimal balanceAfter) {
+    this.balanceAfter = balanceAfter;
   }
 
   public String getDescription() {
