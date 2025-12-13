@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Category Action Sheet-->
+<div class="modal fade action-sheet" th:id="${prefixId+(c.getId() == null ? '' : c.getId())}" tabindex="-1" role="dialog" th:fragment="categoryActionSheet(c, prefixId)">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:text="${c.getTitle()}"></h5>
+            </div>
+            <div class="modal-body">
+                <div class="action-sheet-content">
+                    <form action="#" th:action="@{${c.getId() == null ? '/protected/categories' : '/protected/categories/' + c.getId()}}" method="post">
+                        <input type="hidden" th:name="id" th:value="${c.id}" />
+                        <div class="form-group basic">
+                            <div class="input-wrapper">
+                                <label class="label" th:for="${prefixId + 'category-name-' + c.getId()}">Name</label>
+                                <input type="text" class="form-control" th:id="${prefixId + 'category-name-' + c.getId()}"
+                                    th:name="name" th:value="${c.name}">
+                                <i class="clear-input">
+                                    <ion-icon name="close-circle"></ion-icon>
+                                </i>
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <div class="input-wrapper">
+                                <label class="label" th:for="${prefixId + 'category-type-' + c.getId()}">Tipo</label>
+                                <select class="form-control custom-select" th:id="${prefixId + 'category-type-' + c.getId()}"
+                                    th:name="type" th:value="${c.type}">
+                                    <option value="CREDIT">Credito</option>
+                                    <option value="DEBIT">Debito</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <label class="label">Valor</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">#</span>
+                                <input type="text" class="form-control" th:id="${prefixId + 'category-hashColor-' + c.getId()}"
+                                    maxlength="6" th:name="hashColor" th:value="${c.hashColor}">
+                                <i class="clear-input">
+                                    <ion-icon name="close-circle"></ion-icon>
+                                </i>
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <button type="submit" class="btn btn-primary btn-block btn-lg"
+                                    data-bs-dismiss="modal">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- * Category Action Sheet -->
+</html>

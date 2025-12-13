@@ -1,5 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "app.mock-data")
 public class MockDataProperties {
   private List<User> users;
-  private List<Category> categories;
+  private List<Category> categories = new ArrayList<>();
   private List<Bank> banks;
   private List<Account> accounts;
 

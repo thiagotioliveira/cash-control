@@ -26,7 +26,7 @@ public class CreatePayable {
         categoryRepository
             .findByOrganizationIdAndId(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
-    if (!TransactionType.DEBIT.equals(category.getType()))
+    if (!TransactionType.DEBIT.equals(category.type()))
       throw ApplicationException.badRequest("category must be debit");
     var pastEvents = eventStore.load(command.accountId());
 
@@ -42,9 +42,9 @@ public class CreatePayable {
 
     account.payable(
         command.userId(),
-        category.getId(),
+        category.id(),
         command.amount(),
-        category.getName(),
+        category.name(),
         command.startDueDate(),
         command.recurrence(),
         command.installments());

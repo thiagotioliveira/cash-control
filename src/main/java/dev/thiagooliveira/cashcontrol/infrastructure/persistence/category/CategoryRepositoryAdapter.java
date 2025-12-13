@@ -1,7 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.category;
 
+import dev.thiagooliveira.cashcontrol.application.category.dto.GetCategoryItem;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
-import dev.thiagooliveira.cashcontrol.domain.category.Category;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.util.List;
 import java.util.Optional;
@@ -16,21 +16,21 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   }
 
   @Override
-  public List<Category> findAllByOrganizationId(UUID organizationId) {
+  public List<GetCategoryItem> findAllByOrganizationId(UUID organizationId) {
     return this.repository.findAllByOrganizationId(organizationId).stream()
         .map(CategoryEntity::toDomain)
         .toList();
   }
 
   @Override
-  public Optional<Category> findByOrganizationIdAndId(UUID organizationId, UUID id) {
+  public Optional<GetCategoryItem> findByOrganizationIdAndId(UUID organizationId, UUID id) {
     return this.repository
         .findByOrganizationIdAndId(organizationId, id)
         .map(CategoryEntity::toDomain);
   }
 
   @Override
-  public Optional<Category> findByOrganizationIdAndNameAndType(
+  public Optional<GetCategoryItem> findByOrganizationIdAndNameAndType(
       UUID organizationId, String name, TransactionType type) {
     return this.repository
         .findByOrganizationIdAndNameAndType(organizationId, name, type)

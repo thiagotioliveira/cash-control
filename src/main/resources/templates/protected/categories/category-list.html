@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{protected/fragments/head}"></div>
+
+<body>
+
+<div th:insert="~{protected/fragments/loader}"></div>
+
+<div th:insert="~{protected/fragments/page-header :: pageHeader('Categorias', '/protected/', true, '#categoryActionSheet')}"></div>
+
+<!-- App Capsule -->
+<div id="appCapsule">
+
+    <div th:insert="~{protected/fragments/alert}"></div>
+
+    <!-- Categories -->
+    <div class="section mt-2" th:if="${categories.content.isEmpty()}">
+        <p th:class="text-center">Não existe categoria cadastrada.</p>
+    </div>
+    <div class="mt-2"></div>
+    <div class="transactions"  th:each="c : ${categories.content}">
+        <!-- item -->
+        <a href="#" data-bs-toggle="modal" th:data-bs-target="${'#categoryActionSheet-' + c.getId()}" class="item mb-2">
+            <div class="detail">
+                <img th:src="@{/assets/img/1.jpg}" alt="img" class="image-block imaged w48" th:if="${false}">
+                <div>
+                    <strong th:text="${c.name}"></strong>
+                    <p th:class="${c.type.isCredit() ? 'text-success' : 'text-danger'}"
+                            th:text="${c.getTypeFormatted()}"></p>
+                </div>
+            </div>
+            <div class="right">
+                <div class="price"
+                     th:style="'color: ' + ${c.hashColor}"
+                     th:text="${c.hashColor}">
+                </div>
+            </div>
+        </a>
+        <div th:replace="~{protected/fragments/app-category-action-sheet :: categoryActionSheet(${c.toActionSheetModel()}, 'categoryActionSheet-')}"></div>
+        <!-- * item -->
+    </div>
+    <div th:replace="~{protected/fragments/app-category-action-sheet :: categoryActionSheet(${category}, 'categoryActionSheet')}"></div>
+    <!-- * Categories -->
+</div>
+<!-- * App Capsule -->
+
+<!-- ========= JS Files =========  -->
+<!-- Bootstrap -->
+<script th:src="@{/assets/js/lib/bootstrap.bundle.min.js}"></script>
+<!-- Ionicons -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@latest/dist/ionicons/ionicons.esm.js"></script>
+<!-- Splide -->
+<script th:src="@{/assets/js/plugins/splide/splide.min.js}"></script>
+<!-- Base Js File -->
+<script th:src="@{/assets/js/base.js}"></script>
+
+</body>
+
+</html>

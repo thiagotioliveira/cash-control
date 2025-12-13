@@ -8,8 +8,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import org.apache.logging.log4j.util.Strings;
 
 public class Category {
+  private static final Pattern HEX_COLOR = Pattern.compile("^#?[0-9a-fA-F]{6}$");
+
   private UUID id;
   private String name;
   private String hashColor;
@@ -29,12 +33,11 @@ public class Category {
     this(UUID.randomUUID(), name, hashColor, type);
   }
 
-  public static Category restore(UUID id, String name, String hashColor, TransactionType type) {
-    return new Category(id, name, hashColor, type);
-  }
-
   public static Category create(
       UUID organizationId, String name, String hashColor, TransactionType type) {
+    if (Strings.isBlank(name)) throw DomainException.badRequest("name is required");
+    if (type == null) throw DomainException.badRequest("type is required");
+    if (!isHexColor(hashColor)) throw DomainException.badRequest("Invalid hex color");
     var category = new Category(name, hashColor, type);
     category.apply(
         new CategoryCreated(
@@ -46,6 +49,10 @@ public class Category {
             Instant.now(),
             1));
     return category;
+  }
+
+  private static boolean isHexColor(String value) {
+    return Strings.isNotBlank(value) && HEX_COLOR.matcher(value).matches();
   }
 
   public UUID getId() {

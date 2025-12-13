@@ -124,7 +124,7 @@ public class TransactionController {
         categoryRepository
             .findByOrganizationIdAndId(context.getOrganizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
-    form.setCategoryName(categories.getName());
+    form.setCategoryName(categories.name());
     if (form.getDescription() == null) {
       form.setDescription(form.getCategoryName());
     }
@@ -146,7 +146,7 @@ public class TransactionController {
             .findByOrganizationIdAndId(context.getOrganizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     try {
-      if (categories.getType().isCredit()) {
+      if (categories.type().isCredit()) {
         if (form.getOccurredAt() != null) {
           createDeposit.execute(
               new CreateTransactionCommand(

@@ -26,7 +26,7 @@ public class CreateReceivable {
         categoryRepository
             .findByOrganizationIdAndId(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
-    if (!TransactionType.CREDIT.equals(category.getType()))
+    if (!TransactionType.CREDIT.equals(category.type()))
       throw ApplicationException.badRequest("category must be credit");
     var pastEvents = eventStore.load(command.accountId());
 
@@ -42,9 +42,9 @@ public class CreateReceivable {
 
     account.receivable(
         command.userId(),
-        category.getId(),
+        category.id(),
         command.amount(),
-        category.getName(),
+        category.name(),
         command.startDueDate(),
         command.recurrence(),
         command.installments());

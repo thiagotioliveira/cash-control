@@ -30,7 +30,7 @@ public class CreateDeposit {
         categoryRepository
             .findByOrganizationIdAndId(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
-    if (!TransactionType.CREDIT.equals(category.getType()))
+    if (!TransactionType.CREDIT.equals(category.type()))
       throw ApplicationException.badRequest("category must be credit");
     var pastEvents = eventStore.load(command.accountId());
 
@@ -42,7 +42,7 @@ public class CreateDeposit {
     account.credit(
         command.userId(),
         command.occurredAt(),
-        category.getId(),
+        category.id(),
         command.amount(),
         command.description().orElse("Deposito"));
 

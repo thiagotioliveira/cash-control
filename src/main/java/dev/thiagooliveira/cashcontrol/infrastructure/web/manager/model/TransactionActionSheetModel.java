@@ -2,8 +2,8 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
+import dev.thiagooliveira.cashcontrol.application.category.dto.GetCategoryItem;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
-import dev.thiagooliveira.cashcontrol.domain.category.Category;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
@@ -328,11 +328,11 @@ public class TransactionActionSheetModel {
     private final String hashColor;
     private final String type;
 
-    public CategoryModel(Category category) {
-      this.id = category.getId();
-      this.name = category.getName();
-      this.hashColor = category.getHashColor();
-      this.type = category.getType().toString();
+    public CategoryModel(GetCategoryItem category) {
+      this.id = category.id();
+      this.name = category.name();
+      this.hashColor = category.hashColor();
+      this.type = category.type().toString();
     }
 
     public UUID getId() {
@@ -357,13 +357,13 @@ public class TransactionActionSheetModel {
     private final List<CategoryModel> credit;
     private final List<CategoryModel> debit;
 
-    public ListCategoryModel(List<Category> categories) {
+    public ListCategoryModel(List<GetCategoryItem> categories) {
       this.credit =
-          categories.stream().filter(c -> c.getType().isCredit()).toList().stream()
+          categories.stream().filter(c -> c.type().isCredit()).toList().stream()
               .map(CategoryModel::new)
               .toList();
       this.debit =
-          categories.stream().filter(c -> c.getType().isDebit()).toList().stream()
+          categories.stream().filter(c -> c.type().isDebit()).toList().stream()
               .map(CategoryModel::new)
               .toList();
     }
