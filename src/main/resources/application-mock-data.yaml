@@ -6,6 +6,13 @@ app:
       - name: Gabriela
         email: gabrielamooraeess@gmail.com
         organization: thiago@thiagoti.com
+    categories:
+      - name: Outros
+        hashColor: "#148408"
+        type: CREDIT
+      - name: Outros
+        hashColor: "#cb4b4b"
+        type: DEBIT
     banks:
       - name: Millenium
         currency: EUR
