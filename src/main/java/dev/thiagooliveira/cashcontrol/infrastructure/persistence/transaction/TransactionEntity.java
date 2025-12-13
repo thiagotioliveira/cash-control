@@ -52,7 +52,7 @@ public class TransactionEntity {
   @Column(nullable = false)
   private BigDecimal amount;
 
-  @Column private BigDecimal accountBalanceBefore;
+  @Column private BigDecimal accountBalance;
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id", nullable = false)
@@ -81,7 +81,7 @@ public class TransactionEntity {
     this.dueDate = this.originalDueDate;
     this.description = event.getDescription();
     this.amount = event.getAmount();
-    this.accountBalanceBefore = event.getBalanceBefore();
+    this.accountBalance = event.getBalanceAfter();
     this.category = new CategoryEntity();
     this.category.setId(event.getCategoryId());
     this.type = event.getType();
@@ -120,7 +120,7 @@ public class TransactionEntity {
         this.dueDate,
         this.description,
         this.amount,
-        Optional.ofNullable(this.accountBalanceBefore),
+        Optional.ofNullable(this.accountBalance),
         this.category.getId(),
         this.category.getName(),
         this.category.getHashColor(),
@@ -137,7 +137,7 @@ public class TransactionEntity {
   public void confirm(TransactionConfirmed event) {
     this.occurredAt = event.occurredAt();
     this.amount = event.getAmount();
-    this.accountBalanceBefore = event.getBalanceBefore();
+    this.accountBalance = event.getBalanceAfter();
     this.status = TransactionStatus.CONFIRMED;
     this.user = new UserEntity();
     this.user.setId(event.getUserId());

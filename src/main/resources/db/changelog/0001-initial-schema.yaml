@@ -379,7 +379,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: account_balance_before
+                  name: account_balance
                   type: numeric(10,2)
               - column:
                   name: category_id
