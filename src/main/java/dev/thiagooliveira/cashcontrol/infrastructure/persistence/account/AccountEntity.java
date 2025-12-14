@@ -4,6 +4,7 @@ import dev.thiagooliveira.cashcontrol.application.account.dto.GetAccountItem;
 import dev.thiagooliveira.cashcontrol.domain.event.account.AccountCreated;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionReversed;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -50,6 +51,11 @@ public class AccountEntity {
   }
 
   public void update(TransactionConfirmed event) {
+    this.balance = event.getBalanceAfter();
+    this.updatedAt = event.occurredAt();
+  }
+
+  public void update(TransactionReversed event) {
     this.balance = event.getBalanceAfter();
     this.updatedAt = event.occurredAt();
   }

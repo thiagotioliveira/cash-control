@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public interface TransactionRepository {
 
+  boolean isLatestTransaction(UUID organizationId, UUID accountId, UUID id);
+
   Optional<GetTransactionItem> findByOrganizationIdAndAccountIdAndId(
       UUID organizationId, UUID accountId, UUID id);
 

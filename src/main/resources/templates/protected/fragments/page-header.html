@@ -3,7 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <!-- App Header -->
-<div class="appHeader" th:fragment="pageHeader(title, hrefback, showHeaderButton, targetButton)">
+<div class="appHeader" th:fragment="pageHeader(title, hrefback, showHeaderButton, targetHeaderButton, showDeleteButton, targetDeleteButton)">
     <div class="left">
         <a th:href="${hrefback}" class="headerButton goBack">
             <ion-icon name="chevron-back-outline"></ion-icon>
@@ -11,8 +11,11 @@
     </div>
     <div class="pageTitle" th:text="${title}"></div>
     <div class="right">
-        <a href="#" class="headerButton" th:if="${showHeaderButton}" data-bs-toggle="modal" th:data-bs-target="${targetButton}">
+        <a href="#" class="headerButton" th:if="${showHeaderButton}" data-bs-toggle="modal" th:data-bs-target="${targetHeaderButton}">
             <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+        </a>
+        <a href="#" class="headerButton" th:if="${showDeleteButton}" data-bs-toggle="modal" th:data-bs-target="${targetDeleteButton}">
+            <ion-icon name="trash-outline"></ion-icon>
         </a>
     </div>
 </div>

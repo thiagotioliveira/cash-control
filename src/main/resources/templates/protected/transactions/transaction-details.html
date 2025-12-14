@@ -7,7 +7,7 @@
 
     <div th:insert="~{protected/fragments/loader}"></div>
 
-    <div th:insert="~{protected/fragments/page-header :: pageHeader(${transaction.title}, ${transaction.backLink}, ${transaction.status.isScheduled()}, ${'#transactionActionSheet-'+transaction.getId()})}"></div>
+    <div th:insert="~{protected/fragments/page-header :: pageHeader(${transaction.title}, ${transaction.backLink}, ${transaction.status.isScheduled()}, ${'#transactionActionSheet-'+transaction.getId()}, ${transaction.status.isConfirmed()}, '#dialogRevertTransaction')}"></div>
 
     <!-- App Capsule -->
     <div id="appCapsule">
@@ -54,7 +54,36 @@
                 </ul>
             </div>
         </div>
-        <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${transaction.toActionSheetModel()}, 'transactionActionSheet-')}"></div>
+        <div th:if="${transaction.status.isScheduled()}" th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${transaction.toActionSheetModel()}, 'transactionActionSheet-')}"></div>
+        <!-- Dialog Revert Transaction -->
+        <div class="modal fade dialogbox" th:if="${transaction.status.isConfirmed()}" id="dialogRevertTransaction" data-bs-backdrop="static" tabindex="-1"
+             role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmação</h5>
+                    </div>
+                    <div class="modal-body">
+                        Tem certeza que deseja reverter a transação?
+                    </div>
+                    <div class="modal-footer">
+                        <form th:action="@{${'/protected/transactions/' + transaction.getId() + '/delete'}}" method="post">
+                            <div class="btn-inline">
+                                <a href="#" class="btn btn-text-danger" data-bs-dismiss="modal">
+                                    <ion-icon name="close-outline"></ion-icon>
+                                    Não
+                                </a>
+                                <button type="submit" class="btn btn-text-primary" data-bs-dismiss="modal">
+                                    <ion-icon name="checkmark-outline"></ion-icon>
+                                    Sim
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- * Dialog Revert Transaction -->
     </div>
     <!-- * App Capsule -->
 

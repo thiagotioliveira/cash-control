@@ -65,4 +65,12 @@ public class AccountConfig {
       EventPublisher publisher) {
     return new UpdateScheduledTransaction(transactionRepository, eventStore, publisher);
   }
+
+  @Bean
+  RevertTransaction revertTransaction(
+      TransactionRepository transactionRepository,
+      EventStore eventStore,
+      EventPublisher publisher) {
+    return new RevertTransaction(transactionRepository, eventStore, publisher);
+  }
 }

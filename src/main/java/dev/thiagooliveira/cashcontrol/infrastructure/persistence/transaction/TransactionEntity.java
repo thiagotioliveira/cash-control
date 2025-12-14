@@ -4,6 +4,7 @@ import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransaction
 import dev.thiagooliveira.cashcontrol.domain.event.account.ScheduledTransactionUpdated;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionReversed;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserEntity;
@@ -111,7 +112,7 @@ public class TransactionEntity {
         this.account.getId(),
         this.account.getName(),
         this.user != null ? Optional.of(this.user.getId()) : Optional.empty(),
-        this.user != null ? Optional.of(this.user.getName()) : Optional.empty(),
+        this.user != null ? Optional.ofNullable(this.user.getName()) : Optional.empty(),
         this.account.getBank().getCurrency(),
         this.transactionTemplate != null
             ? Optional.of(this.transactionTemplate.getId())
@@ -147,6 +148,17 @@ public class TransactionEntity {
     this.description = event.description();
     this.amount = event.amount();
     this.dueDate = event.dueDate();
+  }
+
+  public boolean wasScheduled() {
+    return this.transactionTemplate != null;
+  }
+
+  public void revert(TransactionReversed event) {
+    this.occurredAt = null;
+    this.accountBalance = null;
+    this.user = null;
+    this.status = TransactionStatus.SCHEDULED;
   }
 
   public UUID getId() {

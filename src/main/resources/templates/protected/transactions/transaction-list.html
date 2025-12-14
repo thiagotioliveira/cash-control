@@ -7,10 +7,12 @@
 
 <div th:insert="~{protected/fragments/loader}"></div>
 
-<div th:insert="~{protected/fragments/page-header :: pageHeader('Transações', '/protected/', false, '')}"></div>
+<div th:insert="~{protected/fragments/page-header :: pageHeader('Transações', '/protected/', false, '', false, '')}"></div>
 
 <!-- App Capsule -->
 <div id="appCapsule">
+    <div th:insert="~{protected/fragments/alert}"></div>
+
     <div th:replace="~{protected/fragments/app-transaction-list}"></div>
 </div>
 <!-- * App Capsule -->

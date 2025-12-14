@@ -5,6 +5,7 @@ import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransaction
 import dev.thiagooliveira.cashcontrol.shared.DueDateUtils;
 import dev.thiagooliveira.cashcontrol.shared.Page;
 import dev.thiagooliveira.cashcontrol.shared.Pageable;
+import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,12 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
       TransactionJpaRepository repository, TransactionTemplateJpaRepository templateRepository) {
     this.repository = repository;
     this.templateRepository = templateRepository;
+  }
+
+  @Override
+  public boolean isLatestTransaction(UUID organizationId, UUID accountId, UUID id) {
+    return this.repository.isLatestTransaction(
+        organizationId, accountId, id, TransactionStatus.CONFIRMED);
   }
 
   @Override

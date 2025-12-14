@@ -3,6 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.listener.account;
 import dev.thiagooliveira.cashcontrol.domain.event.account.AccountCreated;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionReversed;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountJpaRepository;
@@ -31,6 +32,13 @@ public class AccountEventListener {
 
   @EventListener
   public void on(TransactionConfirmed event) {
+    var entity = findById(event.getAccountId());
+    entity.update(event);
+    repository.save(entity);
+  }
+
+  @EventListener
+  public void on(TransactionReversed event) {
     var entity = findById(event.getAccountId());
     entity.update(event);
     repository.save(entity);

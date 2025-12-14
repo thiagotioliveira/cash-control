@@ -3,10 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
 import dev.thiagooliveira.cashcontrol.application.account.*;
-import dev.thiagooliveira.cashcontrol.application.account.dto.ConfirmTransactionCommand;
-import dev.thiagooliveira.cashcontrol.application.account.dto.CreateScheduledTransactionCommand;
-import dev.thiagooliveira.cashcontrol.application.account.dto.CreateTransactionCommand;
-import dev.thiagooliveira.cashcontrol.application.account.dto.UpdateScheduledTransactionCommand;
+import dev.thiagooliveira.cashcontrol.application.account.dto.*;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
@@ -44,6 +41,7 @@ public class TransactionController {
   private final CreateWithdrawal createWithdrawal;
   private final CreateReceivable createReceivable;
   private final CreatePayable createPayable;
+  private final RevertTransaction revertTransaction;
 
   public TransactionController(
       MockContext context,
@@ -54,7 +52,8 @@ public class TransactionController {
       CreateDeposit createDeposit,
       CreateWithdrawal createWithdrawal,
       CreateReceivable createReceivable,
-      CreatePayable createPayable) {
+      CreatePayable createPayable,
+      RevertTransaction revertTransaction) {
     this.context = context;
     this.getTransactions = getTransactions;
     this.categoryRepository = categoryRepository;
@@ -64,6 +63,7 @@ public class TransactionController {
     this.createWithdrawal = createWithdrawal;
     this.createReceivable = createReceivable;
     this.createPayable = createPayable;
+    this.revertTransaction = revertTransaction;
   }
 
   @GetMapping("/{yearMonth:\\d{4}-\\d{2}}")
@@ -213,6 +213,25 @@ public class TransactionController {
     var transaction = getTransactionItem(transactionId);
     model.addAttribute("transaction", new TransactionDetailsModel(transaction, "/protected/"));
     return "protected/transactions/transaction-details";
+  }
+
+  @PostMapping("/{transactionId}/delete")
+  public String deleteTransaction(
+      @PathVariable UUID transactionId, RedirectAttributes redirectAttributes) {
+    try {
+      revertTransaction.execute(
+          new RevertTransactionCommand(
+              context.getOrganizationId(),
+              context.getAccountId(),
+              transactionId,
+              context.getUserId()));
+      redirectAttributes.addFlashAttribute(
+          "alert", AlertModel.success("Transação revertida com sucesso!"));
+      return "redirect:/protected/transactions";
+    } catch (DomainException | ApplicationException e) {
+      redirectAttributes.addFlashAttribute("alert", AlertModel.error(e.getMessage()));
+      return "redirect:/protected/transactions/" + transactionId;
+    }
   }
 
   @PostMapping("/{transactionId}")

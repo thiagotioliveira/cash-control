@@ -1,9 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.listener.transaction;
 
-import dev.thiagooliveira.cashcontrol.domain.event.account.ScheduledTransactionCreated;
-import dev.thiagooliveira.cashcontrol.domain.event.account.ScheduledTransactionUpdated;
-import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
-import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.account.*;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionJpaRepository;
@@ -76,6 +73,19 @@ public class TransactionEventListener {
             event.getOrganizationId(), event.getAccountId(), event.getTransactionId());
     transaction.confirm(event);
     this.repository.save(transaction);
+  }
+
+  @EventListener
+  public void on(TransactionReversed event) {
+    var transaction =
+        findByIdAndAccountId(
+            event.getOrganizationId(), event.getAccountId(), event.getTransactionId());
+    if (transaction.wasScheduled()) {
+      transaction.revert(event);
+      this.repository.save(transaction);
+    } else {
+      this.repository.deleteById(transaction.getId());
+    }
   }
 
   private TransactionEntity findByIdAndAccountId(

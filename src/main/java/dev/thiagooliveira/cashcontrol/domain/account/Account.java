@@ -215,6 +215,21 @@ public class Account extends Aggregate {
             getVersion() + 1));
   }
 
+  public void revertTransaction(
+      UUID userId, UUID transactionId, BigDecimal amount, TransactionType type) {
+    validate(amount);
+    apply(
+        new TransactionReversed(
+            organizationId,
+            userId,
+            id,
+            transactionId,
+            type,
+            amount,
+            Instant.now(),
+            getVersion() + 1));
+  }
+
   public UUID getId() {
     return id;
   }
@@ -290,6 +305,17 @@ public class Account extends Aggregate {
       }
       case ScheduledTransactionUpdated ev -> {
         updatedAt = ev.occurredAt();
+      }
+      case TransactionReversed ev -> {
+        if (ev.getType().isCredit()) {
+          balance = balance.subtract(ev.getAmount());
+          ev.setBalanceAfter(balance);
+          updatedAt = ev.occurredAt();
+        } else if (ev.getType().isDebit()) {
+          balance = balance.add(ev.getAmount());
+          ev.setBalanceAfter(balance);
+          updatedAt = ev.occurredAt();
+        } else throw DomainException.badRequest("unhandled transaction type " + ev.getType());
       }
       default -> throw DomainException.badRequest("unhandled event " + event);
     }
