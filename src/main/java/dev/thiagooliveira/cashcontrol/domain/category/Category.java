@@ -1,26 +1,22 @@
 package dev.thiagooliveira.cashcontrol.domain.category;
 
+import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import dev.thiagooliveira.cashcontrol.domain.event.category.CategoryCreated;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.util.Strings;
 
-public class Category {
+public class Category extends Aggregate {
   private static final Pattern HEX_COLOR = Pattern.compile("^#?[0-9a-fA-F]{6}$");
 
   private UUID id;
   private String name;
   private String hashColor;
   private TransactionType type;
-
-  private int version = 0;
-  private final List<DomainEvent> pendingEvents = new ArrayList<>();
 
   private Category(UUID id, String name, String hashColor, TransactionType type) {
     this.id = id;
@@ -71,30 +67,13 @@ public class Category {
     return type;
   }
 
-  public List<DomainEvent> pendingEvents() {
-    return List.copyOf(pendingEvents);
+  @Override
+  public UUID aggregateId() {
+    return id;
   }
 
-  public void markEventsCommitted() {
-    pendingEvents.clear();
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  private void applyFromHistory(DomainEvent e) {
-    when(e);
-    version++;
-  }
-
-  private void apply(DomainEvent event) {
-    when(event);
-    pendingEvents.add(event);
-    version = event.version();
-  }
-
-  private void when(DomainEvent event) {
+  @Override
+  public void whenTemplate(DomainEvent event) {
     switch (event) {
       case CategoryCreated ev -> {
         id = ev.aggregateId();

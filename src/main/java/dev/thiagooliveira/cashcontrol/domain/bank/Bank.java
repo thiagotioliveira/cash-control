@@ -1,21 +1,17 @@
 package dev.thiagooliveira.cashcontrol.domain.bank;
 
+import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import dev.thiagooliveira.cashcontrol.domain.event.bank.BankCreated;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-public class Bank {
+public class Bank extends Aggregate {
   private UUID id;
   private String name;
   private Currency currency;
-
-  private int version = 0;
-  private final List<DomainEvent> pendingEvents = new ArrayList<>();
 
   private Bank(UUID id, String name, Currency currency) {
     this.id = id;
@@ -34,10 +30,6 @@ public class Bank {
     return bank;
   }
 
-  public static Bank restore(UUID id, String name, Currency currency) {
-    return new Bank(id, name, currency);
-  }
-
   public UUID getId() {
     return id;
   }
@@ -50,25 +42,13 @@ public class Bank {
     return currency;
   }
 
-  public List<DomainEvent> pendingEvents() {
-    return List.copyOf(pendingEvents);
+  @Override
+  public UUID aggregateId() {
+    return id;
   }
 
-  public void markEventsCommitted() {
-    pendingEvents.clear();
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  private void apply(DomainEvent event) {
-    when(event);
-    pendingEvents.add(event);
-    version = event.version();
-  }
-
-  private void when(DomainEvent event) {
+  @Override
+  public void whenTemplate(DomainEvent event) {
     switch (event) {
       case BankCreated ev -> {
         id = ev.aggregateId();

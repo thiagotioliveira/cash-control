@@ -1,5 +1,6 @@
 package dev.thiagooliveira.cashcontrol.domain.account;
 
+import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import dev.thiagooliveira.cashcontrol.domain.event.account.*;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
@@ -8,21 +9,17 @@ import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Account {
+public class Account extends Aggregate {
   private UUID id;
   private UUID organizationId;
   private String name;
   private UUID bankId;
   private BigDecimal balance;
   private Instant updatedAt;
-
-  private int version = 0;
-  private final List<DomainEvent> pendingEvents = new ArrayList<>();
 
   private Account(
       UUID id,
@@ -57,16 +54,6 @@ public class Account {
     return account;
   }
 
-  public static Account restore(
-      UUID id,
-      UUID organizationId,
-      UUID bankId,
-      String name,
-      BigDecimal balance,
-      Instant updatedAt) {
-    return new Account(id, organizationId, bankId, name, balance, updatedAt);
-  }
-
   public static Account rehydrate(List<DomainEvent> events) {
     Account account = null;
     for (DomainEvent event : events) {
@@ -95,7 +82,7 @@ public class Account {
             organizationId,
             userId,
             occurredAt,
-            version + 1));
+            getVersion() + 1));
   }
 
   public void creditConfirmed(
@@ -111,7 +98,7 @@ public class Account {
             amount,
             balance,
             occurredAt,
-            version + 1));
+            getVersion() + 1));
   }
 
   public void debit(
@@ -129,7 +116,7 @@ public class Account {
             organizationId,
             userId,
             occurredAt,
-            version + 1));
+            getVersion() + 1));
   }
 
   public void debitConfirmed(
@@ -145,7 +132,7 @@ public class Account {
             amount,
             balance,
             occurredAt,
-            version + 1));
+            getVersion() + 1));
   }
 
   public void payable(
@@ -172,7 +159,7 @@ public class Account {
             organizationId,
             userId,
             Instant.now(),
-            version + 1));
+            getVersion() + 1));
   }
 
   public void receivable(
@@ -199,7 +186,7 @@ public class Account {
             organizationId,
             userId,
             Instant.now(),
-            version + 1));
+            getVersion() + 1));
   }
 
   public void updateScheduledTransaction(
@@ -225,7 +212,7 @@ public class Account {
             organizationId,
             userId,
             Instant.now(),
-            version + 1));
+            getVersion() + 1));
   }
 
   public UUID getId() {
@@ -248,18 +235,6 @@ public class Account {
     return balance;
   }
 
-  public List<DomainEvent> pendingEvents() {
-    return List.copyOf(pendingEvents);
-  }
-
-  public void markEventsCommitted() {
-    pendingEvents.clear();
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
   private static void validateDueDate(LocalDate dueDate) {
     if (LocalDate.now().isAfter(dueDate)) {
       throw DomainException.badRequest("Due date must be in the future");
@@ -272,18 +247,13 @@ public class Account {
     }
   }
 
-  private void applyFromHistory(DomainEvent e) {
-    when(e);
-    version++;
+  @Override
+  public UUID aggregateId() {
+    return id;
   }
 
-  private void apply(DomainEvent event) {
-    when(event);
-    pendingEvents.add(event);
-    version = event.version();
-  }
-
-  private void when(DomainEvent event) {
+  @Override
+  public void whenTemplate(DomainEvent event) {
     switch (event) {
       case AccountCreated ev -> {
         id = ev.aggregateId();
