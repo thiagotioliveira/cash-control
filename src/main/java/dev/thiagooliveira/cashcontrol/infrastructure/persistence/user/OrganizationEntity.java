@@ -1,7 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.user;
 
+import dev.thiagooliveira.cashcontrol.application.user.dto.GetOrganizationItem;
 import dev.thiagooliveira.cashcontrol.domain.event.user.OrganizationCreated;
-import dev.thiagooliveira.cashcontrol.domain.user.Organization;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -32,8 +32,8 @@ public class OrganizationEntity {
     this.active = event.active();
   }
 
-  public Organization toDomain() {
-    return Organization.restore(id, email, createdAt, active);
+  public GetOrganizationItem toDomain() {
+    return new GetOrganizationItem(id, email, createdAt, active);
   }
 
   public UUID getId() {

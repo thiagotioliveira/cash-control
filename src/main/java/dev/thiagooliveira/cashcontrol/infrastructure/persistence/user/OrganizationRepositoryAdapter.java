@@ -1,7 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.user;
 
 import dev.thiagooliveira.cashcontrol.application.outbound.OrganizationRepository;
-import dev.thiagooliveira.cashcontrol.domain.user.Organization;
+import dev.thiagooliveira.cashcontrol.application.user.dto.GetOrganizationItem;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,12 +14,12 @@ public class OrganizationRepositoryAdapter implements OrganizationRepository {
   }
 
   @Override
-  public Optional<Organization> findById(UUID id) {
+  public Optional<GetOrganizationItem> findById(UUID id) {
     return this.repository.findById(id).map(OrganizationEntity::toDomain);
   }
 
   @Override
-  public Optional<Organization> findByEmail(String email) {
+  public Optional<GetOrganizationItem> findByEmail(String email) {
     return this.repository.findByEmail(email).map(OrganizationEntity::toDomain);
   }
 }

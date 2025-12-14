@@ -1,12 +1,12 @@
 package dev.thiagooliveira.cashcontrol.application.outbound;
 
-import dev.thiagooliveira.cashcontrol.domain.user.Organization;
+import dev.thiagooliveira.cashcontrol.application.user.dto.GetOrganizationItem;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface OrganizationRepository {
 
-  Optional<Organization> findById(UUID id);
+  Optional<GetOrganizationItem> findById(UUID id);
 
-  Optional<Organization> findByEmail(String email);
+  Optional<GetOrganizationItem> findByEmail(String email);
 }

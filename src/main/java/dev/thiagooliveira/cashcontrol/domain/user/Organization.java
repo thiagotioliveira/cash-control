@@ -29,10 +29,6 @@ public class Organization extends Aggregate {
     return organization;
   }
 
-  public static Organization restore(UUID id, String email, Instant createdAt, boolean active) {
-    return new Organization(id, email, createdAt, active);
-  }
-
   @Override
   public UUID aggregateId() {
     return id;

@@ -103,12 +103,10 @@ public class InitContextMockDataCommandLineRunner implements CommandLineRunner {
               } else {
                 var organization =
                     organizationRepository.findByEmail(user.getOrganization()).orElseThrow();
-                log.debug(
-                    " - Inviting {} to organization {}", user.getName(), organization.getId());
+                log.debug(" - Inviting {} to organization {}", user.getName(), organization.id());
                 var u =
                     inviteUser.execute(
-                        new InviteUserCommand(
-                            user.getName(), user.getEmail(), organization.getId()));
+                        new InviteUserCommand(user.getName(), user.getEmail(), organization.id()));
               }
             });
     var categoryMap = new HashMap<String, UUID>();
