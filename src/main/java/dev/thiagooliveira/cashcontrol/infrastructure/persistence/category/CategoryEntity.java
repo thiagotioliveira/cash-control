@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.category;
 
-import dev.thiagooliveira.cashcontrol.application.category.dto.GetCategoryItem;
+import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
 import dev.thiagooliveira.cashcontrol.domain.event.category.CategoryCreated;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import jakarta.persistence.*;
@@ -35,8 +35,8 @@ public class CategoryEntity {
     this.organizationId = event.organizationId();
   }
 
-  public GetCategoryItem toDomain() {
-    return new GetCategoryItem(id, name, hashColor, type);
+  public CategorySummary toDomain() {
+    return new CategorySummary(id, name, hashColor, type);
   }
 
   public UUID getId() {

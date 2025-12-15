@@ -21,7 +21,7 @@ public class CreatePayable {
     this.publisher = publisher;
   }
 
-  public Account execute(CreateScheduledTransactionCommand command) {
+  public void execute(CreateScheduledTransactionCommand command) {
     var category =
         categoryRepository
             .findByOrganizationIdAndId(command.organizationId(), command.categoryId())
@@ -58,7 +58,5 @@ public class CreatePayable {
     newEvents.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();
-
-    return account;
   }
 }

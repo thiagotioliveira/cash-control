@@ -7,6 +7,7 @@ import dev.thiagooliveira.cashcontrol.application.outbound.OrganizationRepositor
 import dev.thiagooliveira.cashcontrol.application.outbound.UserRepository;
 import dev.thiagooliveira.cashcontrol.application.user.dto.InviteUserCommand;
 import dev.thiagooliveira.cashcontrol.domain.user.User;
+import dev.thiagooliveira.cashcontrol.domain.user.UserSummary;
 
 public class InviteUser {
 
@@ -26,7 +27,7 @@ public class InviteUser {
     this.publisher = publisher;
   }
 
-  public User execute(InviteUserCommand command) {
+  public UserSummary execute(InviteUserCommand command) {
     if (this.repository.existsByEmail(command.email())) {
       throw ApplicationException.badRequest("user already registered");
     }
@@ -43,6 +44,6 @@ public class InviteUser {
     events.forEach(publisher::publishEvent);
 
     user.markEventsCommitted();
-    return user;
+    return new UserSummary(user);
   }
 }

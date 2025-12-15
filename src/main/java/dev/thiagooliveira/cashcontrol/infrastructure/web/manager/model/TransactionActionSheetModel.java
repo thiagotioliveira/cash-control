@@ -2,8 +2,8 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
-import dev.thiagooliveira.cashcontrol.application.category.dto.GetCategoryItem;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
+import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
@@ -328,7 +328,7 @@ public class TransactionActionSheetModel {
     private final String hashColor;
     private final String type;
 
-    public CategoryModel(GetCategoryItem category) {
+    public CategoryModel(CategorySummary category) {
       this.id = category.id();
       this.name = category.name();
       this.hashColor = category.hashColor();
@@ -357,7 +357,7 @@ public class TransactionActionSheetModel {
     private final List<CategoryModel> credit;
     private final List<CategoryModel> debit;
 
-    public ListCategoryModel(List<GetCategoryItem> categories) {
+    public ListCategoryModel(List<CategorySummary> categories) {
       this.credit =
           categories.stream().filter(c -> c.type().isCredit()).toList().stream()
               .map(CategoryModel::new)

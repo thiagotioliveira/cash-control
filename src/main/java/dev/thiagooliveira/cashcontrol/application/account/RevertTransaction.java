@@ -22,7 +22,7 @@ public class RevertTransaction {
     this.publisher = publisher;
   }
 
-  public Account execute(RevertTransactionCommand command) {
+  public void execute(RevertTransactionCommand command) {
     var transaction =
         this.transactionRepository
             .findByOrganizationIdAndAccountIdAndId(
@@ -58,6 +58,5 @@ public class RevertTransaction {
     newEvents.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();
-    return account;
   }
 }

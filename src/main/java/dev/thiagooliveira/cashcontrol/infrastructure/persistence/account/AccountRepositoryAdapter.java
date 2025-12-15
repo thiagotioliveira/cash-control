@@ -1,7 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.account;
 
-import dev.thiagooliveira.cashcontrol.application.account.dto.GetAccountItem;
 import dev.thiagooliveira.cashcontrol.application.outbound.AccountRepository;
+import dev.thiagooliveira.cashcontrol.domain.account.AccountSummary;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ public class AccountRepositoryAdapter implements AccountRepository {
   }
 
   @Override
-  public Optional<GetAccountItem> findByOrganizationIdAndId(UUID organizationId, UUID id) {
+  public Optional<AccountSummary> findByOrganizationIdAndId(UUID organizationId, UUID id) {
     return this.repository
         .findByOrganizationIdAndId(organizationId, id)
         .map(AccountEntity::toDomain);

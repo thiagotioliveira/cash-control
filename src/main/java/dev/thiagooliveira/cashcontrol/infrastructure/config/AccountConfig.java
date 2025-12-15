@@ -22,8 +22,9 @@ public class AccountConfig {
   }
 
   @Bean
-  CreateAccount createAccount(EventStore eventStore, EventPublisher publisher) {
-    return new CreateAccount(eventStore, publisher);
+  CreateAccount createAccount(
+      BankRepository bankRepository, EventStore eventStore, EventPublisher publisher) {
+    return new CreateAccount(bankRepository, eventStore, publisher);
   }
 
   @Bean

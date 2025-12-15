@@ -92,14 +92,14 @@ public class InitContextMockDataCommandLineRunner implements CommandLineRunner {
                     registerUser.execute(
                         new RegisterUserCommand(
                             user.getName(), user.getEmail(), password, password));
-                context.setOrganizationId(u.getOrganizationId());
-                context.setUserId(u.getId());
+                context.setOrganizationId(u.organizationId());
+                context.setUserId(u.id());
                 log.debug(
                     " - {} ({}) - Password: '{}' - Organization: {}",
                     user.getName(),
                     user.getEmail(),
                     password,
-                    u.getOrganizationId());
+                    u.organizationId());
               } else {
                 var organization =
                     organizationRepository.findByEmail(user.getOrganization()).orElseThrow();
@@ -122,7 +122,7 @@ public class InitContextMockDataCommandLineRunner implements CommandLineRunner {
                           category.getName(),
                           category.getHashColor(),
                           TransactionType.valueOf(category.getType())));
-              categoryMap.put(category.getName(), c.getId());
+              categoryMap.put(category.getName(), c.id());
             });
     log.debug("Banks:");
     var bankMap = new HashMap<String, UUID>();
@@ -137,7 +137,7 @@ public class InitContextMockDataCommandLineRunner implements CommandLineRunner {
                           context.getOrganizationId(),
                           bank.getName(),
                           Currency.valueOf(bank.getCurrency())));
-              bankMap.put(bank.getName(), b.getId());
+              bankMap.put(bank.getName(), b.id());
             });
     log.debug("Accounts:");
     properties
@@ -151,7 +151,7 @@ public class InitContextMockDataCommandLineRunner implements CommandLineRunner {
                           context.getOrganizationId(),
                           bankMap.get(account.getBank()),
                           account.getName()));
-              context.setAccountId(a.getId());
+              context.setAccountId(a.id());
             });
   }
 

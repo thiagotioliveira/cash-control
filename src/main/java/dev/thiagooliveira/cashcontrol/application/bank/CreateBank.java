@@ -6,6 +6,7 @@ import dev.thiagooliveira.cashcontrol.application.outbound.BankRepository;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventPublisher;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
 import dev.thiagooliveira.cashcontrol.domain.bank.Bank;
+import dev.thiagooliveira.cashcontrol.domain.bank.BankSummary;
 
 public class CreateBank {
 
@@ -19,7 +20,7 @@ public class CreateBank {
     this.publisher = publisher;
   }
 
-  public Bank execute(CreateBankCommand command) {
+  public BankSummary execute(CreateBankCommand command) {
     if (repository.existsByOrganizationIdAndName(command.organizationId(), command.name()))
       throw ApplicationException.badRequest("bank already exists");
     var bank = Bank.create(command.organizationId(), command.name(), command.currency());
@@ -30,6 +31,6 @@ public class CreateBank {
     events.forEach(publisher::publishEvent);
 
     bank.markEventsCommitted();
-    return bank;
+    return new BankSummary(bank);
   }
 }

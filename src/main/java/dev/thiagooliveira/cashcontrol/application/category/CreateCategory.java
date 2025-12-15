@@ -6,6 +6,7 @@ import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventPublisher;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
 import dev.thiagooliveira.cashcontrol.domain.category.Category;
+import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
 
 public class CreateCategory {
 
@@ -20,7 +21,7 @@ public class CreateCategory {
     this.publisher = publisher;
   }
 
-  public Category execute(CreateCategoryCommand command) {
+  public CategorySummary execute(CreateCategoryCommand command) {
     if (repository
         .findByOrganizationIdAndNameAndType(
             command.organizationId(), command.name(), command.type())
@@ -37,6 +38,6 @@ public class CreateCategory {
     events.forEach(publisher::publishEvent);
 
     category.markEventsCommitted();
-    return category;
+    return new CategorySummary(category);
   }
 }

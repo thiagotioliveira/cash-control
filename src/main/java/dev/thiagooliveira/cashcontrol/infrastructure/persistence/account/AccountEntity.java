@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.account;
 
-import dev.thiagooliveira.cashcontrol.application.account.dto.GetAccountItem;
+import dev.thiagooliveira.cashcontrol.domain.account.AccountSummary;
 import dev.thiagooliveira.cashcontrol.domain.event.account.AccountCreated;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
@@ -60,8 +60,8 @@ public class AccountEntity {
     this.updatedAt = event.occurredAt();
   }
 
-  public GetAccountItem toDomain() {
-    return new GetAccountItem(
+  public AccountSummary toDomain() {
+    return new AccountSummary(
         this.id,
         this.name,
         this.bank.getId(),

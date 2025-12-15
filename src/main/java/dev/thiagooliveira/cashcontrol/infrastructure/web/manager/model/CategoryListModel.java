@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
-import dev.thiagooliveira.cashcontrol.application.category.dto.GetCategoryItem;
+import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.util.List;
 import java.util.UUID;
@@ -9,7 +9,7 @@ public class CategoryListModel {
 
   private final List<CategoryItem> content;
 
-  public CategoryListModel(List<GetCategoryItem> categories) {
+  public CategoryListModel(List<CategorySummary> categories) {
     this.content =
         categories.stream()
             .map(c -> new CategoryItem(c.id(), c.name(), c.hashColor(), c.type()))

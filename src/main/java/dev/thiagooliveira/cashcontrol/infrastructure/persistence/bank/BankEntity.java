@@ -1,5 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank;
 
+import dev.thiagooliveira.cashcontrol.domain.bank.BankSummary;
 import dev.thiagooliveira.cashcontrol.domain.event.bank.BankCreated;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import jakarta.persistence.*;
@@ -27,6 +28,10 @@ public class BankEntity {
     this.name = event.name();
     this.currency = event.currency();
     this.organizationId = event.organizationId();
+  }
+
+  public BankSummary toDomain() {
+    return new BankSummary(id, name, currency);
   }
 
   public UUID getId() {

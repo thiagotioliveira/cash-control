@@ -22,7 +22,7 @@ public class CreateDeposit {
     this.publisher = publisher;
   }
 
-  public Account execute(CreateTransactionCommand command) {
+  public void execute(CreateTransactionCommand command) {
     if (command.occurredAt().isAfter(Instant.now())) {
       throw ApplicationException.badRequest("occurredAt must be before now");
     }
@@ -55,7 +55,5 @@ public class CreateDeposit {
     newEvents.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();
-
-    return account;
   }
 }

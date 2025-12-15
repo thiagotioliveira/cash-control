@@ -7,6 +7,7 @@ import dev.thiagooliveira.cashcontrol.application.outbound.UserRepository;
 import dev.thiagooliveira.cashcontrol.application.user.dto.RegisterUserCommand;
 import dev.thiagooliveira.cashcontrol.domain.user.Organization;
 import dev.thiagooliveira.cashcontrol.domain.user.User;
+import dev.thiagooliveira.cashcontrol.domain.user.UserSummary;
 import java.util.Objects;
 
 public class RegisterUser {
@@ -22,7 +23,7 @@ public class RegisterUser {
     this.publisher = publisher;
   }
 
-  public User execute(RegisterUserCommand command) {
+  public UserSummary execute(RegisterUserCommand command) {
     if (!Objects.equals(command.password(), command.passwordConfirmation())) {
       throw ApplicationException.badRequest("passwords must match");
     }
@@ -55,6 +56,6 @@ public class RegisterUser {
     events.forEach(publisher::publishEvent);
 
     user.markEventsCommitted();
-    return user;
+    return new UserSummary(user);
   }
 }

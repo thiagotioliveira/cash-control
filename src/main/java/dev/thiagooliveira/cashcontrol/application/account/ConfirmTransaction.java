@@ -23,7 +23,7 @@ public class ConfirmTransaction {
     this.publisher = publisher;
   }
 
-  public Account execute(ConfirmTransactionCommand command) {
+  public void execute(ConfirmTransactionCommand command) {
     if (command.occurredAt().isAfter(Instant.now())) {
       throw ApplicationException.badRequest("occurredAt must be before now");
     }
@@ -64,6 +64,5 @@ public class ConfirmTransaction {
     newEvents.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();
-    return account;
   }
 }

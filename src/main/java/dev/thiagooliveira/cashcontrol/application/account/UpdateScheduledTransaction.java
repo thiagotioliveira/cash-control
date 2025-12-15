@@ -22,7 +22,7 @@ public class UpdateScheduledTransaction {
     this.publisher = publisher;
   }
 
-  public Account execute(UpdateScheduledTransactionCommand command) {
+  public void execute(UpdateScheduledTransactionCommand command) {
     var transaction =
         this.transactionRepository
             .findByOrganizationIdAndAccountIdAndId(
@@ -58,6 +58,5 @@ public class UpdateScheduledTransaction {
     newEvents.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();
-    return account;
   }
 }
