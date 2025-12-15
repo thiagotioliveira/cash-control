@@ -3,7 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.df;
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.dtf;
 
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;
@@ -16,7 +16,7 @@ public class TransactionCarouselSlideModel {
 
   private final List<TransactionCarouselSlideItem> items = new ArrayList<>();
 
-  public TransactionCarouselSlideModel(List<GetTransactionItem> transactions) {
+  public TransactionCarouselSlideModel(List<TransactionSummary> transactions) {
     transactions.forEach(t -> items.add(new TransactionCarouselSlideItem(t)));
   }
 
@@ -31,9 +31,9 @@ public class TransactionCarouselSlideModel {
     private final BigDecimal amount;
     private final String categoryName;
     private final LocalDate dueDate;
-    private final GetTransactionItem transaction;
+    private final TransactionSummary transaction;
 
-    public TransactionCarouselSlideItem(GetTransactionItem transaction) {
+    public TransactionCarouselSlideItem(TransactionSummary transaction) {
       this.transaction = transaction;
       this.id = transaction.transactionId();
       this.currency = transaction.currency();

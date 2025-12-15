@@ -1,10 +1,10 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction;
 
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.domain.event.account.ScheduledTransactionUpdated;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
 import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionReversed;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserEntity;
@@ -106,8 +106,8 @@ public class TransactionEntity {
     this.status = TransactionStatus.SCHEDULED;
   }
 
-  public GetTransactionItem toDomain() {
-    return new GetTransactionItem(
+  public TransactionSummary toDomain() {
+    return new TransactionSummary(
         this.id,
         this.account.getId(),
         this.account.getName(),

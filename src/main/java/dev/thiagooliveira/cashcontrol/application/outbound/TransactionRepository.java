@@ -1,8 +1,6 @@
 package dev.thiagooliveira.cashcontrol.application.outbound;
 
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
-import dev.thiagooliveira.cashcontrol.shared.Page;
-import dev.thiagooliveira.cashcontrol.shared.Pageable;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -12,16 +10,9 @@ public interface TransactionRepository {
 
   boolean isLatestTransaction(UUID organizationId, UUID accountId, UUID id);
 
-  Optional<GetTransactionItem> findByOrganizationIdAndAccountIdAndId(
+  Optional<TransactionSummary> findByOrganizationIdAndAccountIdAndId(
       UUID organizationId, UUID accountId, UUID id);
 
-  Page<GetTransactionItem> findAllByOrganizationIdAndAccountIdAndDueDateBetween(
-      UUID organizationId,
-      UUID accountId,
-      LocalDate startDate,
-      LocalDate endDate,
-      Pageable pageable);
-
-  List<GetTransactionItem> findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
+  List<TransactionSummary> findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
       UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate);
 }

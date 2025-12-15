@@ -8,9 +8,9 @@ import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionCommand;
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
@@ -276,7 +276,7 @@ public class TransactionController {
   }
 
   private static String buildGetTransactionModel(
-      List<GetTransactionItem> transactions,
+      List<TransactionSummary> transactions,
       TransactionType type,
       TransactionStatus status,
       Model model) {
@@ -302,7 +302,7 @@ public class TransactionController {
     return "protected/transactions/transaction-list";
   }
 
-  public GetTransactionItem getTransactionItem(UUID transactionId) {
+  public TransactionSummary getTransactionItem(UUID transactionId) {
     return this.getTransactions
         .execute(
             new GetTransactionCommand(

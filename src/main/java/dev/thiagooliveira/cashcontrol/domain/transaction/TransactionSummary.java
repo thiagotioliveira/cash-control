@@ -1,4 +1,4 @@
-package dev.thiagooliveira.cashcontrol.application.transaction.dto;
+package dev.thiagooliveira.cashcontrol.domain.transaction;
 
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-public record GetTransactionItem(
+public record TransactionSummary(
     UUID transactionId,
     UUID accountId,
     String accountName,

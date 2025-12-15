@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.mapper;
 
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.*;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class MonthlyCategoryMapper {
 
-  public List<MonthlyCategoryItem> toMonthlyCategoryData(List<GetTransactionItem> items) {
+  public List<MonthlyCategoryItem> toMonthlyCategoryData(List<TransactionSummary> items) {
 
-    Map<YearMonth, List<GetTransactionItem>> grouped =
+    Map<YearMonth, List<TransactionSummary>> grouped =
         items.stream().collect(Collectors.groupingBy(t -> YearMonth.from(t.dueDate())));
 
     List<MonthlyCategoryItem> result = new ArrayList<>();
@@ -25,10 +25,10 @@ public class MonthlyCategoryMapper {
               list.stream()
                   .collect(
                       Collectors.groupingBy(
-                          GetTransactionItem::categoryName,
+                          TransactionSummary::categoryName,
                           LinkedHashMap::new,
                           Collectors.reducing(
-                              BigDecimal.ZERO, GetTransactionItem::amount, BigDecimal::add)))
+                              BigDecimal.ZERO, TransactionSummary::amount, BigDecimal::add)))
                   .entrySet()
                   .stream()
                   .map(
@@ -38,7 +38,7 @@ public class MonthlyCategoryMapper {
                             list.stream()
                                 .filter(t -> t.categoryName().equals(e.getKey()))
                                 .findFirst()
-                                .map(GetTransactionItem::categoryHashColor)
+                                .map(TransactionSummary::categoryHashColor)
                                 .orElse("#007bff");
 
                         return new CategoryItem(e.getKey(), e.getValue(), color);

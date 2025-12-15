@@ -2,7 +2,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
@@ -23,11 +23,11 @@ public class TransactionDetailsModel {
   private final LocalDate dueDate;
   private final LocalDateTime occurredAt;
   private final BigDecimal amount;
-  private final GetTransactionItem transaction;
+  private final TransactionSummary transaction;
   private final Recurrence recurrence;
   private final Integer installments;
 
-  public TransactionDetailsModel(GetTransactionItem transaction, String backLink) {
+  public TransactionDetailsModel(TransactionSummary transaction, String backLink) {
     this.transaction = transaction;
     this.title = "Detalhe da Transação";
     this.backLink = backLink;

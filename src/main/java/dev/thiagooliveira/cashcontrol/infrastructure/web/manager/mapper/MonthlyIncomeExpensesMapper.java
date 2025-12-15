@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.mapper;
 
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class MonthlyIncomeExpensesMapper {
 
-  public List<MonthlyIncomeExpenses> toMonthlyIncomeExpensesData(List<GetTransactionItem> items) {
-    Map<YearMonth, List<GetTransactionItem>> grouped =
+  public List<MonthlyIncomeExpenses> toMonthlyIncomeExpensesData(List<TransactionSummary> items) {
+    Map<YearMonth, List<TransactionSummary>> grouped =
         items.stream().collect(Collectors.groupingBy(t -> YearMonth.from(t.dueDate())));
 
     List<MonthlyIncomeExpenses> result = new ArrayList<>();
@@ -24,13 +24,13 @@ public class MonthlyIncomeExpensesMapper {
           BigDecimal credit =
               list.stream()
                   .filter(t -> t.type().isCredit())
-                  .map(GetTransactionItem::amount)
+                  .map(TransactionSummary::amount)
                   .reduce(BigDecimal.ZERO, BigDecimal::add);
 
           BigDecimal debit =
               list.stream()
                   .filter(t -> t.type().isDebit())
-                  .map(GetTransactionItem::amount)
+                  .map(TransactionSummary::amount)
                   .reduce(BigDecimal.ZERO, BigDecimal::add);
 
           result.add(new MonthlyIncomeExpenses(yearMonth, credit, debit));

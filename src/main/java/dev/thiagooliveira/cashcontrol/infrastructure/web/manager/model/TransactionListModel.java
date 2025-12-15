@@ -3,7 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.df;
 
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
@@ -18,7 +18,7 @@ public class TransactionListModel {
   private final Map<LocalDate, List<TransactionItem>> content =
       new TreeMap<>(Comparator.reverseOrder());
 
-  public TransactionListModel(List<GetTransactionItem> transactions) {
+  public TransactionListModel(List<TransactionSummary> transactions) {
     transactions
         //            .stream()
         //        .sorted(
@@ -82,7 +82,7 @@ public class TransactionListModel {
     private final TransactionType type;
     private final TransactionStatus status;
 
-    public TransactionItem(GetTransactionItem transaction) {
+    public TransactionItem(TransactionSummary transaction) {
       this.id = transaction.transactionId();
       this.transactionTemplateId = transaction.transactionTemplateId().orElse(null);
       this.occurredAt = transaction.occurredAt().orElse(null);

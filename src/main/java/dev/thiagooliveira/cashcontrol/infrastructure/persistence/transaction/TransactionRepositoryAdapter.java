@@ -1,16 +1,13 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction;
 
 import dev.thiagooliveira.cashcontrol.application.outbound.TransactionRepository;
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.shared.DueDateUtils;
-import dev.thiagooliveira.cashcontrol.shared.Page;
-import dev.thiagooliveira.cashcontrol.shared.Pageable;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.domain.PageRequest;
 
 public class TransactionRepositoryAdapter implements TransactionRepository {
 
@@ -30,7 +27,7 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
   }
 
   @Override
-  public Optional<GetTransactionItem> findByOrganizationIdAndAccountIdAndId(
+  public Optional<TransactionSummary> findByOrganizationIdAndAccountIdAndId(
       UUID organizationId, UUID accountId, UUID id) {
     return this.repository
         .findByOrganizationIdAndAccountIdAndId(organizationId, accountId, id)
@@ -38,32 +35,7 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
   }
 
   @Override
-  public Page<GetTransactionItem> findAllByOrganizationIdAndAccountIdAndDueDateBetween(
-      UUID organizationId,
-      UUID accountId,
-      LocalDate startDate,
-      LocalDate endDate,
-      Pageable pageable) {
-    populateTransactions(organizationId, accountId, startDate, endDate);
-    var page =
-        this.repository.findAllByAccountIdAndDueDateBetweenOrderByDueDateDesc(
-            accountId,
-            startDate,
-            endDate,
-            PageRequest.of(pageable.pageNumber(), pageable.pageSize()));
-
-    return new Page<GetTransactionItem>(
-        page.getContent().stream().map(TransactionEntity::toDomain).toList(),
-        page.getNumber(),
-        page.getSize(),
-        page.getTotalElements(),
-        page.getTotalPages(),
-        page.isFirst(),
-        page.isLast());
-  }
-
-  @Override
-  public List<GetTransactionItem>
+  public List<TransactionSummary>
       findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
           UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate) {
     populateTransactions(organizationId, accountId, startDate, endDate);

@@ -2,8 +2,8 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
@@ -40,7 +40,7 @@ public class TransactionActionSheetModel {
   private final String recurrence;
   private final Integer installments;
 
-  public TransactionActionSheetModel(GetTransactionItem transaction, boolean showDetailButton) {
+  public TransactionActionSheetModel(TransactionSummary transaction, boolean showDetailButton) {
     this.showDetailButton = showDetailButton;
     this.showStartDueDateInput = true;
     this.showOccurredAtInput = true;
@@ -188,7 +188,7 @@ public class TransactionActionSheetModel {
 
     public TransactionForm() {}
 
-    public TransactionForm(GetTransactionItem transaction) {
+    public TransactionForm(TransactionSummary transaction) {
       this.id = transaction.transactionId();
       this.categoryId = transaction.categoryId();
       this.categoryName = transaction.categoryName();

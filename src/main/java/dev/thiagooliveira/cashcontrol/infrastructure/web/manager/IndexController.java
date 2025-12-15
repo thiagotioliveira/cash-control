@@ -5,8 +5,8 @@ import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.Formatte
 import dev.thiagooliveira.cashcontrol.application.outbound.AccountRepository;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionItem;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
@@ -64,28 +64,28 @@ public class IndexController {
         df.format(
             transactionsConfirmed.stream()
                 .filter(t -> t.type().isCredit())
-                .map(GetTransactionItem::amount)
+                .map(TransactionSummary::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)));
     model.addAttribute(
         "expenses",
         df.format(
             transactionsConfirmed.stream()
                 .filter(t -> t.type().isDebit())
-                .map(GetTransactionItem::amount)
+                .map(TransactionSummary::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)));
     model.addAttribute(
         "incomePending",
         df.format(
             transactionsScheduled.stream()
                 .filter(t -> t.type().isCredit())
-                .map(GetTransactionItem::amount)
+                .map(TransactionSummary::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)));
     model.addAttribute(
         "expensesPending",
         df.format(
             transactionsScheduled.stream()
                 .filter(t -> t.type().isDebit())
-                .map(GetTransactionItem::amount)
+                .map(TransactionSummary::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)));
     model.addAttribute("account", new AccountModel(account));
     model.addAttribute("transactions", new TransactionListModel(transactionsConfirmed));
