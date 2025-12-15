@@ -12,7 +12,7 @@
         <a th:href="@{'/protected/transactions/' + ${t.id}}" class="item mb-2">
             <div class="detail">
                 <img th:src="@{/assets/img/1.jpg}" alt="img" class="image-block imaged w48" th:if="${false}">
-                <div>
+                <div th:title="${#strings.isEmpty(t.description) ? '-' : t.description}">
                     <strong th:text="${t.categoryName}"></strong>
                     <p th:class="${t.status.isScheduled() ? 'text-warning' : ''}"
                        th:text="${(t.status.isConfirmed() ? t.occurredAtFormatted : t.statusFormatted)}"></p>
