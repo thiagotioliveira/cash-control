@@ -38,7 +38,7 @@ public class RevertTransaction {
       throw ApplicationException.badRequest("transaction must be the latest one");
     }
 
-    var pastEvents = eventStore.load(command.accountId());
+    var pastEvents = eventStore.load(command.organizationId(), command.accountId());
 
     if (pastEvents.isEmpty()) {
       throw ApplicationException.notFound("account not found");
@@ -50,7 +50,11 @@ public class RevertTransaction {
         command.userId(), command.transactionId(), transaction.amount(), transaction.type());
 
     var newEvents = account.pendingEvents();
-    eventStore.append(account.getId(), newEvents, account.getVersion() - newEvents.size());
+    eventStore.append(
+        command.organizationId(),
+        account.getId(),
+        newEvents,
+        account.getVersion() - newEvents.size());
     newEvents.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();

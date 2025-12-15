@@ -5,5 +5,6 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventJpaRepository extends JpaRepository<EventEntity, Long> {
-  List<EventEntity> findByAggregateIdOrderByVersion(UUID aggregateId);
+  List<EventEntity> findByOrganizationIdAndAggregateIdOrderByVersion(
+      UUID organizationId, UUID aggregateId);
 }

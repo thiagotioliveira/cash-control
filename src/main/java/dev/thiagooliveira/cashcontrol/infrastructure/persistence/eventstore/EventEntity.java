@@ -14,6 +14,9 @@ public class EventEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(nullable = false)
+  private UUID organizationId;
+
   @Column(nullable = false, columnDefinition = "uuid")
   private UUID aggregateId;
 
@@ -79,5 +82,13 @@ public class EventEntity {
 
   public void setOccurredAt(Instant occurredAt) {
     this.occurredAt = occurredAt;
+  }
+
+  public UUID getOrganizationId() {
+    return organizationId;
+  }
+
+  public void setOrganizationId(UUID organizationId) {
+    this.organizationId = organizationId;
   }
 }

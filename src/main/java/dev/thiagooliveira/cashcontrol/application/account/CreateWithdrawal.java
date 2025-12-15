@@ -32,7 +32,7 @@ public class CreateWithdrawal {
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
     if (!TransactionType.DEBIT.equals(category.type()))
       throw ApplicationException.badRequest("category must be debit");
-    var pastEvents = eventStore.load(command.accountId());
+    var pastEvents = eventStore.load(command.organizationId(), command.accountId());
 
     if (pastEvents.isEmpty()) {
       throw ApplicationException.notFound("account not found");
@@ -47,7 +47,11 @@ public class CreateWithdrawal {
         command.description().orElse("Retirada"));
 
     var newEvents = account.pendingEvents();
-    eventStore.append(account.getId(), newEvents, account.getVersion() - newEvents.size());
+    eventStore.append(
+        command.organizationId(),
+        account.getId(),
+        newEvents,
+        account.getVersion() - newEvents.size());
     newEvents.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();

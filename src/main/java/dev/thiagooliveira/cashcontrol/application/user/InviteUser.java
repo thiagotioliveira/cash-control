@@ -38,7 +38,8 @@ public class InviteUser {
     user.invite(command.organizationId());
 
     var events = user.pendingEvents();
-    eventStore.append(user.getId(), events, user.getVersion() - events.size());
+    eventStore.append(
+        command.organizationId(), user.getId(), events, user.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
 
     user.markEventsCommitted();

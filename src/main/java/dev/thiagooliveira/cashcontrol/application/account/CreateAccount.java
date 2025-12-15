@@ -19,7 +19,8 @@ public class CreateAccount {
     var account = Account.create(command.organizationId(), command.bankId(), command.name());
     var events = account.pendingEvents();
 
-    eventStore.append(account.getId(), events, account.getVersion() - events.size());
+    eventStore.append(
+        command.organizationId(), account.getId(), events, account.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();

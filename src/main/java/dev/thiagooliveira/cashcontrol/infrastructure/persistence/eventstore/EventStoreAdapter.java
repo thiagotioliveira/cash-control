@@ -21,8 +21,10 @@ public class EventStoreAdapter implements EventStore {
   }
 
   @Override
-  public void append(UUID aggregateId, List<DomainEvent> events, int expectedVersion) {
-    List<EventEntity> current = repository.findByAggregateIdOrderByVersion(aggregateId);
+  public void append(
+      UUID organizationId, UUID aggregateId, List<DomainEvent> events, int expectedVersion) {
+    List<EventEntity> current =
+        repository.findByOrganizationIdAndAggregateIdOrderByVersion(organizationId, aggregateId);
 
     if (current.size() != expectedVersion) {
       throw InfrastructureException.conflict("concurrency error: version mismatch");
@@ -32,6 +34,7 @@ public class EventStoreAdapter implements EventStore {
     for (DomainEvent event : events) {
       try {
         EventEntity entity = new EventEntity();
+        entity.setOrganizationId(organizationId);
         entity.setAggregateId(aggregateId);
         entity.setVersion(++version);
         entity.setEventType(
@@ -47,8 +50,9 @@ public class EventStoreAdapter implements EventStore {
   }
 
   @Override
-  public List<DomainEvent> load(UUID aggregateId) {
-    var entities = repository.findByAggregateIdOrderByVersion(aggregateId);
+  public List<DomainEvent> load(UUID organizationId, UUID aggregateId) {
+    var entities =
+        repository.findByOrganizationIdAndAggregateIdOrderByVersion(organizationId, aggregateId);
     return convertToDomainEvents(entities);
   }
 

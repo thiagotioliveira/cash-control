@@ -36,7 +36,11 @@ public class RegisterUser {
     var organization = Organization.create(command.email());
 
     var events = organization.pendingEvents();
-    eventStore.append(organization.getId(), events, organization.getVersion() - events.size());
+    eventStore.append(
+        organization.getId(),
+        organization.getId(),
+        events,
+        organization.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
 
     organization.markEventsCommitted();
@@ -46,7 +50,8 @@ public class RegisterUser {
     user.join();
 
     events = user.pendingEvents();
-    eventStore.append(user.getId(), events, user.getVersion() - events.size());
+    eventStore.append(
+        organization.getId(), user.getId(), events, user.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
 
     user.markEventsCommitted();

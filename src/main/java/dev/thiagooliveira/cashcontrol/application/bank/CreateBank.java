@@ -25,7 +25,8 @@ public class CreateBank {
     var bank = Bank.create(command.organizationId(), command.name(), command.currency());
     var events = bank.pendingEvents();
 
-    eventStore.append(bank.getId(), events, bank.getVersion() - events.size());
+    eventStore.append(
+        command.organizationId(), bank.getId(), events, bank.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
 
     bank.markEventsCommitted();

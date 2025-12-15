@@ -33,7 +33,7 @@ public class UpdateScheduledTransaction {
       throw ApplicationException.badRequest("transaction must be scheduled");
     }
 
-    var pastEvents = eventStore.load(command.accountId());
+    var pastEvents = eventStore.load(command.organizationId(), command.accountId());
 
     if (pastEvents.isEmpty()) {
       throw ApplicationException.notFound("account not found");
@@ -50,7 +50,11 @@ public class UpdateScheduledTransaction {
         command.endDueDate());
 
     var newEvents = account.pendingEvents();
-    eventStore.append(account.getId(), newEvents, account.getVersion() - newEvents.size());
+    eventStore.append(
+        command.organizationId(),
+        account.getId(),
+        newEvents,
+        account.getVersion() - newEvents.size());
     newEvents.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();
