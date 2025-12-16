@@ -3,6 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.persistence.user;
 import dev.thiagooliveira.cashcontrol.domain.event.user.UserCreated;
 import dev.thiagooliveira.cashcontrol.domain.event.user.UserInvited;
 import dev.thiagooliveira.cashcontrol.domain.event.user.UserJoined;
+import dev.thiagooliveira.cashcontrol.domain.user.UserSummary;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -40,6 +41,10 @@ public class UserEntity {
     this.password = event.password();
     this.createdAt = event.occurredAt();
     this.active = event.active();
+  }
+
+  public UserSummary toDomain() {
+    return new UserSummary(id, organizationId, name, email);
   }
 
   public void invite(UserInvited event) {

@@ -21,6 +21,17 @@ spring:
     parameters:
       jsonb.type: JSONB
 
+app:
+  user:
+    name: Thiago Oliveira
+    email: thiago@thiagoti.com
+    password: ZuQvnq
+  bank:
+    name: Millenium
+    currency: EUR
+  account:
+    name: Millenium
+
 logging:
   level:
     ROOT: OFF

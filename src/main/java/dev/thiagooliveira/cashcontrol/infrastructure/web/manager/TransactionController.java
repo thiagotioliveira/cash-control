@@ -4,14 +4,14 @@ import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.Formatte
 
 import dev.thiagooliveira.cashcontrol.application.account.*;
 import dev.thiagooliveira.cashcontrol.application.account.dto.*;
+import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
-import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
-import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
+import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
-import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockContext;
+import dev.thiagooliveira.cashcontrol.domain.user.security.Context;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
@@ -32,38 +32,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/protected/transactions")
 public class TransactionController {
 
-  private final MockContext context;
-  private final GetTransactions getTransactions;
-  private final CategoryRepository categoryRepository;
-  private final UpdateScheduledTransaction updateScheduledTransaction;
-  private final ConfirmTransaction confirmTransaction;
-  private final CreateDeposit createDeposit;
-  private final CreateWithdrawal createWithdrawal;
-  private final CreateReceivable createReceivable;
-  private final CreatePayable createPayable;
-  private final RevertTransaction revertTransaction;
+  private final Context context;
+  private final AccountService accountService;
+  private final TransactionService transactionService;
+  private final CategoryService categoryService;
 
   public TransactionController(
-      MockContext context,
-      GetTransactions getTransactions,
-      CategoryRepository categoryRepository,
-      UpdateScheduledTransaction updateScheduledTransaction,
-      ConfirmTransaction confirmTransaction,
-      CreateDeposit createDeposit,
-      CreateWithdrawal createWithdrawal,
-      CreateReceivable createReceivable,
-      CreatePayable createPayable,
-      RevertTransaction revertTransaction) {
+      Context context,
+      AccountService accountService,
+      TransactionService transactionService,
+      CategoryService categoryService) {
     this.context = context;
-    this.getTransactions = getTransactions;
-    this.categoryRepository = categoryRepository;
-    this.updateScheduledTransaction = updateScheduledTransaction;
-    this.confirmTransaction = confirmTransaction;
-    this.createDeposit = createDeposit;
-    this.createWithdrawal = createWithdrawal;
-    this.createReceivable = createReceivable;
-    this.createPayable = createPayable;
-    this.revertTransaction = revertTransaction;
+    this.accountService = accountService;
+    this.transactionService = transactionService;
+    this.categoryService = categoryService;
   }
 
   @GetMapping("/{yearMonth:\\d{4}-\\d{2}}")
@@ -75,9 +57,9 @@ public class TransactionController {
     LocalDate startDate = yearMonth.atDay(1);
     LocalDate endDate = yearMonth.atEndOfMonth();
     var transactions =
-        getTransactions.execute(
+        transactionService.get(
             new GetTransactionsCommand(
-                context.getOrganizationId(), context.getAccountId(), startDate, endDate));
+                context.getUser().organizationId(), context.getAccountId(), startDate, endDate));
     return buildGetTransactionModel(transactions, type, status, model);
   }
 
@@ -88,9 +70,9 @@ public class TransactionController {
       Model model) {
     var today = LocalDate.now(zoneId);
     var transactions =
-        getTransactions.execute(
+        transactionService.get(
             new GetTransactionsCommand(
-                context.getOrganizationId(),
+                context.getUser().organizationId(),
                 context.getAccountId(),
                 today.with(TemporalAdjusters.firstDayOfMonth()),
                 today.with(TemporalAdjusters.lastDayOfMonth())));
@@ -121,8 +103,8 @@ public class TransactionController {
   public String postReviewTransaction(
       @ModelAttribute TransactionActionSheetModel.TransactionForm form, Model model) {
     var categories =
-        categoryRepository
-            .findByOrganizationIdAndId(context.getOrganizationId(), form.getCategoryId())
+        categoryService
+            .get(context.getUser().organizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     form.setCategoryName(categories.name());
     if (form.getDescription() == null) {
@@ -142,26 +124,26 @@ public class TransactionController {
       Model model,
       RedirectAttributes redirectAttributes) {
     var categories =
-        categoryRepository
-            .findByOrganizationIdAndId(context.getOrganizationId(), form.getCategoryId())
+        categoryService
+            .get(context.getUser().organizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     try {
       if (categories.type().isCredit()) {
         if (form.getOccurredAt() != null) {
-          createDeposit.execute(
+          accountService.createDeposit(
               new CreateTransactionCommand(
-                  context.getOrganizationId(),
-                  context.getUserId(),
+                  context.getUser().organizationId(),
+                  context.getUser().id(),
                   context.getAccountId(),
                   form.getOccurredAt().atZone(zoneId).toInstant(),
                   form.getCategoryId(),
                   form.getAmount(),
                   form.getDescription()));
         } else {
-          createReceivable.execute(
+          accountService.createReceivable(
               new CreateScheduledTransactionCommand(
-                  context.getOrganizationId(),
-                  context.getUserId(),
+                  context.getUser().organizationId(),
+                  context.getUser().id(),
                   context.getAccountId(),
                   form.getCategoryId(),
                   form.getAmount(),
@@ -171,20 +153,20 @@ public class TransactionController {
         }
       } else {
         if (form.getOccurredAt() != null) {
-          createWithdrawal.execute(
+          accountService.createWithdrawal(
               new CreateTransactionCommand(
-                  context.getOrganizationId(),
-                  context.getUserId(),
+                  context.getUser().organizationId(),
+                  context.getUser().id(),
                   context.getAccountId(),
                   form.getOccurredAt().atZone(zoneId).toInstant(),
                   form.getCategoryId(),
                   form.getAmount(),
                   form.getDescription()));
         } else {
-          createPayable.execute(
+          accountService.createPayable(
               new CreateScheduledTransactionCommand(
-                  context.getOrganizationId(),
-                  context.getUserId(),
+                  context.getUser().organizationId(),
+                  context.getUser().id(),
                   context.getAccountId(),
                   form.getCategoryId(),
                   form.getAmount(),
@@ -219,12 +201,12 @@ public class TransactionController {
   public String deleteTransaction(
       @PathVariable UUID transactionId, RedirectAttributes redirectAttributes) {
     try {
-      revertTransaction.execute(
+      accountService.revertTransaction(
           new RevertTransactionCommand(
-              context.getOrganizationId(),
+              context.getUser().organizationId(),
               context.getAccountId(),
               transactionId,
-              context.getUserId()));
+              context.getUser().id()));
       redirectAttributes.addFlashAttribute(
           "alert", AlertModel.success("Transação revertida com sucesso!"));
       return "redirect:/protected/transactions";
@@ -245,19 +227,19 @@ public class TransactionController {
     }
     try {
       if (form.getOccurredAt() != null) {
-        confirmTransaction.execute(
+        accountService.confirmTransaction(
             new ConfirmTransactionCommand(
-                context.getOrganizationId(),
-                context.getUserId(),
+                context.getUser().organizationId(),
+                context.getUser().id(),
                 context.getAccountId(),
                 transactionId,
                 form.getOccurredAt().atZone(zoneId).toInstant(),
                 form.getAmount()));
       } else {
-        updateScheduledTransaction.execute(
+        accountService.updateScheduledTransaction(
             new UpdateScheduledTransactionCommand(
-                context.getOrganizationId(),
-                context.getUserId(),
+                context.getUser().organizationId(),
+                context.getUser().id(),
                 context.getAccountId(),
                 transactionId,
                 form.getDescription(),
@@ -303,10 +285,10 @@ public class TransactionController {
   }
 
   public TransactionSummary getTransactionItem(UUID transactionId) {
-    return this.getTransactions
-        .execute(
+    return transactionService
+        .get(
             new GetTransactionCommand(
-                context.getOrganizationId(), context.getAccountId(), transactionId))
+                context.getUser().organizationId(), context.getAccountId(), transactionId))
         .orElseThrow(() -> InfrastructureException.notFound("Transaction not found"));
   }
 }

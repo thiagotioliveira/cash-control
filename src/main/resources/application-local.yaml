@@ -16,6 +16,10 @@ spring:
     parameters:
       jsonb.type: CLOB
 
+app:
+  user:
+    password:
+
 logging:
   level:
     ROOT: INFO

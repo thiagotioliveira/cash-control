@@ -1,19 +1,36 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.config;
 
 import dev.thiagooliveira.cashcontrol.application.account.*;
+import dev.thiagooliveira.cashcontrol.application.bank.BankService;
+import dev.thiagooliveira.cashcontrol.application.bank.BankServiceImpl;
+import dev.thiagooliveira.cashcontrol.application.bank.CreateBank;
+import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.outbound.*;
+import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.account.AccountEventListener;
+import dev.thiagooliveira.cashcontrol.infrastructure.listener.bank.BankEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountJpaRepository;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountRepositoryAdapter;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankJpaRepository;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankRepositoryAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 public class AccountConfig {
 
   @Bean
-  AccountRepository accountRepository(AccountJpaRepository repository) {
-    return new AccountRepositoryAdapter(repository);
+  BankEventListener bankEventListener(BankJpaRepository repository) {
+    return new BankEventListener(repository);
+  }
+
+  @Bean
+  @Transactional
+  BankService bankService(
+      EventStore eventStore, EventPublisher publisher, BankJpaRepository repository) {
+    var bankRepository = bankRepository(repository);
+    return new BankServiceImpl(createBank(bankRepository, eventStore, publisher), bankRepository);
   }
 
   @Bean
@@ -22,56 +39,76 @@ public class AccountConfig {
   }
 
   @Bean
-  CreateAccount createAccount(
+  @Transactional
+  AccountService accountService(
+      EventStore eventStore,
+      EventPublisher publisher,
+      AccountJpaRepository accountJpaRepository,
+      BankService bankService,
+      CategoryService categoryService,
+      TransactionService transactionService) {
+    return new AccountServiceImpl(
+        accountRepository(accountJpaRepository),
+        confirmTransaction(eventStore, publisher, transactionService),
+        createAccount(eventStore, publisher, bankService),
+        createDeposit(eventStore, publisher, categoryService),
+        createWithdrawal(eventStore, publisher, categoryService),
+        createPayable(eventStore, publisher, categoryService),
+        createReceivable(eventStore, publisher, categoryService),
+        revertTransaction(eventStore, publisher, transactionService),
+        updateScheduledTransaction(eventStore, publisher, transactionService));
+  }
+
+  private CreateBank createBank(
       BankRepository bankRepository, EventStore eventStore, EventPublisher publisher) {
-    return new CreateAccount(bankRepository, eventStore, publisher);
+    return new CreateBank(bankRepository, eventStore, publisher);
   }
 
-  @Bean
-  CreateDeposit createDeposit(
-      CategoryRepository categoryRepository, EventStore eventStore, EventPublisher publisher) {
-    return new CreateDeposit(categoryRepository, eventStore, publisher);
+  private BankRepository bankRepository(BankJpaRepository repository) {
+    return new BankRepositoryAdapter(repository);
   }
 
-  @Bean
-  CreateWithdrawal createWithdrawal(
-      CategoryRepository categoryRepository, EventStore eventStore, EventPublisher publisher) {
-    return new CreateWithdrawal(categoryRepository, eventStore, publisher);
+  private AccountRepository accountRepository(AccountJpaRepository repository) {
+    return new AccountRepositoryAdapter(repository);
   }
 
-  @Bean
-  CreatePayable createPayable(
-      CategoryRepository categoryRepository, EventStore eventStore, EventPublisher publisher) {
-    return new CreatePayable(categoryRepository, eventStore, publisher);
+  private CreateAccount createAccount(
+      EventStore eventStore, EventPublisher publisher, BankService bankService) {
+    return new CreateAccount(eventStore, publisher, bankService);
   }
 
-  @Bean
-  CreateReceivable createReceivable(
-      CategoryRepository categoryRepository, EventStore eventStore, EventPublisher publisher) {
-    return new CreateReceivable(categoryRepository, eventStore, publisher);
+  private CreateDeposit createDeposit(
+      EventStore eventStore, EventPublisher publisher, CategoryService categoryService) {
+    return new CreateDeposit(eventStore, publisher, categoryService);
   }
 
-  @Bean
-  ConfirmTransaction confirmTransaction(
-      TransactionRepository transactionRepository,
-      EventStore eventStore,
-      EventPublisher publisher) {
-    return new ConfirmTransaction(transactionRepository, eventStore, publisher);
+  private CreateWithdrawal createWithdrawal(
+      EventStore eventStore, EventPublisher publisher, CategoryService categoryService) {
+    return new CreateWithdrawal(eventStore, publisher, categoryService);
   }
 
-  @Bean
-  UpdateScheduledTransaction updateScheduledTransaction(
-      TransactionRepository transactionRepository,
-      EventStore eventStore,
-      EventPublisher publisher) {
-    return new UpdateScheduledTransaction(transactionRepository, eventStore, publisher);
+  private CreatePayable createPayable(
+      EventStore eventStore, EventPublisher publisher, CategoryService categoryService) {
+    return new CreatePayable(eventStore, publisher, categoryService);
   }
 
-  @Bean
-  RevertTransaction revertTransaction(
-      TransactionRepository transactionRepository,
-      EventStore eventStore,
-      EventPublisher publisher) {
-    return new RevertTransaction(transactionRepository, eventStore, publisher);
+  private CreateReceivable createReceivable(
+      EventStore eventStore, EventPublisher publisher, CategoryService categoryService) {
+    return new CreateReceivable(eventStore, publisher, categoryService);
+  }
+
+  private ConfirmTransaction confirmTransaction(
+      EventStore eventStore, EventPublisher publisher, TransactionService transactionService) {
+    return new ConfirmTransaction(eventStore, publisher, transactionService);
+  }
+
+  private UpdateScheduledTransaction updateScheduledTransaction(
+      EventStore eventStore, EventPublisher publisher, TransactionService transactionService) {
+    return new UpdateScheduledTransaction(eventStore, publisher, transactionService);
+  }
+
+  private RevertTransaction revertTransaction(
+      EventStore eventStore, EventPublisher publisher, TransactionService transactionService) {
+    return new RevertTransaction(eventStore, publisher, transactionService);
   }
 }

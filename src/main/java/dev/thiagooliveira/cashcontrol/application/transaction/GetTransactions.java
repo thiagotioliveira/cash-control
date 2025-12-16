@@ -6,6 +6,7 @@ import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransaction
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class GetTransactions {
 
@@ -23,5 +24,9 @@ public class GetTransactions {
   public Optional<TransactionSummary> execute(GetTransactionCommand command) {
     return this.repository.findByOrganizationIdAndAccountIdAndId(
         command.organizationId(), command.accountId(), command.transactionId());
+  }
+
+  public boolean isLatestTransaction(UUID organizationId, UUID accountId, UUID id) {
+    return this.repository.isLatestTransaction(organizationId, accountId, id);
   }
 }

@@ -2,12 +2,12 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
-import dev.thiagooliveira.cashcontrol.application.outbound.AccountRepository;
-import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
-import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
+import dev.thiagooliveira.cashcontrol.application.account.AccountService;
+import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
+import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
-import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockContext;
+import dev.thiagooliveira.cashcontrol.domain.user.security.Context;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
 import java.math.BigDecimal;
@@ -21,34 +21,34 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/protected")
 public class IndexController {
-  private final MockContext context;
-  private final AccountRepository accountRepository;
-  private final CategoryRepository categoryRepository;
-  private final GetTransactions getTransactions;
+  private final Context context;
+  private final AccountService accountService;
+  private final CategoryService categoryService;
+  private final TransactionService transactionService;
 
   public IndexController(
-      MockContext context,
-      AccountRepository accountRepository,
-      CategoryRepository categoryRepository,
-      GetTransactions getTransactions) {
+      Context context,
+      AccountService accountService,
+      CategoryService categoryService,
+      TransactionService transactionService) {
     this.context = context;
-    this.accountRepository = accountRepository;
-    this.categoryRepository = categoryRepository;
-    this.getTransactions = getTransactions;
+    this.accountService = accountService;
+    this.categoryService = categoryService;
+    this.transactionService = transactionService;
   }
 
   @GetMapping
   public String index(Model model) {
     var account =
-        accountRepository
-            .findByOrganizationIdAndId(context.getOrganizationId(), context.getAccountId())
+        accountService
+            .get(context.getUser().organizationId(), context.getAccountId())
             .orElseThrow(() -> InfrastructureException.badRequest("something wrong"));
-    var categories = categoryRepository.findAllByOrganizationId(context.getOrganizationId());
+    var categories = categoryService.get(context.getUser().organizationId());
     var today = LocalDate.now(zoneId);
     var transactions =
-        getTransactions.execute(
+        transactionService.get(
             new GetTransactionsCommand(
-                context.getOrganizationId(),
+                context.getUser().organizationId(),
                 context.getAccountId(),
                 today.with(TemporalAdjusters.firstDayOfMonth()),
                 today.with(TemporalAdjusters.lastDayOfMonth())));

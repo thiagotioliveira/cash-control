@@ -1,11 +1,10 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 
-import dev.thiagooliveira.cashcontrol.application.category.CreateCategory;
+import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.category.dto.CreateCategoryCommand;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
-import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
-import dev.thiagooliveira.cashcontrol.infrastructure.config.Context;
+import dev.thiagooliveira.cashcontrol.domain.user.security.Context;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.AlertModel;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.CategoryActionSheetModel;
@@ -22,19 +21,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CategoryController {
 
   private final Context context;
-  private final CategoryRepository categoryRepository;
-  private final CreateCategory createCategory;
+  private final CategoryService categoryService;
 
-  public CategoryController(
-      Context context, CategoryRepository categoryRepository, CreateCategory createCategory) {
+  public CategoryController(Context context, CategoryService categoryService) {
     this.context = context;
-    this.categoryRepository = categoryRepository;
-    this.createCategory = createCategory;
+    this.categoryService = categoryService;
   }
 
   @GetMapping
   public String index(Model model) {
-    var categories = categoryRepository.findAllByOrganizationId(context.getOrganizationId());
+    var categories = categoryService.get(context.getUser().organizationId());
     model.addAttribute("categories", new CategoryListModel(categories));
     model.addAttribute("category", new CategoryActionSheetModel("Nova Categoria"));
     return "protected/categories/category-list";
@@ -46,9 +42,9 @@ public class CategoryController {
       Model model,
       RedirectAttributes redirectAttributes) {
     try {
-      createCategory.execute(
+      categoryService.createCategory(
           new CreateCategoryCommand(
-              context.getOrganizationId(),
+              context.getUser().organizationId(),
               form.getName(),
               "#" + form.getHashColor(),
               TransactionType.valueOf(form.getType())));

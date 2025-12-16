@@ -4,23 +4,22 @@ import dev.thiagooliveira.cashcontrol.application.account.dto.ConfirmTransaction
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventPublisher;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
-import dev.thiagooliveira.cashcontrol.application.outbound.TransactionRepository;
+import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
+import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionCommand;
 import dev.thiagooliveira.cashcontrol.domain.account.Account;
 import java.time.Instant;
 
 public class ConfirmTransaction {
 
-  private final TransactionRepository transactionRepository;
   private final EventStore eventStore;
   private final EventPublisher publisher;
+  private final TransactionService transactionService;
 
   public ConfirmTransaction(
-      TransactionRepository transactionRepository,
-      EventStore eventStore,
-      EventPublisher publisher) {
-    this.transactionRepository = transactionRepository;
+      EventStore eventStore, EventPublisher publisher, TransactionService transactionService) {
     this.eventStore = eventStore;
     this.publisher = publisher;
+    this.transactionService = transactionService;
   }
 
   public void execute(ConfirmTransactionCommand command) {
@@ -29,9 +28,10 @@ public class ConfirmTransaction {
     }
 
     var transaction =
-        this.transactionRepository
-            .findByOrganizationIdAndAccountIdAndId(
-                command.organizationId(), command.accountId(), command.transactionId())
+        this.transactionService
+            .get(
+                new GetTransactionCommand(
+                    command.organizationId(), command.accountId(), command.transactionId()))
             .orElseThrow(() -> ApplicationException.notFound("transaction not found"));
 
     if (!transaction.status().isScheduled()) {

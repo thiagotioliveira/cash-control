@@ -1,16 +1,20 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.config;
 
+import dev.thiagooliveira.cashcontrol.application.account.AccountService;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventPublisher;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
 import dev.thiagooliveira.cashcontrol.application.outbound.OrganizationRepository;
 import dev.thiagooliveira.cashcontrol.application.outbound.UserRepository;
-import dev.thiagooliveira.cashcontrol.application.user.InviteUser;
-import dev.thiagooliveira.cashcontrol.application.user.RegisterUser;
+import dev.thiagooliveira.cashcontrol.application.user.*;
+import dev.thiagooliveira.cashcontrol.infrastructure.listener.user.OrganizationEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.user.UserEventListener;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.OrganizationJpaRepository;
+import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.OrganizationRepositoryAdapter;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserJpaRepository;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserRepositoryAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 public class UserConfig {
@@ -21,18 +25,49 @@ public class UserConfig {
   }
 
   @Bean
-  UserRepository userRepository(UserJpaRepository userJpaRepository) {
-    return new UserRepositoryAdapter(userJpaRepository);
+  OrganizationEventListener organizationEventListener(
+      OrganizationJpaRepository organizationJpaRepository) {
+    return new OrganizationEventListener(organizationJpaRepository);
   }
 
   @Bean
-  RegisterUser registerUser(
+  @Transactional
+  UserService userService(
+      UserJpaRepository userJpaRepository,
+      OrganizationJpaRepository organizationJpaRepository,
+      AccountService accountService,
+      EventStore eventStore,
+      EventPublisher publisher) {
+    var userRepository = userRepository(userJpaRepository);
+    return new UserServiceImpl(
+        login(accountService, userRepository),
+        registerUser(userRepository, eventStore, publisher),
+        inviteUser(
+            organizationRepository(organizationJpaRepository),
+            userRepository,
+            eventStore,
+            publisher));
+  }
+
+  private OrganizationRepository organizationRepository(
+      OrganizationJpaRepository organizationJpaRepository) {
+    return new OrganizationRepositoryAdapter(organizationJpaRepository);
+  }
+
+  private UserRepository userRepository(UserJpaRepository userJpaRepository) {
+    return new UserRepositoryAdapter(userJpaRepository);
+  }
+
+  private Login login(AccountService accountService, UserRepository userRepository) {
+    return new Login(accountService, userRepository);
+  }
+
+  private RegisterUser registerUser(
       UserRepository userRepository, EventStore eventStore, EventPublisher publisher) {
     return new RegisterUser(userRepository, eventStore, publisher);
   }
 
-  @Bean
-  InviteUser inviteUser(
+  private InviteUser inviteUser(
       OrganizationRepository organizationRepository,
       UserRepository repository,
       EventStore eventStore,

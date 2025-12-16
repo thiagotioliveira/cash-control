@@ -2,9 +2,9 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 
 import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
 
-import dev.thiagooliveira.cashcontrol.application.transaction.GetTransactions;
+import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
-import dev.thiagooliveira.cashcontrol.infrastructure.config.mockdata.MockContext;
+import dev.thiagooliveira.cashcontrol.domain.user.security.Context;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.mapper.MonthlyCategoryMapper;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.mapper.MonthlyIncomeExpensesMapper;
 import java.time.LocalDate;
@@ -20,18 +20,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/protected/reports")
 public class ReportController {
 
-  private final MockContext context;
-  private final GetTransactions getTransactions;
+  private final Context context;
+  private final TransactionService transactionService;
   private final MonthlyCategoryMapper monthlyCategoryMapper;
   private final MonthlyIncomeExpensesMapper monthlyIncomeExpensesMapper;
 
   public ReportController(
-      MockContext context,
-      GetTransactions getTransactions,
+      Context context,
+      TransactionService transactionService,
       MonthlyCategoryMapper monthlyCategoryMapper,
       MonthlyIncomeExpensesMapper monthlyIncomeExpensesMapper) {
     this.context = context;
-    this.getTransactions = getTransactions;
+    this.transactionService = transactionService;
     this.monthlyCategoryMapper = monthlyCategoryMapper;
     this.monthlyIncomeExpensesMapper = monthlyIncomeExpensesMapper;
   }
@@ -48,10 +48,10 @@ public class ReportController {
 
   private String buildReportModel(Model model, LocalDate localDate) {
     var transactions =
-        getTransactions
-            .execute(
+        transactionService
+            .get(
                 new GetTransactionsCommand(
-                    context.getOrganizationId(),
+                    context.getUser().organizationId(),
                     context.getAccountId(),
                     localDate.with(TemporalAdjusters.firstDayOfMonth()),
                     localDate.with(TemporalAdjusters.lastDayOfMonth())))
