@@ -9,9 +9,9 @@ import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.category.CategoryEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryJpaRepository;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryRepositoryAdapter;
+import dev.thiagooliveira.cashcontrol.infrastructure.transactional.category.CategoryServiceProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 public class CategoryConfig {
@@ -22,12 +22,12 @@ public class CategoryConfig {
   }
 
   @Bean
-  @Transactional
   CategoryService categoryService(
       CategoryJpaRepository repository, EventStore eventStore, EventPublisher publisher) {
     var categoryRepository = categoryRepository(repository);
-    return new CategoryServiceImpl(
-        categoryRepository, createCategory(categoryRepository, eventStore, publisher));
+    return new CategoryServiceProxy(
+        new CategoryServiceImpl(
+            categoryRepository, createCategory(categoryRepository, eventStore, publisher)));
   }
 
   private CategoryRepository categoryRepository(CategoryJpaRepository repository) {

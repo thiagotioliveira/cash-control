@@ -8,9 +8,9 @@ import dev.thiagooliveira.cashcontrol.infrastructure.listener.transaction.Transa
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionJpaRepository;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionRepositoryAdapter;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionTemplateJpaRepository;
+import dev.thiagooliveira.cashcontrol.infrastructure.transactional.transaction.TransactionServiceProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 public class TransactionConfig {
@@ -22,12 +22,12 @@ public class TransactionConfig {
   }
 
   @Bean
-  @Transactional
   TransactionService transactionService(
       TransactionJpaRepository repository,
       TransactionTemplateJpaRepository transactionTemplateJpaRepository) {
-    return new TransactionServiceImpl(
-        getTransactions(transactionRepository(repository, transactionTemplateJpaRepository)));
+    return new TransactionServiceProxy(
+        new TransactionServiceImpl(
+            getTransactions(transactionRepository(repository, transactionTemplateJpaRepository))));
   }
 
   private TransactionRepository transactionRepository(

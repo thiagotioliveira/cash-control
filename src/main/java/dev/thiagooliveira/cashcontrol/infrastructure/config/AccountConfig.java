@@ -13,9 +13,10 @@ import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.Account
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountRepositoryAdapter;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankJpaRepository;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankRepositoryAdapter;
+import dev.thiagooliveira.cashcontrol.infrastructure.transactional.account.AccountServiceProxy;
+import dev.thiagooliveira.cashcontrol.infrastructure.transactional.bank.BankServiceProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 public class AccountConfig {
@@ -26,11 +27,11 @@ public class AccountConfig {
   }
 
   @Bean
-  @Transactional
   BankService bankService(
       EventStore eventStore, EventPublisher publisher, BankJpaRepository repository) {
     var bankRepository = bankRepository(repository);
-    return new BankServiceImpl(createBank(bankRepository, eventStore, publisher), bankRepository);
+    return new BankServiceProxy(
+        new BankServiceImpl(createBank(bankRepository, eventStore, publisher), bankRepository));
   }
 
   @Bean
@@ -39,7 +40,6 @@ public class AccountConfig {
   }
 
   @Bean
-  @Transactional
   AccountService accountService(
       EventStore eventStore,
       EventPublisher publisher,
@@ -47,16 +47,17 @@ public class AccountConfig {
       BankService bankService,
       CategoryService categoryService,
       TransactionService transactionService) {
-    return new AccountServiceImpl(
-        accountRepository(accountJpaRepository),
-        confirmTransaction(eventStore, publisher, transactionService),
-        createAccount(eventStore, publisher, bankService),
-        createDeposit(eventStore, publisher, categoryService),
-        createWithdrawal(eventStore, publisher, categoryService),
-        createPayable(eventStore, publisher, categoryService),
-        createReceivable(eventStore, publisher, categoryService),
-        revertTransaction(eventStore, publisher, transactionService),
-        updateScheduledTransaction(eventStore, publisher, transactionService));
+    return new AccountServiceProxy(
+        new AccountServiceImpl(
+            accountRepository(accountJpaRepository),
+            confirmTransaction(eventStore, publisher, transactionService),
+            createAccount(eventStore, publisher, bankService),
+            createDeposit(eventStore, publisher, categoryService),
+            createWithdrawal(eventStore, publisher, categoryService),
+            createPayable(eventStore, publisher, categoryService),
+            createReceivable(eventStore, publisher, categoryService),
+            revertTransaction(eventStore, publisher, transactionService),
+            updateScheduledTransaction(eventStore, publisher, transactionService)));
   }
 
   private CreateBank createBank(

@@ -26,7 +26,7 @@ public class AccountEntity {
   @Column(nullable = false)
   private String name;
 
-  @ManyToOne(optional = false, fetch = FetchType.EAGER)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "bank_id", nullable = false)
   private BankEntity bank;
 
