@@ -1,44 +1,37 @@
-package dev.thiagooliveira.cashcontrol.domain.event.account;
+package dev.thiagooliveira.cashcontrol.domain.event.account.v1;
 
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-public class TransactionConfirmed implements DomainEvent {
+public class CreditApplied implements DomainEvent {
   private UUID organizationId;
-  private UUID userId;
   private UUID accountId;
   private UUID transactionId;
-  private TransactionType type;
+  private UUID userId;
   private BigDecimal amount;
-  private BigDecimal balanceBefore;
   private BigDecimal balanceAfter;
   private Instant occurredAt;
   private int version;
 
-  public TransactionConfirmed() {}
+  public CreditApplied() {}
 
-  public TransactionConfirmed(
+  public CreditApplied(
       UUID organizationId,
-      UUID userId,
       UUID accountId,
       UUID transactionId,
-      TransactionType type,
+      UUID userId,
       BigDecimal amount,
-      BigDecimal balanceBefore,
       Instant occurredAt,
       int version) {
     this.organizationId = organizationId;
-    this.userId = userId;
     this.accountId = accountId;
     this.transactionId = transactionId;
-    this.type = type;
+    this.userId = userId;
     this.amount = amount;
     this.occurredAt = occurredAt;
     this.version = version;
-    this.balanceBefore = balanceBefore;
   }
 
   @Override
@@ -48,32 +41,28 @@ public class TransactionConfirmed implements DomainEvent {
 
   @Override
   public Instant occurredAt() {
-    return getOccurredAt();
+    return occurredAt;
   }
 
   @Override
   public int version() {
-    return getVersion();
-  }
-
-  public UUID getAccountId() {
-    return accountId;
-  }
-
-  public UUID getTransactionId() {
-    return transactionId;
-  }
-
-  public TransactionType getType() {
-    return type;
+    return version;
   }
 
   public BigDecimal getAmount() {
     return amount;
   }
 
-  public BigDecimal getBalanceBefore() {
-    return balanceBefore;
+  public UUID getTransactionId() {
+    return transactionId;
+  }
+
+  public UUID getAccountId() {
+    return accountId;
+  }
+
+  public UUID getOrganizationId() {
+    return organizationId;
   }
 
   public BigDecimal getBalanceAfter() {
@@ -82,18 +71,6 @@ public class TransactionConfirmed implements DomainEvent {
 
   public void setBalanceAfter(BigDecimal balanceAfter) {
     this.balanceAfter = balanceAfter;
-  }
-
-  public Instant getOccurredAt() {
-    return occurredAt;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public UUID getOrganizationId() {
-    return organizationId;
   }
 
   public UUID getUserId() {
