@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.user;
 
-import dev.thiagooliveira.cashcontrol.domain.event.user.OrganizationCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.user.v1.OrganizationCreated;
 import dev.thiagooliveira.cashcontrol.domain.user.OrganizationSummary;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

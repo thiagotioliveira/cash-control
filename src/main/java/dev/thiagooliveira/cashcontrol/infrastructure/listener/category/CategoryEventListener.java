@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.listener.category;
 
-import dev.thiagooliveira.cashcontrol.domain.event.category.CategoryCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.CategoryCreated;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryJpaRepository;
 import org.springframework.context.event.EventListener;

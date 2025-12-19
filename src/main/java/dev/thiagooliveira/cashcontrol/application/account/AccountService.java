@@ -7,19 +7,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface AccountService {
-  void confirmTransaction(ConfirmTransactionCommand command);
 
-  void createDeposit(CreateTransactionCommand command);
+  void applyCredit(ApplyCreditCommand command);
 
-  void createWithdrawal(CreateTransactionCommand command);
+  void revertCredit(RevertCreditCommand command);
 
-  void createPayable(CreateScheduledTransactionCommand command);
+  void applyDebit(ApplyDebitCommand command);
 
-  void createReceivable(CreateScheduledTransactionCommand command);
-
-  void revertTransaction(RevertTransactionCommand command);
-
-  void updateScheduledTransaction(UpdateScheduledTransactionCommand command);
+  void revertDebit(RevertDebitCommand command);
 
   AccountSummary createAccount(CreateAccountCommand command);
 

@@ -2,15 +2,12 @@ package dev.thiagooliveira.cashcontrol.domain.account;
 
 import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
-import dev.thiagooliveira.cashcontrol.domain.event.account.*;
+import dev.thiagooliveira.cashcontrol.domain.event.account.v1.*;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
-import dev.thiagooliveira.cashcontrol.shared.Recurrence;
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class Account extends Aggregate {
@@ -67,167 +64,32 @@ public class Account extends Aggregate {
     return account;
   }
 
-  public void credit(
-      UUID userId, Instant occurredAt, UUID categoryId, BigDecimal amount, String description) {
+  public void credit(UUID transactionId, UUID userId, BigDecimal amount) {
     validate(amount);
     apply(
-        new TransactionCreated(
-            UUID.randomUUID(),
-            id,
-            categoryId,
-            TransactionType.CREDIT,
-            amount,
-            balance,
-            description,
-            organizationId,
-            userId,
-            occurredAt,
-            getVersion() + 1));
+        new CreditApplied(
+            organizationId, id, transactionId, userId, amount, Instant.now(), getVersion() + 1));
   }
 
-  public void creditConfirmed(
-      UUID userId, UUID transactionId, Instant occurredAt, BigDecimal amount) {
+  public void revertCredit(UUID transactionId, UUID userId, BigDecimal amount) {
     validate(amount);
     apply(
-        new TransactionConfirmed(
-            organizationId,
-            userId,
-            id,
-            transactionId,
-            TransactionType.CREDIT,
-            amount,
-            balance,
-            occurredAt,
-            getVersion() + 1));
+        new CreditReverted(
+            organizationId, id, transactionId, userId, amount, Instant.now(), getVersion() + 1));
   }
 
-  public void debit(
-      UUID userId, Instant occurredAt, UUID categoryId, BigDecimal amount, String description) {
+  public void debit(UUID transactionId, UUID userId, BigDecimal amount) {
     validate(amount);
     apply(
-        new TransactionCreated(
-            UUID.randomUUID(),
-            id,
-            categoryId,
-            TransactionType.DEBIT,
-            amount,
-            balance,
-            description,
-            organizationId,
-            userId,
-            occurredAt,
-            getVersion() + 1));
+        new DebitApplied(
+            organizationId, id, transactionId, userId, amount, Instant.now(), getVersion() + 1));
   }
 
-  public void debitConfirmed(
-      UUID userId, UUID transactionId, Instant occurredAt, BigDecimal amount) {
+  public void revertDebit(UUID transactionId, UUID userId, BigDecimal amount) {
     validate(amount);
     apply(
-        new TransactionConfirmed(
-            organizationId,
-            userId,
-            id,
-            transactionId,
-            TransactionType.DEBIT,
-            amount,
-            balance,
-            occurredAt,
-            getVersion() + 1));
-  }
-
-  public void payable(
-      UUID userId,
-      UUID categoryId,
-      BigDecimal amount,
-      String description,
-      LocalDate startDueDate,
-      Recurrence recurrence,
-      Optional<Integer> installments) {
-    validate(amount);
-    validateDueDate(startDueDate);
-    apply(
-        new ScheduledTransactionCreated(
-            UUID.randomUUID(),
-            id,
-            categoryId,
-            TransactionType.DEBIT,
-            amount,
-            description,
-            startDueDate,
-            recurrence,
-            installments.orElse(null),
-            organizationId,
-            userId,
-            Instant.now(),
-            getVersion() + 1));
-  }
-
-  public void receivable(
-      UUID userId,
-      UUID categoryId,
-      BigDecimal amount,
-      String description,
-      LocalDate startDueDate,
-      Recurrence recurrence,
-      Optional<Integer> installments) {
-    validate(amount);
-    validateDueDate(startDueDate);
-    apply(
-        new ScheduledTransactionCreated(
-            UUID.randomUUID(),
-            id,
-            categoryId,
-            TransactionType.CREDIT,
-            amount,
-            description,
-            startDueDate,
-            recurrence,
-            installments.orElse(null),
-            organizationId,
-            userId,
-            Instant.now(),
-            getVersion() + 1));
-  }
-
-  public void updateScheduledTransaction(
-      UUID userId,
-      UUID transactionId,
-      BigDecimal amount,
-      String description,
-      LocalDate dueDate,
-      Optional<LocalDate> endDueDate) {
-    validate(amount);
-    validateDueDate(dueDate);
-    //    if (endDueDate.isPresent() && dueDayOfMonth != endDueDate.get().getDayOfMonth()) {
-    //      throw DomainException.badRequest("Due date must be the same day of the month");
-    //    }
-    apply(
-        new ScheduledTransactionUpdated(
-            transactionId,
-            id,
-            amount,
-            description,
-            dueDate,
-            endDueDate.orElse(null),
-            organizationId,
-            userId,
-            Instant.now(),
-            getVersion() + 1));
-  }
-
-  public void revertTransaction(
-      UUID userId, UUID transactionId, BigDecimal amount, TransactionType type) {
-    validate(amount);
-    apply(
-        new TransactionReversed(
-            organizationId,
-            userId,
-            id,
-            transactionId,
-            type,
-            amount,
-            Instant.now(),
-            getVersion() + 1));
+        new DebitReverted(
+            organizationId, id, transactionId, userId, amount, Instant.now(), getVersion() + 1));
   }
 
   public UUID getId() {
@@ -278,44 +140,25 @@ public class Account extends Aggregate {
         organizationId = ev.organizationId();
         updatedAt = ev.occurredAt();
       }
-      case TransactionCreated ev -> {
-        if (ev.getType().isCredit()) {
-          balance = balance.add(ev.getAmount());
-          ev.setBalanceAfter(balance);
-          updatedAt = ev.occurredAt();
-        } else if (ev.getType().isDebit()) {
-          balance = balance.subtract(ev.getAmount());
-          ev.setBalanceAfter(balance);
-          updatedAt = ev.occurredAt();
-        } else throw DomainException.badRequest("unhandled transaction type " + ev.getType());
-      }
-      case ScheduledTransactionCreated ev -> {
+      case CreditApplied ev -> {
+        balance = balance.add(ev.getAmount());
+        ev.setBalanceAfter(balance);
         updatedAt = ev.occurredAt();
       }
-      case TransactionConfirmed ev -> {
-        if (ev.getType().isCredit()) {
-          balance = balance.add(ev.getAmount());
-          ev.setBalanceAfter(balance);
-          updatedAt = ev.occurredAt();
-        } else if (ev.getType().isDebit()) {
-          balance = balance.subtract(ev.getAmount());
-          ev.setBalanceAfter(balance);
-          updatedAt = ev.occurredAt();
-        } else throw DomainException.badRequest("unhandled transaction type " + ev.getType());
-      }
-      case ScheduledTransactionUpdated ev -> {
+      case DebitApplied ev -> {
+        balance = balance.subtract(ev.getAmount());
+        ev.setBalanceAfter(balance);
         updatedAt = ev.occurredAt();
       }
-      case TransactionReversed ev -> {
-        if (ev.getType().isCredit()) {
-          balance = balance.subtract(ev.getAmount());
-          ev.setBalanceAfter(balance);
-          updatedAt = ev.occurredAt();
-        } else if (ev.getType().isDebit()) {
-          balance = balance.add(ev.getAmount());
-          ev.setBalanceAfter(balance);
-          updatedAt = ev.occurredAt();
-        } else throw DomainException.badRequest("unhandled transaction type " + ev.getType());
+      case DebitReverted ev -> {
+        balance = balance.add(ev.getAmount());
+        ev.setBalanceAfter(balance);
+        updatedAt = ev.occurredAt();
+      }
+      case CreditReverted ev -> {
+        balance = balance.subtract(ev.getAmount());
+        ev.setBalanceAfter(balance);
+        updatedAt = ev.occurredAt();
       }
       default -> throw DomainException.badRequest("unhandled event " + event);
     }

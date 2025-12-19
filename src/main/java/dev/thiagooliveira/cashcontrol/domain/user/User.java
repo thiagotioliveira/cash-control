@@ -2,9 +2,9 @@ package dev.thiagooliveira.cashcontrol.domain.user;
 
 import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
-import dev.thiagooliveira.cashcontrol.domain.event.user.UserCreated;
-import dev.thiagooliveira.cashcontrol.domain.event.user.UserInvited;
-import dev.thiagooliveira.cashcontrol.domain.event.user.UserJoined;
+import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserInvited;
+import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserJoined;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import java.time.Instant;
 import java.util.UUID;

@@ -15,4 +15,10 @@ public interface TransactionRepository {
 
   List<TransactionSummary> findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
       UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate);
+
+  List<TransactionSummary> findAllByTransactionTemplateIdAndAccountId(
+      UUID transactionTemplateId, UUID accountId);
+
+  boolean existsByTransactionTemplateIdAndOriginalDueDate(
+      UUID transactionTemplateId, LocalDate originalDueDate);
 }

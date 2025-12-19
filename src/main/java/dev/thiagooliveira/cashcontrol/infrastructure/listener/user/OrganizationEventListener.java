@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.listener.user;
 
-import dev.thiagooliveira.cashcontrol.domain.event.user.OrganizationCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.user.v1.OrganizationCreated;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.OrganizationEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.OrganizationJpaRepository;
 import org.springframework.context.event.EventListener;

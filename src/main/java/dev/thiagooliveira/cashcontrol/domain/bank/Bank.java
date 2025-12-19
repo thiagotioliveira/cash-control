@@ -2,7 +2,7 @@ package dev.thiagooliveira.cashcontrol.domain.bank;
 
 import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
-import dev.thiagooliveira.cashcontrol.domain.event.bank.BankCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.account.v1.BankCreated;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import java.time.Instant;

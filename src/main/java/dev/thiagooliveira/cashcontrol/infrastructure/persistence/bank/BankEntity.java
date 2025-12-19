@@ -1,7 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank;
 
 import dev.thiagooliveira.cashcontrol.domain.bank.BankSummary;
-import dev.thiagooliveira.cashcontrol.domain.event.bank.BankCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.account.v1.BankCreated;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import jakarta.persistence.*;
 import java.util.UUID;

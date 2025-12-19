@@ -1,7 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.category;
 
 import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
-import dev.thiagooliveira.cashcontrol.domain.event.category.CategoryCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.CategoryCreated;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import jakarta.persistence.*;
 import java.util.UUID;

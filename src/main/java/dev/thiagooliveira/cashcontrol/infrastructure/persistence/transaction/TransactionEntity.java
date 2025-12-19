@@ -1,10 +1,8 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction;
 
-import dev.thiagooliveira.cashcontrol.domain.event.account.ScheduledTransactionUpdated;
-import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
-import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
-import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionReversed;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.*;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
+import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserEntity;
@@ -69,40 +67,40 @@ public class TransactionEntity {
 
   public TransactionEntity() {}
 
-  public TransactionEntity(TransactionCreated event) {
-    this.id = event.getTransactionId();
-    this.organizationId = event.getOrganizationId();
-    this.user = new UserEntity();
-    this.user.setId(event.getUserId());
+  public TransactionEntity(TransactionRequested event) {
+    this.id = event.transactionId();
+    this.organizationId = event.organizationId();
+    this.user = null;
     this.account = new AccountEntity();
-    this.account.setId(event.getAccountId());
+    this.account.setId(event.accountId());
     this.transactionTemplate = null;
-    this.occurredAt = event.occurredAt();
-    this.originalDueDate = this.occurredAt.atZone(FormattersUtils.zoneId).toLocalDate();
+    this.occurredAt = null;
+    this.originalDueDate = event.occurredAt().atZone(FormattersUtils.zoneId).toLocalDate();
     this.dueDate = this.originalDueDate;
-    this.description = event.getDescription();
-    this.amount = event.getAmount();
-    this.accountBalance = event.getBalanceAfter();
+    this.description = event.description();
+    this.amount = event.amount();
+    this.accountBalance = null;
     this.category = new CategoryEntity();
-    this.category.setId(event.getCategoryId());
-    this.type = event.getType();
-    this.status = TransactionStatus.CONFIRMED;
+    this.category.setId(event.categoryId());
+    this.type = event.type();
+    this.status = TransactionStatus.PENDING;
   }
 
-  public TransactionEntity(TransactionTemplateEntity template, LocalDate dueDate) {
-    this.id = UUID.randomUUID();
-    this.organizationId = template.getOrganizationId();
+  public TransactionEntity(ScheduledTransactionCreated event) {
+    this.id = event.transactionId();
+    this.organizationId = event.organizationId();
     this.account = new AccountEntity();
-    this.account.setId(template.getAccountId());
-    this.transactionTemplate = template;
+    this.account.setId(event.accountId());
+    this.transactionTemplate = new TransactionTemplateEntity();
+    this.transactionTemplate.setId(event.templateId());
     this.occurredAt = null;
-    this.originalDueDate = dueDate;
+    this.originalDueDate = event.dueDate();
     this.dueDate = this.originalDueDate;
-    this.description = template.getDescription();
-    this.amount = template.getAmount();
+    this.description = event.description();
+    this.amount = event.amount();
     this.category = new CategoryEntity();
-    this.category.setId(template.getCategoryId());
-    this.type = template.getType();
+    this.category.setId(event.categoryId());
+    this.type = event.type();
     this.status = TransactionStatus.SCHEDULED;
   }
 
@@ -137,11 +135,10 @@ public class TransactionEntity {
 
   public void confirm(TransactionConfirmed event) {
     this.occurredAt = event.occurredAt();
-    this.amount = event.getAmount();
-    this.accountBalance = event.getBalanceAfter();
+    this.accountBalance = event.balanceAfter();
     this.status = TransactionStatus.CONFIRMED;
     this.user = new UserEntity();
-    this.user.setId(event.getUserId());
+    this.user.setId(event.userId());
   }
 
   public void update(ScheduledTransactionUpdated event) {
@@ -150,11 +147,18 @@ public class TransactionEntity {
     this.dueDate = event.dueDate();
   }
 
+  public void updateStatusToPending() {
+    if (!TransactionStatus.SCHEDULED.equals(this.status)) {
+      throw InfrastructureException.conflict("Status of transaction is " + this.status);
+    }
+    this.status = TransactionStatus.PENDING;
+  }
+
   public boolean wasScheduled() {
     return this.transactionTemplate != null;
   }
 
-  public void revert(TransactionReversed event) {
+  public void revert() {
     this.occurredAt = null;
     this.accountBalance = null;
     this.user = null;

@@ -1,7 +1,9 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction;
 
-import dev.thiagooliveira.cashcontrol.domain.event.account.ScheduledTransactionCreated;
-import dev.thiagooliveira.cashcontrol.domain.event.account.ScheduledTransactionUpdated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.PayableCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.ReceivableCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionTemplateUpdated;
+import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionTemplateSummary;
 import dev.thiagooliveira.cashcontrol.shared.DueDateUtils;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
@@ -51,20 +53,20 @@ public class TransactionTemplateEntity {
 
   public TransactionTemplateEntity() {}
 
-  public TransactionTemplateEntity(ScheduledTransactionCreated event) {
-    this.id = event.transactionId();
+  public TransactionTemplateEntity(PayableCreated event) {
+    this.id = event.templateId();
     this.organizationId = event.organizationId();
     this.accountId = event.accountId();
     this.description = event.description();
     this.amount = event.amount();
     this.categoryId = event.categoryId();
-    this.type = event.type();
+    this.type = TransactionType.DEBIT;
     this.recurrence = event.recurrence();
-    this.originalStartDate = event.dueDate();
+    this.originalStartDate = event.startDueDate();
     this.startDate = this.originalStartDate;
-    if (event.totalInstallments() != null) {
-      this.totalInstallments = event.totalInstallments();
-      var dueDate = event.dueDate();
+    if (event.installments() != null) {
+      this.totalInstallments = event.installments();
+      var dueDate = event.startDueDate();
       for (int i = 0; i < this.totalInstallments; i++) {
         this.endDate = dueDate;
         dueDate = DueDateUtils.nextDueDate(dueDate, event.recurrence());
@@ -72,10 +74,45 @@ public class TransactionTemplateEntity {
     }
   }
 
-  public void update(ScheduledTransactionUpdated event) {
+  public TransactionTemplateEntity(ReceivableCreated event) {
+    this.id = event.templateId();
+    this.organizationId = event.organizationId();
+    this.accountId = event.accountId();
+    this.description = event.description();
+    this.amount = event.amount();
+    this.categoryId = event.categoryId();
+    this.type = TransactionType.CREDIT;
+    this.recurrence = event.recurrence();
+    this.originalStartDate = event.startDueDate();
+    this.startDate = this.originalStartDate;
+    if (event.installments() != null) {
+      this.totalInstallments = event.installments();
+      var dueDate = event.startDueDate();
+      for (int i = 0; i < this.totalInstallments; i++) {
+        this.endDate = dueDate;
+        dueDate = DueDateUtils.nextDueDate(dueDate, event.recurrence());
+      }
+    }
+  }
+
+  public void update(TransactionTemplateUpdated event) {
     this.amount = event.amount();
     this.startDate = event.dueDate();
     this.endDate = event.endDueDate();
+  }
+
+  public TransactionTemplateSummary toDomain() {
+    return new TransactionTemplateSummary(
+        this.id,
+        this.organizationId,
+        this.accountId,
+        this.categoryId,
+        this.type,
+        this.description,
+        this.amount,
+        this.recurrence,
+        this.startDate,
+        this.totalInstallments);
   }
 
   public UUID getId() {

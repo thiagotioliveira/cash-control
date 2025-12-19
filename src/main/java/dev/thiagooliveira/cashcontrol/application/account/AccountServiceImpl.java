@@ -10,69 +10,45 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
   private final AccountRepository accountRepository;
-  private final ConfirmTransaction confirmTransaction;
   private final CreateAccount createAccount;
-  private final CreateDeposit createDeposit;
-  private final CreateWithdrawal createWithdrawal;
-  private final CreatePayable createPayable;
-  private final CreateReceivable createReceivable;
-  private final RevertTransaction revertTransaction;
-  private final UpdateScheduledTransaction updateScheduledTransaction;
+  private final ApplyCredit applyCredit;
+  private final ApplyDebit applyDebit;
+  private final RevertCredit revertCredit;
+  private final RevertDebit revertDebit;
 
   public AccountServiceImpl(
       AccountRepository accountRepository,
-      ConfirmTransaction confirmTransaction,
       CreateAccount createAccount,
-      CreateDeposit createDeposit,
-      CreateWithdrawal createWithdrawal,
-      CreatePayable createPayable,
-      CreateReceivable createReceivable,
-      RevertTransaction revertTransaction,
-      UpdateScheduledTransaction updateScheduledTransaction) {
+      ApplyCredit applyCredit,
+      ApplyDebit applyDebit,
+      RevertCredit revertCredit,
+      RevertDebit revertDebit) {
     this.accountRepository = accountRepository;
-    this.confirmTransaction = confirmTransaction;
     this.createAccount = createAccount;
-    this.createDeposit = createDeposit;
-    this.createWithdrawal = createWithdrawal;
-    this.createPayable = createPayable;
-    this.createReceivable = createReceivable;
-    this.revertTransaction = revertTransaction;
-    this.updateScheduledTransaction = updateScheduledTransaction;
+    this.applyCredit = applyCredit;
+    this.applyDebit = applyDebit;
+    this.revertCredit = revertCredit;
+    this.revertDebit = revertDebit;
   }
 
   @Override
-  public void confirmTransaction(ConfirmTransactionCommand command) {
-    this.confirmTransaction.execute(command);
+  public void applyCredit(ApplyCreditCommand command) {
+    this.applyCredit.execute(command);
   }
 
   @Override
-  public void createDeposit(CreateTransactionCommand command) {
-    this.createDeposit.execute(command);
+  public void revertCredit(RevertCreditCommand command) {
+    this.revertCredit.execute(command);
   }
 
   @Override
-  public void createWithdrawal(CreateTransactionCommand command) {
-    this.createWithdrawal.execute(command);
+  public void applyDebit(ApplyDebitCommand command) {
+    this.applyDebit.execute(command);
   }
 
   @Override
-  public void createPayable(CreateScheduledTransactionCommand command) {
-    this.createPayable.execute(command);
-  }
-
-  @Override
-  public void createReceivable(CreateScheduledTransactionCommand command) {
-    this.createReceivable.execute(command);
-  }
-
-  @Override
-  public void revertTransaction(RevertTransactionCommand command) {
-    this.revertTransaction.execute(command);
-  }
-
-  @Override
-  public void updateScheduledTransaction(UpdateScheduledTransactionCommand command) {
-    this.updateScheduledTransaction.execute(command);
+  public void revertDebit(RevertDebitCommand command) {
+    this.revertDebit.execute(command);
   }
 
   @Override

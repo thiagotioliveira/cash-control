@@ -1,6 +1,13 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.listener.transaction;
 
-import dev.thiagooliveira.cashcontrol.domain.event.account.*;
+import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
+import dev.thiagooliveira.cashcontrol.application.transaction.dto.ConfirmRevertTransactionCommand;
+import dev.thiagooliveira.cashcontrol.application.transaction.dto.ConfirmTransactionCommand;
+import dev.thiagooliveira.cashcontrol.domain.event.account.v1.CreditApplied;
+import dev.thiagooliveira.cashcontrol.domain.event.account.v1.CreditReverted;
+import dev.thiagooliveira.cashcontrol.domain.event.account.v1.DebitApplied;
+import dev.thiagooliveira.cashcontrol.domain.event.account.v1.DebitReverted;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.*;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionJpaRepository;
@@ -8,84 +15,109 @@ import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.Tra
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionTemplateJpaRepository;
 import java.util.UUID;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 
 public class TransactionEventListener {
 
+  private final TransactionService transactionService;
   private final TransactionTemplateJpaRepository templateRepository;
   private final TransactionJpaRepository repository;
 
   public TransactionEventListener(
-      TransactionTemplateJpaRepository templateRepository, TransactionJpaRepository repository) {
+      TransactionService transactionService,
+      TransactionTemplateJpaRepository templateRepository,
+      TransactionJpaRepository repository) {
+    this.transactionService = transactionService;
     this.templateRepository = templateRepository;
     this.repository = repository;
   }
 
+  @Order(1)
   @EventListener
-  public void on(TransactionCreated event) {
-    repository.save(new TransactionEntity(event));
+  public void on(TransactionRequested event) {
+    this.repository.save(new TransactionEntity(event));
+  }
+
+  @Order(1)
+  @EventListener
+  public void on(ScheduledTransactionRequested event) {
+    var transaction =
+        findByIdAndAccountId(event.organizationId(), event.accountId(), event.transactionId());
+    transaction.updateStatusToPending();
+    this.repository.save(transaction);
+  }
+
+  @EventListener
+  public void on(CreditApplied event) {
+    this.transactionService.confirm(new ConfirmTransactionCommand(event));
+  }
+
+  @EventListener
+  public void on(DebitApplied event) {
+    this.transactionService.confirm(new ConfirmTransactionCommand(event));
+  }
+
+  @EventListener
+  public void on(TransactionConfirmed event) {
+    var transaction =
+        findByIdAndAccountId(event.organizationId(), event.accountId(), event.transactionId());
+    transaction.confirm(event);
+    this.repository.save(transaction);
+  }
+
+  @EventListener
+  public void on(PayableCreated event) {
+    templateRepository.save(new TransactionTemplateEntity(event));
+  }
+
+  @EventListener
+  public void on(ReceivableCreated event) {
+    templateRepository.save(new TransactionTemplateEntity(event));
   }
 
   @EventListener
   public void on(ScheduledTransactionCreated event) {
-    TransactionTemplateEntity entity = new TransactionTemplateEntity(event);
-    templateRepository.save(entity);
+    repository.save(new TransactionEntity(event));
+  }
+
+  @EventListener
+  public void on(TransactionTemplateUpdated event) {
+    var template =
+        this.templateRepository
+            .findById(event.templateId())
+            .orElseThrow(() -> InfrastructureException.notFound("Template not found"));
+    template.update(event);
+    this.templateRepository.save(template);
   }
 
   @EventListener
   public void on(ScheduledTransactionUpdated event) {
     var transaction =
         findByIdAndAccountId(event.organizationId(), event.accountId(), event.transactionId());
-    if (!transaction.getStatus().isScheduled()) {
-      throw InfrastructureException.badRequest("Transaction must be scheduled");
-    }
-    var template =
-        this.templateRepository
-            .findByIdAndAccountId(transaction.getTransactionTemplate().getId(), event.accountId())
-            .orElseThrow(() -> InfrastructureException.notFound("Transaction template not found"));
-
-    template.update(event);
-    this.templateRepository.save(template);
-    var transactions =
-        repository.findAllByTransactionTemplateIdAndAccountId(template.getId(), event.accountId());
-    transactions.stream()
-        .filter(t -> t.getStatus().isScheduled())
-        //        .filter(
-        //            t ->
-        //                t.getOriginalDueDate().isAfter(transaction.getDueDate())
-        //                    ||
-        // t.getOriginalDueDate().equals(transactions.getFirst().getDueDate()))
-        .forEach(
-            (t -> {
-              t.update(event);
-              this.repository.save(t);
-            }));
-    if (event.endDueDate() != null) {
-      transactions.stream()
-          .filter(t -> t.getOriginalDueDate().isAfter(event.endDueDate()))
-          .forEach(t -> this.repository.deleteById(t.getId()));
-    }
-  }
-
-  @EventListener
-  public void on(TransactionConfirmed event) {
-    var transaction =
-        findByIdAndAccountId(
-            event.getOrganizationId(), event.getAccountId(), event.getTransactionId());
-    transaction.confirm(event);
+    transaction.update(event);
     this.repository.save(transaction);
   }
 
   @EventListener
-  public void on(TransactionReversed event) {
+  public void on(TransactionReverted event) {
     var transaction =
-        findByIdAndAccountId(
-            event.getOrganizationId(), event.getAccountId(), event.getTransactionId());
+        findByIdAndAccountId(event.organizationId(), event.accountId(), event.transactionId());
     if (transaction.wasScheduled()) {
-      transaction.revert(event);
+      transaction.revert();
       this.repository.save(transaction);
     } else {
       this.repository.deleteById(transaction.getId());
     }
+  }
+
+  @EventListener
+  public void on(CreditReverted event) {
+    this.transactionService.confirm(new ConfirmRevertTransactionCommand(event));
+  }
+
+  @EventListener
+  public void on(DebitReverted event) {
+    this.transactionService.confirm(new ConfirmRevertTransactionCommand(event));
   }
 
   private TransactionEntity findByIdAndAccountId(

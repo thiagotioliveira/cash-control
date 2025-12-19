@@ -18,38 +18,23 @@ public class AccountServiceProxy implements AccountService {
   }
 
   @Override
-  public void confirmTransaction(ConfirmTransactionCommand command) {
-    this.accountService.confirmTransaction(command);
+  public void applyCredit(ApplyCreditCommand command) {
+    this.accountService.applyCredit(command);
   }
 
   @Override
-  public void createDeposit(CreateTransactionCommand command) {
-    this.accountService.createDeposit(command);
+  public void revertCredit(RevertCreditCommand command) {
+    this.accountService.revertCredit(command);
   }
 
   @Override
-  public void createWithdrawal(CreateTransactionCommand command) {
-    this.accountService.createWithdrawal(command);
+  public void applyDebit(ApplyDebitCommand command) {
+    this.accountService.applyDebit(command);
   }
 
   @Override
-  public void createPayable(CreateScheduledTransactionCommand command) {
-    this.accountService.createPayable(command);
-  }
-
-  @Override
-  public void createReceivable(CreateScheduledTransactionCommand command) {
-    this.accountService.createReceivable(command);
-  }
-
-  @Override
-  public void revertTransaction(RevertTransactionCommand command) {
-    this.accountService.revertTransaction(command);
-  }
-
-  @Override
-  public void updateScheduledTransaction(UpdateScheduledTransactionCommand command) {
-    this.accountService.updateScheduledTransaction(command);
+  public void revertDebit(RevertDebitCommand command) {
+    this.accountService.revertDebit(command);
   }
 
   @Override

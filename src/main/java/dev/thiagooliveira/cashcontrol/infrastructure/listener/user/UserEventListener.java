@@ -1,8 +1,8 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.listener.user;
 
-import dev.thiagooliveira.cashcontrol.domain.event.user.UserCreated;
-import dev.thiagooliveira.cashcontrol.domain.event.user.UserInvited;
-import dev.thiagooliveira.cashcontrol.domain.event.user.UserJoined;
+import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserInvited;
+import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserJoined;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserJpaRepository;

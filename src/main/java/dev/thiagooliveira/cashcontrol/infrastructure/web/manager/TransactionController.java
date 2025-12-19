@@ -7,8 +7,7 @@ import dev.thiagooliveira.cashcontrol.application.account.dto.*;
 import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionCommand;
-import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
+import dev.thiagooliveira.cashcontrol.application.transaction.dto.*;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.domain.user.security.Context;
@@ -33,7 +32,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class TransactionController {
 
   private final Context context;
-  private final AccountService accountService;
   private final TransactionService transactionService;
   private final CategoryService categoryService;
 
@@ -43,7 +41,6 @@ public class TransactionController {
       TransactionService transactionService,
       CategoryService categoryService) {
     this.context = context;
-    this.accountService = accountService;
     this.transactionService = transactionService;
     this.categoryService = categoryService;
   }
@@ -130,8 +127,8 @@ public class TransactionController {
     try {
       if (categories.type().isCredit()) {
         if (form.getOccurredAt() != null) {
-          accountService.createDeposit(
-              new CreateTransactionCommand(
+          transactionService.createDeposit(
+              new CreateDepositCommand(
                   context.getUser().organizationId(),
                   context.getUser().id(),
                   context.getAccountId(),
@@ -140,8 +137,8 @@ public class TransactionController {
                   form.getAmount(),
                   form.getDescription()));
         } else {
-          accountService.createReceivable(
-              new CreateScheduledTransactionCommand(
+          transactionService.createReceivable(
+              new CreateReceivableCommand(
                   context.getUser().organizationId(),
                   context.getUser().id(),
                   context.getAccountId(),
@@ -153,8 +150,8 @@ public class TransactionController {
         }
       } else {
         if (form.getOccurredAt() != null) {
-          accountService.createWithdrawal(
-              new CreateTransactionCommand(
+          transactionService.createWithdrawal(
+              new CreateWithdrawalCommand(
                   context.getUser().organizationId(),
                   context.getUser().id(),
                   context.getAccountId(),
@@ -163,8 +160,8 @@ public class TransactionController {
                   form.getAmount(),
                   form.getDescription()));
         } else {
-          accountService.createPayable(
-              new CreateScheduledTransactionCommand(
+          transactionService.createPayable(
+              new CreatePayableCommand(
                   context.getUser().organizationId(),
                   context.getUser().id(),
                   context.getAccountId(),
@@ -201,7 +198,7 @@ public class TransactionController {
   public String deleteTransaction(
       @PathVariable UUID transactionId, RedirectAttributes redirectAttributes) {
     try {
-      accountService.revertTransaction(
+      transactionService.revertTransaction(
           new RevertTransactionCommand(
               context.getUser().organizationId(),
               context.getAccountId(),
@@ -227,8 +224,8 @@ public class TransactionController {
     }
     try {
       if (form.getOccurredAt() != null) {
-        accountService.confirmTransaction(
-            new ConfirmTransactionCommand(
+        transactionService.confirm(
+            new ConfirmScheduledTransactionCommand(
                 context.getUser().organizationId(),
                 context.getUser().id(),
                 context.getAccountId(),
@@ -236,7 +233,7 @@ public class TransactionController {
                 form.getOccurredAt().atZone(zoneId).toInstant(),
                 form.getAmount()));
       } else {
-        accountService.updateScheduledTransaction(
+        transactionService.update(
             new UpdateScheduledTransactionCommand(
                 context.getUser().organizationId(),
                 context.getUser().id(),

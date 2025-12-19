@@ -13,7 +13,7 @@ For further reference, please consider the following sections:
 * [Create an OCI image](https://docs.spring.io/spring-boot/3.5.8/maven-plugin/build-image.html)
 * [Spring Web](https://docs.spring.io/spring-boot/3.5.8/reference/web/servlet.html)
 * [Spring Boot DevTools](https://docs.spring.io/spring-boot/3.5.8/reference/using/devtools.html)
-* [Thymeleaf](https://docs.spring.io/spring-boot/3.5.8/reference/web/servlet.html#web.servlet.spring-mvc.template-engines)
+* [Thymeleaf](https://docs.spring.io/spring-boot/3.5.8/reference/web/servlet.html#web.servlet.spring-mvc.transactionTemplate-engines)
 * [Liquibase Migration](https://docs.spring.io/spring-boot/3.5.8/how-to/data-initialization.html#howto.data-initialization.migration-tool.liquibase)
 
 ### Guides

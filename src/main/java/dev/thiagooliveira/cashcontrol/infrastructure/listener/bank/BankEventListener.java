@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.listener.bank;
 
-import dev.thiagooliveira.cashcontrol.domain.event.bank.BankCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.account.v1.BankCreated;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankJpaRepository;
 import org.springframework.context.event.EventListener;

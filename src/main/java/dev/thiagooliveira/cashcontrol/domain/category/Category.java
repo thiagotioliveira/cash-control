@@ -2,7 +2,7 @@ package dev.thiagooliveira.cashcontrol.domain.category;
 
 import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
-import dev.thiagooliveira.cashcontrol.domain.event.category.CategoryCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.CategoryCreated;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.time.Instant;

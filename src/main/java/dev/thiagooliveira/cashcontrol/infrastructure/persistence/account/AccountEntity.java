@@ -1,10 +1,8 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.account;
 
 import dev.thiagooliveira.cashcontrol.domain.account.AccountSummary;
-import dev.thiagooliveira.cashcontrol.domain.event.account.AccountCreated;
-import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionConfirmed;
-import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionCreated;
-import dev.thiagooliveira.cashcontrol.domain.event.account.TransactionReversed;
+import dev.thiagooliveira.cashcontrol.domain.event.account.v1.*;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionConfirmed;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -45,18 +43,28 @@ public class AccountEntity {
     this.organizationId = event.organizationId();
   }
 
-  public void update(TransactionCreated event) {
+  public void update(CreditApplied event) {
+    this.balance = event.getBalanceAfter();
+    this.updatedAt = event.occurredAt();
+  }
+
+  public void update(DebitApplied event) {
+    this.balance = event.getBalanceAfter();
+    this.updatedAt = event.occurredAt();
+  }
+
+  public void update(CreditReverted event) {
+    this.balance = event.getBalanceAfter();
+    this.updatedAt = event.occurredAt();
+  }
+
+  public void update(DebitReverted event) {
     this.balance = event.getBalanceAfter();
     this.updatedAt = event.occurredAt();
   }
 
   public void update(TransactionConfirmed event) {
-    this.balance = event.getBalanceAfter();
-    this.updatedAt = event.occurredAt();
-  }
-
-  public void update(TransactionReversed event) {
-    this.balance = event.getBalanceAfter();
+    this.balance = event.balanceAfter();
     this.updatedAt = event.occurredAt();
   }
 

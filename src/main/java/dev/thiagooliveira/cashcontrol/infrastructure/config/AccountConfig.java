@@ -4,9 +4,7 @@ import dev.thiagooliveira.cashcontrol.application.account.*;
 import dev.thiagooliveira.cashcontrol.application.bank.BankService;
 import dev.thiagooliveira.cashcontrol.application.bank.BankServiceImpl;
 import dev.thiagooliveira.cashcontrol.application.bank.CreateBank;
-import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.outbound.*;
-import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.account.AccountEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.bank.BankEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountJpaRepository;
@@ -35,8 +33,9 @@ public class AccountConfig {
   }
 
   @Bean
-  AccountEventListener accountEventListener(AccountJpaRepository repository) {
-    return new AccountEventListener(repository);
+  AccountEventListener accountEventListener(
+      AccountService accountService, AccountJpaRepository repository) {
+    return new AccountEventListener(accountService, repository);
   }
 
   @Bean
@@ -44,20 +43,15 @@ public class AccountConfig {
       EventStore eventStore,
       EventPublisher publisher,
       AccountJpaRepository accountJpaRepository,
-      BankService bankService,
-      CategoryService categoryService,
-      TransactionService transactionService) {
+      BankService bankService) {
     return new AccountServiceProxy(
         new AccountServiceImpl(
             accountRepository(accountJpaRepository),
-            confirmTransaction(eventStore, publisher, transactionService),
             createAccount(eventStore, publisher, bankService),
-            createDeposit(eventStore, publisher, categoryService),
-            createWithdrawal(eventStore, publisher, categoryService),
-            createPayable(eventStore, publisher, categoryService),
-            createReceivable(eventStore, publisher, categoryService),
-            revertTransaction(eventStore, publisher, transactionService),
-            updateScheduledTransaction(eventStore, publisher, transactionService)));
+            applyCredit(eventStore, publisher),
+            applyDebit(eventStore, publisher),
+            revertCredit(eventStore, publisher),
+            revertDebit(eventStore, publisher)));
   }
 
   private CreateBank createBank(
@@ -78,38 +72,19 @@ public class AccountConfig {
     return new CreateAccount(eventStore, publisher, bankService);
   }
 
-  private CreateDeposit createDeposit(
-      EventStore eventStore, EventPublisher publisher, CategoryService categoryService) {
-    return new CreateDeposit(eventStore, publisher, categoryService);
+  private ApplyCredit applyCredit(EventStore eventStore, EventPublisher publisher) {
+    return new ApplyCredit(eventStore, publisher);
   }
 
-  private CreateWithdrawal createWithdrawal(
-      EventStore eventStore, EventPublisher publisher, CategoryService categoryService) {
-    return new CreateWithdrawal(eventStore, publisher, categoryService);
+  private ApplyDebit applyDebit(EventStore eventStore, EventPublisher publisher) {
+    return new ApplyDebit(eventStore, publisher);
   }
 
-  private CreatePayable createPayable(
-      EventStore eventStore, EventPublisher publisher, CategoryService categoryService) {
-    return new CreatePayable(eventStore, publisher, categoryService);
+  private RevertDebit revertDebit(EventStore eventStore, EventPublisher publisher) {
+    return new RevertDebit(eventStore, publisher);
   }
 
-  private CreateReceivable createReceivable(
-      EventStore eventStore, EventPublisher publisher, CategoryService categoryService) {
-    return new CreateReceivable(eventStore, publisher, categoryService);
-  }
-
-  private ConfirmTransaction confirmTransaction(
-      EventStore eventStore, EventPublisher publisher, TransactionService transactionService) {
-    return new ConfirmTransaction(eventStore, publisher, transactionService);
-  }
-
-  private UpdateScheduledTransaction updateScheduledTransaction(
-      EventStore eventStore, EventPublisher publisher, TransactionService transactionService) {
-    return new UpdateScheduledTransaction(eventStore, publisher, transactionService);
-  }
-
-  private RevertTransaction revertTransaction(
-      EventStore eventStore, EventPublisher publisher, TransactionService transactionService) {
-    return new RevertTransaction(eventStore, publisher, transactionService);
+  private RevertCredit revertCredit(EventStore eventStore, EventPublisher publisher) {
+    return new RevertCredit(eventStore, publisher);
   }
 }

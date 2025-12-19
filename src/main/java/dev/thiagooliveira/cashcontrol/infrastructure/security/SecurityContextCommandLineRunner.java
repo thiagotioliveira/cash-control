@@ -37,7 +37,7 @@ public class SecurityContextCommandLineRunner implements CommandLineRunner {
   @Value("${app.user.password}")
   private String password;
 
-  @Value("${app.bank.name")
+  @Value("${app.bank.name}")
   private String bankName;
 
   @Value("${app.bank.currency}")
