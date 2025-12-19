@@ -1,11 +1,11 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.config;
 
-import dev.thiagooliveira.cashcontrol.application.account.AccountService;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventPublisher;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
 import dev.thiagooliveira.cashcontrol.application.outbound.OrganizationRepository;
 import dev.thiagooliveira.cashcontrol.application.outbound.UserRepository;
 import dev.thiagooliveira.cashcontrol.application.user.*;
+import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.user.OrganizationEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.user.UserEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.OrganizationJpaRepository;
@@ -20,8 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserConfig {
 
   @Bean
-  UserEventListener userEventListener(UserJpaRepository userJpaRepository) {
-    return new UserEventListener(userJpaRepository);
+  UserEventListener userEventListener(
+      SecurityContext securityContext,
+      UserService userService,
+      UserJpaRepository userJpaRepository) {
+    return new UserEventListener(securityContext, userService, userJpaRepository);
   }
 
   @Bean
@@ -35,12 +38,11 @@ public class UserConfig {
   UserService userService(
       UserJpaRepository userJpaRepository,
       OrganizationJpaRepository organizationJpaRepository,
-      AccountService accountService,
       EventStore eventStore,
       EventPublisher publisher) {
     var userRepository = userRepository(userJpaRepository);
     return new UserServiceImpl(
-        login(accountService, userRepository),
+        login(userRepository),
         registerUser(userRepository, eventStore, publisher),
         inviteUser(
             organizationRepository(organizationJpaRepository),
@@ -58,8 +60,8 @@ public class UserConfig {
     return new UserRepositoryAdapter(userJpaRepository);
   }
 
-  private Login login(AccountService accountService, UserRepository userRepository) {
-    return new Login(accountService, userRepository);
+  private Login login(UserRepository userRepository) {
+    return new Login(userRepository);
   }
 
   private RegisterUser registerUser(

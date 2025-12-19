@@ -12,13 +12,6 @@ spring:
   h2:
     console:
       enabled: true
-  liquibase:
-    parameters:
-      jsonb.type: CLOB
-
-app:
-  user:
-    password:
 
 logging:
   level:

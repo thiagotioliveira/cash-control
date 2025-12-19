@@ -7,49 +7,51 @@ import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
-import dev.thiagooliveira.cashcontrol.domain.user.security.Context;
+import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.UUID;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/protected")
+@RequestMapping("/protected/accounts")
 public class IndexController {
-  private final Context context;
+  private final SecurityContext securityContext;
   private final AccountService accountService;
   private final CategoryService categoryService;
   private final TransactionService transactionService;
 
   public IndexController(
-      Context context,
+      SecurityContext securityContext,
       AccountService accountService,
       CategoryService categoryService,
       TransactionService transactionService) {
-    this.context = context;
+    this.securityContext = securityContext;
     this.accountService = accountService;
     this.categoryService = categoryService;
     this.transactionService = transactionService;
   }
 
-  @GetMapping
-  public String index(Model model) {
+  @GetMapping("/{accountId}")
+  public String index(@PathVariable UUID accountId, Model model) {
     var account =
         accountService
-            .get(context.getUser().organizationId(), context.getAccountId())
+            .get(securityContext.getUser().organizationId(), accountId)
             .orElseThrow(() -> InfrastructureException.badRequest("something wrong"));
-    var categories = categoryService.get(context.getUser().organizationId());
+    var categories = categoryService.get(securityContext.getUser().organizationId());
     var today = LocalDate.now(zoneId);
     var transactions =
         transactionService.get(
             new GetTransactionsCommand(
-                context.getUser().organizationId(),
-                context.getAccountId(),
+                securityContext.getUser().organizationId(),
+                accountId,
                 today.with(TemporalAdjusters.firstDayOfMonth()),
                 today.with(TemporalAdjusters.lastDayOfMonth())));
     var transactionsConfirmed =
@@ -94,6 +96,7 @@ public class IndexController {
     model.addAttribute(
         "depositActionSheet",
         new TransactionActionSheetModel(
+            accountId,
             "Deposito",
             account.currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getCredit(),
@@ -104,6 +107,7 @@ public class IndexController {
     model.addAttribute(
         "withdrawActionSheet",
         new TransactionActionSheetModel(
+            accountId,
             "Retirada",
             account.currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
@@ -114,6 +118,7 @@ public class IndexController {
     model.addAttribute(
         "payableActionSheet",
         new TransactionActionSheetModel(
+            accountId,
             "Pagamento",
             account.currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
@@ -124,6 +129,7 @@ public class IndexController {
     model.addAttribute(
         "receivableActionSheet",
         new TransactionActionSheetModel(
+            accountId,
             "Recebimento",
             account.currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getCredit(),

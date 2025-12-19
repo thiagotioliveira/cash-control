@@ -12,25 +12,11 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/cash_control
     driver-class-name: org.postgresql.Driver
-    username: cashuser
-    password: cashpass
+    username: admin
+    password: admin
   h2:
     console:
       enabled: false
-  liquibase:
-    parameters:
-      jsonb.type: JSONB
-
-app:
-  user:
-    name: Thiago Oliveira
-    email: thiago@thiagoti.com
-    password: ZuQvnq
-  bank:
-    name: Millenium
-    currency: EUR
-  account:
-    name: Millenium
 
 logging:
   level:

@@ -67,7 +67,7 @@
                         Tem certeza que deseja reverter a transação?
                     </div>
                     <div class="modal-footer">
-                        <form th:action="@{${'/protected/transactions/' + transaction.getId() + '/delete'}}" method="post">
+                        <form th:action="@{${'/protected/accounts/'+transaction.getAccountId()+'/transactions/' + transaction.getId() + '/delete'}}" method="post">
                             <div class="btn-inline">
                                 <a href="#" class="btn btn-text-danger" data-bs-dismiss="modal">
                                     <ion-icon name="close-outline"></ion-icon>

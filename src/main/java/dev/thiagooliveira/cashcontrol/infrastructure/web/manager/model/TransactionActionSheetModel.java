@@ -30,6 +30,7 @@ public class TransactionActionSheetModel {
   private final String title;
   private final List<CategoryModel> categories;
   private final UUID id;
+  private final UUID accountId;
   private final Currency currency;
   private final UUID categoryId;
   private final String categoryName;
@@ -48,6 +49,7 @@ public class TransactionActionSheetModel {
     this.showRecurrenceInput = false;
     this.showInstallmentInput = false;
     this.id = transaction.transactionId();
+    this.accountId = transaction.accountId();
     this.currency = transaction.currency();
     this.categoryId = transaction.categoryId();
     this.categoryName = transaction.categoryName();
@@ -67,6 +69,7 @@ public class TransactionActionSheetModel {
   }
 
   public TransactionActionSheetModel(
+      UUID accountId,
       String title,
       Currency currency,
       List<CategoryModel> categories,
@@ -83,6 +86,7 @@ public class TransactionActionSheetModel {
     this.title = title;
     this.categories = categories;
     this.id = null;
+    this.accountId = accountId;
     this.currency = currency;
     this.categoryId = null;
     this.categoryName = null;
@@ -170,8 +174,13 @@ public class TransactionActionSheetModel {
     return categories;
   }
 
+  public UUID getAccountId() {
+    return accountId;
+  }
+
   public static class TransactionForm {
     private UUID id;
+    private UUID accountId;
     private UUID categoryId;
     private String categoryName;
     private String symbol;
@@ -190,6 +199,7 @@ public class TransactionActionSheetModel {
 
     public TransactionForm(TransactionSummary transaction) {
       this.id = transaction.transactionId();
+      this.accountId = transaction.accountId();
       this.categoryId = transaction.categoryId();
       this.categoryName = transaction.categoryName();
       this.symbol = transaction.currency().getSymbol();
@@ -206,6 +216,14 @@ public class TransactionActionSheetModel {
 
     public UUID getId() {
       return id;
+    }
+
+    public UUID getAccountId() {
+      return accountId;
+    }
+
+    public void setAccountId(UUID accountId) {
+      this.accountId = accountId;
     }
 
     public void setId(UUID id) {

@@ -8,7 +8,6 @@ import dev.thiagooliveira.cashcontrol.application.user.dto.RegisterUserCommand;
 import dev.thiagooliveira.cashcontrol.domain.user.Organization;
 import dev.thiagooliveira.cashcontrol.domain.user.User;
 import dev.thiagooliveira.cashcontrol.domain.user.UserSummary;
-import java.util.Objects;
 
 public class RegisterUser {
 
@@ -24,11 +23,6 @@ public class RegisterUser {
   }
 
   public UserSummary execute(RegisterUserCommand command) {
-    if (!Objects.equals(command.password(), command.passwordConfirmation())) {
-      throw ApplicationException.badRequest("passwords must match");
-    }
-
-    PasswordUtils.isValid(command.password());
 
     if (userRepository.existsByEmail(command.email())) {
       throw ApplicationException.badRequest("user already registered");
@@ -49,6 +43,7 @@ public class RegisterUser {
     var user = User.create(command.name(), command.email(), command.password());
     user.invite(organization.getId());
     user.join();
+    user.register();
 
     events = user.pendingEvents();
     eventStore.append(

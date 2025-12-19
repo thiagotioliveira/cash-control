@@ -65,6 +65,7 @@ public class TransactionListModel {
 
   public class TransactionItem {
     private final UUID id;
+    private final UUID accountId;
     private final UUID transactionTemplateId;
     private final Instant occurredAt;
     private final String occurredAtFormatted;
@@ -84,6 +85,7 @@ public class TransactionListModel {
 
     public TransactionItem(TransactionSummary transaction) {
       this.id = transaction.transactionId();
+      this.accountId = transaction.accountId();
       this.transactionTemplateId = transaction.transactionTemplateId().orElse(null);
       this.occurredAt = transaction.occurredAt().orElse(null);
       this.occurredAtFormatted =
@@ -117,6 +119,10 @@ public class TransactionListModel {
 
     public UUID getId() {
       return id;
+    }
+
+    public UUID getAccountId() {
+      return accountId;
     }
 
     public Currency getCurrency() {

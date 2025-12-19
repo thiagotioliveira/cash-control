@@ -3,7 +3,6 @@ package dev.thiagooliveira.cashcontrol.application.user;
 import dev.thiagooliveira.cashcontrol.application.user.dto.InviteUserCommand;
 import dev.thiagooliveira.cashcontrol.application.user.dto.RegisterUserCommand;
 import dev.thiagooliveira.cashcontrol.domain.user.UserSummary;
-import dev.thiagooliveira.cashcontrol.domain.user.security.Context;
 
 public class UserServiceImpl implements UserService {
 
@@ -28,7 +27,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Context login(String email, String password) {
+  public UserSummary login(String email, String password) {
     return this.login.execute(email, password);
   }
 }

@@ -39,7 +39,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: payload
-                  type: "${jsonb.type}"
+                  type: text
                   constraints:
                     nullable: false
         - addUniqueConstraint:

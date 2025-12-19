@@ -4,12 +4,13 @@ import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.Formatte
 
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
-import dev.thiagooliveira.cashcontrol.domain.user.security.Context;
+import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.mapper.MonthlyCategoryMapper;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.mapper.MonthlyIncomeExpensesMapper;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
+import java.util.UUID;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,42 +18,43 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/protected/reports")
+@RequestMapping("/protected/accounts")
 public class ReportController {
 
-  private final Context context;
+  private final SecurityContext securityContext;
   private final TransactionService transactionService;
   private final MonthlyCategoryMapper monthlyCategoryMapper;
   private final MonthlyIncomeExpensesMapper monthlyIncomeExpensesMapper;
 
   public ReportController(
-      Context context,
+      SecurityContext securityContext,
       TransactionService transactionService,
       MonthlyCategoryMapper monthlyCategoryMapper,
       MonthlyIncomeExpensesMapper monthlyIncomeExpensesMapper) {
-    this.context = context;
+    this.securityContext = securityContext;
     this.transactionService = transactionService;
     this.monthlyCategoryMapper = monthlyCategoryMapper;
     this.monthlyIncomeExpensesMapper = monthlyIncomeExpensesMapper;
   }
 
-  @GetMapping
-  public String index(Model model) {
-    return buildReportModel(model, LocalDate.now(zoneId));
+  @GetMapping("/{accountId}/reports")
+  public String index(@PathVariable UUID accountId, Model model) {
+    return buildReportModel(accountId, model, LocalDate.now(zoneId));
   }
 
-  @GetMapping("/{yearMonth}")
-  public String index(@PathVariable YearMonth yearMonth, Model model) {
-    return buildReportModel(model, yearMonth.atDay(1));
+  @GetMapping("/{accountId}/reports/{yearMonth}")
+  public String index(
+      @PathVariable UUID accountId, @PathVariable YearMonth yearMonth, Model model) {
+    return buildReportModel(accountId, model, yearMonth.atDay(1));
   }
 
-  private String buildReportModel(Model model, LocalDate localDate) {
+  private String buildReportModel(UUID accountId, Model model, LocalDate localDate) {
     var transactions =
         transactionService
             .get(
                 new GetTransactionsCommand(
-                    context.getUser().organizationId(),
-                    context.getAccountId(),
+                    securityContext.getUser().organizationId(),
+                    accountId,
                     localDate.with(TemporalAdjusters.firstDayOfMonth()),
                     localDate.with(TemporalAdjusters.lastDayOfMonth())))
             .stream()

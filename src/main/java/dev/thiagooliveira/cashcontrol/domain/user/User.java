@@ -5,6 +5,7 @@ import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserCreated;
 import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserInvited;
 import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserJoined;
+import dev.thiagooliveira.cashcontrol.domain.event.user.v1.UserRegistered;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import java.time.Instant;
 import java.util.UUID;
@@ -70,6 +71,16 @@ public class User extends Aggregate {
             this.id, this.name, this.organizationId, true, Instant.now(), getVersion() + 1));
   }
 
+  public void register() {
+    if (!this.active) {
+      throw DomainException.badRequest("user not active");
+    }
+    if (this.organizationId == null) {
+      throw DomainException.badRequest("user not invited");
+    }
+    apply(new UserRegistered(this.id, this.organizationId, Instant.now(), getVersion() + 1));
+  }
+
   @Override
   public UUID aggregateId() {
     return id;
@@ -88,6 +99,7 @@ public class User extends Aggregate {
       }
       case UserInvited ev -> organizationId = ev.organizationId();
       case UserJoined ev -> active = ev.active();
+      case UserRegistered ev -> {}
       default -> throw DomainException.badRequest("unhandled event " + event);
     }
   }

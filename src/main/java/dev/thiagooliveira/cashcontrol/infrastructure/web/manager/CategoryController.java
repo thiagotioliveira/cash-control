@@ -4,7 +4,7 @@ import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.category.dto.CreateCategoryCommand;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
-import dev.thiagooliveira.cashcontrol.domain.user.security.Context;
+import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.AlertModel;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.CategoryActionSheetModel;
@@ -20,17 +20,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/protected/categories")
 public class CategoryController {
 
-  private final Context context;
+  private final SecurityContext securityContext;
   private final CategoryService categoryService;
 
-  public CategoryController(Context context, CategoryService categoryService) {
-    this.context = context;
+  public CategoryController(SecurityContext securityContext, CategoryService categoryService) {
+    this.securityContext = securityContext;
     this.categoryService = categoryService;
   }
 
   @GetMapping
   public String index(Model model) {
-    var categories = categoryService.get(context.getUser().organizationId());
+    var categories = categoryService.get(securityContext.getUser().organizationId());
     model.addAttribute("categories", new CategoryListModel(categories));
     model.addAttribute("category", new CategoryActionSheetModel("Nova Categoria"));
     return "protected/categories/category-list";
@@ -44,7 +44,7 @@ public class CategoryController {
     try {
       categoryService.createCategory(
           new CreateCategoryCommand(
-              context.getUser().organizationId(),
+              securityContext.getUser().organizationId(),
               form.getName(),
               "#" + form.getHashColor(),
               TransactionType.valueOf(form.getType())));

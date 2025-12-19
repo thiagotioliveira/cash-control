@@ -13,13 +13,13 @@ services:
     image: postgres:15
     container_name: cashcontrol-db
     environment:
-      POSTGRES_USER: cashuser
-      POSTGRES_PASSWORD: cashpass
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: cash_control
     ports:
       - "5432:5432"
-    volumes:
-      - /Users/thiago.oliveira/Dev/Personal/cash-control-prod/postgres-data:/var/lib/postgresql/data
+    #volumes:
+    #  - /Users/thiago.oliveira/Dev/Personal/cash-control-prod/postgres-data:/var/lib/postgresql/data
     networks:
       - cashcontrol-network
 

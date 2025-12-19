@@ -13,6 +13,7 @@ import java.util.UUID;
 
 public class TransactionDetailsModel {
   private final UUID id;
+  private final UUID accountId;
   private final String title;
   private final String backLink;
   private final String description;
@@ -32,6 +33,7 @@ public class TransactionDetailsModel {
     this.title = "Detalhe da Transação";
     this.backLink = backLink;
     this.id = transaction.transactionId();
+    this.accountId = transaction.accountId();
     this.currency = transaction.currency();
     this.description = transaction.description();
     this.status = transaction.status();
@@ -61,6 +63,10 @@ public class TransactionDetailsModel {
 
   public UUID getId() {
     return id;
+  }
+
+  public UUID getAccountId() {
+    return accountId;
   }
 
   public String getDescription() {

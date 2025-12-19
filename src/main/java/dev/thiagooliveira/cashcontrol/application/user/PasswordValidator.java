@@ -3,7 +3,7 @@ package dev.thiagooliveira.cashcontrol.application.user;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import java.util.Random;
 
-public class PasswordUtils {
+public class PasswordValidator {
 
   public static boolean isValid(String password) {
     if (password == null || password.isEmpty()) {
