@@ -13,5 +13,7 @@ public interface CategoryJpaRepository extends JpaRepository<CategoryEntity, UUI
   Optional<CategoryEntity> findByOrganizationIdAndNameAndType(
       UUID organizationId, String name, TransactionType type);
 
+  boolean existsByOrganizationIdAndHashColor(UUID organizationId, String hashColor);
+
   List<CategoryEntity> findAllByOrganizationId(UUID organizationId);
 }

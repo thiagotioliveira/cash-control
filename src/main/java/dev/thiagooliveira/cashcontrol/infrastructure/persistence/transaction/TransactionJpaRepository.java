@@ -1,6 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction;
 
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +37,9 @@ public interface TransactionJpaRepository extends JpaRepository<TransactionEntit
 
   boolean existsByTransactionTemplateIdAndOriginalDueDate(
       UUID transactionTemplateId, LocalDate originalDueDate);
+
+  boolean existsByOrganizationIdAndAccount_IdAndOccurredAtAfter(
+      UUID organizationId, UUID accountId, Instant occurredAt);
 
   Optional<TransactionEntity> findByOrganizationIdAndAccountIdAndId(
       UUID organizationId, UUID accountId, UUID id);

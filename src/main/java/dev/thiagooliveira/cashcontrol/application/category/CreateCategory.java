@@ -28,6 +28,10 @@ public class CreateCategory {
         .isPresent()) {
       throw ApplicationException.badRequest("category already exists");
     }
+    if (repository.existsByOrganizationIdAndHashColor(
+        command.organizationId(), command.hashColor())) {
+      throw ApplicationException.badRequest("color already exists");
+    }
     var category =
         Category.create(
             command.organizationId(), command.name(), command.hashColor(), command.type());

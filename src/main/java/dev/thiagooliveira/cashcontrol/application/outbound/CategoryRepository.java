@@ -14,4 +14,6 @@ public interface CategoryRepository {
 
   Optional<CategorySummary> findByOrganizationIdAndNameAndType(
       UUID organizationId, String name, TransactionType type);
+
+  boolean existsByOrganizationIdAndHashColor(UUID organizationId, String hashColor);
 }

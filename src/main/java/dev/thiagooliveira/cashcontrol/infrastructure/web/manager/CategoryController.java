@@ -46,7 +46,7 @@ public class CategoryController {
           new CreateCategoryCommand(
               securityContext.getUser().organizationId(),
               form.getName(),
-              "#" + form.getHashColor(),
+              form.getHashColor(),
               TransactionType.valueOf(form.getType())));
       redirectAttributes.addFlashAttribute(
           "alert", AlertModel.success("Categoria criada com sucesso!"));

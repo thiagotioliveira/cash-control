@@ -3,6 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction;
 import dev.thiagooliveira.cashcontrol.application.outbound.TransactionRepository;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,13 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
   public boolean isLatestTransaction(UUID organizationId, UUID accountId, UUID id) {
     return this.repository.isLatestTransaction(
         organizationId, accountId, id, TransactionStatus.CONFIRMED);
+  }
+
+  @Override
+  public boolean existsByOrganizationIdAndAccountIdAndOccurredAtAfter(
+      UUID organizationId, UUID accountId, Instant occurredAt) {
+    return this.repository.existsByOrganizationIdAndAccount_IdAndOccurredAtAfter(
+        organizationId, accountId, occurredAt);
   }
 
   @Override

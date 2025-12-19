@@ -36,4 +36,9 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
         .findByOrganizationIdAndNameAndType(organizationId, name, type)
         .map(CategoryEntity::toDomain);
   }
+
+  @Override
+  public boolean existsByOrganizationIdAndHashColor(UUID organizationId, String hashColor) {
+    return this.repository.existsByOrganizationIdAndHashColor(organizationId, hashColor);
+  }
 }

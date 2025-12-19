@@ -28,27 +28,27 @@ public class TransactionConfig {
 
   @Bean
   TransactionService transactionService(
-      TransactionJpaRepository repository,
+      TransactionJpaRepository transactionJpaRepository,
       TransactionTemplateJpaRepository transactionTemplateJpaRepository,
       EventStore eventStore,
       EventPublisher eventPublisher,
       CategoryService categoryService) {
-    var r = transactionRepository(repository);
+    var transactionRepository = transactionRepository(transactionJpaRepository);
     return new TransactionServiceProxy(
         new TransactionServiceImpl(
             getTransactions(
                 eventStore,
                 eventPublisher,
                 transactionTemplateRepository(transactionTemplateJpaRepository),
-                r),
-            createDeposit(eventStore, eventPublisher, categoryService),
-            createWithdrawal(eventStore, eventPublisher, categoryService),
+                transactionRepository),
+            createDeposit(eventStore, eventPublisher, categoryService, transactionRepository),
+            createWithdrawal(eventStore, eventPublisher, categoryService, transactionRepository),
             confirmTransaction(eventStore, eventPublisher),
-            confirmScheduledTransaction(eventStore, eventPublisher),
+            confirmScheduledTransaction(eventStore, eventPublisher, transactionRepository),
             createPayable(eventStore, eventPublisher, categoryService),
             createReceivable(eventStore, eventPublisher, categoryService),
-            updateScheduledTransaction(eventStore, eventPublisher, r),
-            revertTransaction(eventStore, eventPublisher, r),
+            updateScheduledTransaction(eventStore, eventPublisher, transactionRepository),
+            revertTransaction(eventStore, eventPublisher, transactionRepository),
             confirmRevertTransaction(eventStore, eventPublisher)));
   }
 
@@ -71,13 +71,19 @@ public class TransactionConfig {
   }
 
   private CreateDeposit createDeposit(
-      EventStore eventStore, EventPublisher eventPublisher, CategoryService categoryService) {
-    return new CreateDeposit(eventStore, eventPublisher, categoryService);
+      EventStore eventStore,
+      EventPublisher eventPublisher,
+      CategoryService categoryService,
+      TransactionRepository transactionRepository) {
+    return new CreateDeposit(eventStore, eventPublisher, categoryService, transactionRepository);
   }
 
   private CreateWithdrawal createWithdrawal(
-      EventStore eventStore, EventPublisher eventPublisher, CategoryService categoryService) {
-    return new CreateWithdrawal(eventStore, eventPublisher, categoryService);
+      EventStore eventStore,
+      EventPublisher eventPublisher,
+      CategoryService categoryService,
+      TransactionRepository transactionRepository) {
+    return new CreateWithdrawal(eventStore, eventPublisher, categoryService, transactionRepository);
   }
 
   private CreatePayable createPayable(
@@ -96,8 +102,10 @@ public class TransactionConfig {
   }
 
   private ConfirmScheduledTransaction confirmScheduledTransaction(
-      EventStore eventStore, EventPublisher eventPublisher) {
-    return new ConfirmScheduledTransaction(eventStore, eventPublisher);
+      EventStore eventStore,
+      EventPublisher eventPublisher,
+      TransactionRepository transactionRepository) {
+    return new ConfirmScheduledTransaction(eventStore, eventPublisher, transactionRepository);
   }
 
   private RevertTransaction revertTransaction(

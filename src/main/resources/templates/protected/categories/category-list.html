@@ -19,7 +19,7 @@
         <p th:class="text-center">Não existe categoria cadastrada.</p>
     </div>
     <div class="mt-2"></div>
-    <div class="transactions"  th:each="c : ${categories.content}">
+    <div class="section transactions"  th:each="c : ${categories.content}">
         <!-- item -->
         <a href="#" data-bs-toggle="modal" th:data-bs-target="${'#categoryActionSheet-' + c.getId()}" class="item mb-2">
             <div class="detail">
