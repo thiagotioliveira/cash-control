@@ -133,7 +133,7 @@
         <div class="section mt-4">
             <div class="section-heading">
                 <h2 class="title">Transações</h2>
-                <a th:href="@{'/protected/transactions'}" class="link">Ver todas</a>
+                <a th:href="@{${'/protected/accounts/'+ account.id +'/transactions'}}" class="link">Ver todas</a>
             </div>
             <div th:insert="~{protected/fragments/app-transaction-list}"></div>
         </div>
