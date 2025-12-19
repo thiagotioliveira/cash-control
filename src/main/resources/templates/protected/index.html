@@ -82,7 +82,7 @@
         <div class="section">
             <div class="row mt-2">
                 <div class="col-6">
-                    <a th:href="@{'/protected/transactions?type=CREDIT&status=CONFIRMED'}">
+                    <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=CREDIT&status=CONFIRMED'}}">
                         <div class="stat-box">
                             <div class="title">Entradas</div>
                             <div class="value text-success" th:text="${income}"></div>
@@ -90,7 +90,7 @@
                     </a>
                 </div>
                 <div class="col-6">
-                    <a th:href="@{'/protected/transactions?type=DEBIT&status=CONFIRMED'}">
+                    <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=DEBIT&status=CONFIRMED'}}">
                         <div class="stat-box">
                             <div class="title">Saídas</div>
                             <div class="value text-danger" th:text="${expenses}"></div>
@@ -100,7 +100,7 @@
             </div>
             <div class="row mt-2">
                 <div class="col-6">
-                    <a th:href="@{'/protected/transactions?type=CREDIT&status=SCHEDULED'}">
+                    <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=CREDIT&status=SCHEDULED'}}">
                         <div class="stat-box">
                             <div class="title">Entradas Previstas</div>
                             <div class="value" th:text="${incomePending}"></div>
@@ -108,7 +108,7 @@
                     </a>
                 </div>
                 <div class="col-6">
-                    <a th:href="@{'/protected/transactions?type=DEBIT&status=SCHEDULED'}">
+                    <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=DEBIT&status=SCHEDULED'}}">
                         <div class="stat-box">
                             <div class="title">Saídas Previstas</div>
                             <div class="value" th:text="${expensesPending}"></div>
