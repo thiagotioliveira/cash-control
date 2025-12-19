@@ -1,11 +1,11 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
-import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
+import static dev.thiagooliveira.cashcontrol.shared.FormattersUtils.*;
 
 import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
+import dev.thiagooliveira.cashcontrol.shared.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import java.math.BigDecimal;
 import java.time.LocalDate;

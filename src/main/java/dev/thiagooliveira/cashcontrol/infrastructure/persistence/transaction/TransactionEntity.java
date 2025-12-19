@@ -6,7 +6,7 @@ import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureExc
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.account.AccountEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.category.CategoryEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.user.UserEntity;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
+import dev.thiagooliveira.cashcontrol.shared.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import jakarta.persistence.*;

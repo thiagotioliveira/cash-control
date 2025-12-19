@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 
-import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
+import static dev.thiagooliveira.cashcontrol.shared.FormattersUtils.*;
 
 import dev.thiagooliveira.cashcontrol.application.account.*;
 import dev.thiagooliveira.cashcontrol.application.category.CategoryService;

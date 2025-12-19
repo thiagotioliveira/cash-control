@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 
-import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
+import static dev.thiagooliveira.cashcontrol.shared.FormattersUtils.*;
 
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;

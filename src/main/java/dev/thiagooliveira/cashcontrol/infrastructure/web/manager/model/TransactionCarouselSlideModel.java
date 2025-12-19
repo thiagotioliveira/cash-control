@@ -1,7 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
-import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.df;
-import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.dtf;
+import static dev.thiagooliveira.cashcontrol.shared.FormattersUtils.df;
+import static dev.thiagooliveira.cashcontrol.shared.FormattersUtils.dtf;
 
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.shared.Currency;

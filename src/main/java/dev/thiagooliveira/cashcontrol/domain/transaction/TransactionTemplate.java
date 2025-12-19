@@ -6,7 +6,7 @@ import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.PayableCreated
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.ReceivableCreated;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionTemplateUpdated;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
+import dev.thiagooliveira.cashcontrol.shared.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;

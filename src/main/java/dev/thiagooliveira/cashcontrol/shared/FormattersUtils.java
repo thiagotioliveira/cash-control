@@ -1,4 +1,4 @@
-package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
+package dev.thiagooliveira.cashcontrol.shared;
 
 import java.text.DecimalFormat;
 import java.time.ZoneId;

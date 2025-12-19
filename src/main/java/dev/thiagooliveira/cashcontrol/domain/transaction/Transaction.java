@@ -4,7 +4,7 @@ import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.*;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils;
+import dev.thiagooliveira.cashcontrol.shared.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;

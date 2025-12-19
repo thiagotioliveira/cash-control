@@ -1,6 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model;
 
-import static dev.thiagooliveira.cashcontrol.infrastructure.web.manager.FormattersUtils.*;
+import static dev.thiagooliveira.cashcontrol.shared.FormattersUtils.*;
 
 import dev.thiagooliveira.cashcontrol.domain.account.AccountSummary;
 import java.time.Instant;
