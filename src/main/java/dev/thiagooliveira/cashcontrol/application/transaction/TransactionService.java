@@ -22,6 +22,8 @@ public interface TransactionService {
 
   void confirm(ConfirmRevertTransactionCommand command);
 
+  void update(UpdateTransactionTemplateCommand command);
+
   void update(UpdateScheduledTransactionCommand command);
 
   void createTemplate(CreateTransactionTemplateCommand command);

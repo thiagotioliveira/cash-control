@@ -1,16 +1,26 @@
 package dev.thiagooliveira.cashcontrol.application.transaction.dto;
 
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionTemplateUpdated;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
 
 public record UpdateScheduledTransactionCommand(
     UUID organizationId,
     UUID userId,
     UUID accountId,
-    UUID transactionId,
+    UUID templateId,
     String description,
     BigDecimal amount,
-    LocalDate dueDate,
-    Optional<LocalDate> endDueDate) {}
+    int dueDay) {
+
+  public UpdateScheduledTransactionCommand(TransactionTemplateUpdated event) {
+    this(
+        event.organizationId(),
+        event.userId(),
+        event.accountId(),
+        event.templateId(),
+        event.description(),
+        event.amount(),
+        event.dueDate().getDayOfMonth());
+  }
+}

@@ -89,6 +89,7 @@ public class IndexController {
                 .filter(t -> t.type().isDebit())
                 .map(TransactionSummary::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)));
+    model.addAttribute("context", securityContext);
     model.addAttribute("account", new AccountModel(account));
     model.addAttribute("transactions", new TransactionListModel(transactionsConfirmed));
     model.addAttribute(

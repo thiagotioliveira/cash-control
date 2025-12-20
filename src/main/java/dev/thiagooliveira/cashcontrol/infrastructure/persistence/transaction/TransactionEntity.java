@@ -144,7 +144,7 @@ public class TransactionEntity {
   public void update(ScheduledTransactionUpdated event) {
     this.description = event.description();
     this.amount = event.amount();
-    this.dueDate = event.dueDate();
+    this.dueDate = this.dueDate.withDayOfMonth(event.dueDay());
   }
 
   public void updateStatusToPending() {

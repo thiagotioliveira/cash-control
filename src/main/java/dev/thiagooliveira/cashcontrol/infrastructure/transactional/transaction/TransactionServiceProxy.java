@@ -53,6 +53,11 @@ public class TransactionServiceProxy implements TransactionService {
   }
 
   @Override
+  public void update(UpdateTransactionTemplateCommand command) {
+    this.transactionService.update(command);
+  }
+
+  @Override
   public void update(UpdateScheduledTransactionCommand command) {
     this.transactionService.update(command);
   }

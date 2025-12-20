@@ -74,6 +74,7 @@ public class TransactionTemplateEntity {
   }
 
   public void update(TransactionTemplateUpdated event) {
+    this.description = event.description();
     this.amount = event.amount();
     this.startDate = event.dueDate();
     this.endDate = event.endDueDate();

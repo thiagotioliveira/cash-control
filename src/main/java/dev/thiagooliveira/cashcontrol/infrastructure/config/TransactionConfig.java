@@ -45,6 +45,7 @@ public class TransactionConfig {
             confirmTransaction(eventStore, eventPublisher),
             confirmScheduledTransaction(eventStore, eventPublisher, transactionRepository),
             createTransactionTemplate(eventStore, eventPublisher, categoryService),
+            updateTransactionTemplate(eventStore, eventPublisher, transactionRepository),
             updateScheduledTransaction(eventStore, eventPublisher, transactionRepository),
             revertTransaction(eventStore, eventPublisher, transactionRepository),
             confirmRevertTransaction(eventStore, eventPublisher)));
@@ -99,6 +100,13 @@ public class TransactionConfig {
       EventPublisher eventPublisher,
       TransactionRepository transactionRepository) {
     return new RevertTransaction(eventStore, eventPublisher, transactionRepository);
+  }
+
+  private UpdateTransactionTemplate updateTransactionTemplate(
+      EventStore eventStore,
+      EventPublisher eventPublisher,
+      TransactionRepository transactionRepository) {
+    return new UpdateTransactionTemplate(eventStore, eventPublisher, transactionRepository);
   }
 
   private UpdateScheduledTransaction updateScheduledTransaction(

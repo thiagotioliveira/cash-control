@@ -129,16 +129,16 @@ public class Transaction extends Aggregate {
             organizationId, userId, accountId, id, type, amount, Instant.now(), getVersion() + 1));
   }
 
-  public void update(UUID userId, BigDecimal amount, String description, LocalDate dueDate) {
+  public void update(UUID userId, BigDecimal amount, String description, int dueDay) {
     validate(amount);
-    validateDueDate(dueDate);
+    validateDueDay(dueDay);
     this.apply(
         new ScheduledTransactionUpdated(
             id,
             accountId,
             amount,
             description,
-            dueDate,
+            dueDay,
             organizationId,
             userId,
             Instant.now(),
@@ -208,7 +208,7 @@ public class Transaction extends Aggregate {
       case ScheduledTransactionUpdated ev -> {
         amount = ev.amount();
         description = ev.description();
-        dueDate = ev.dueDate();
+        dueDate = dueDate.withDayOfMonth(ev.dueDay());
       }
       case RevertTransactionRequested ev -> {
         status = TransactionStatus.PENDING_REVERTED;
@@ -251,6 +251,12 @@ public class Transaction extends Aggregate {
   private static void validateDueDate(LocalDate dueDate) {
     if (LocalDate.now().isAfter(dueDate)) {
       throw DomainException.badRequest("Due date must be in the future");
+    }
+  }
+
+  private static void validateDueDay(int dueDay) {
+    if (dueDay < 1 || dueDay > 31) {
+      throw DomainException.badRequest("invalid due day");
     }
   }
 }

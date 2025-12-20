@@ -3,6 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.listener.transaction;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.ConfirmRevertTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.ConfirmTransactionCommand;
+import dev.thiagooliveira.cashcontrol.application.transaction.dto.UpdateScheduledTransactionCommand;
 import dev.thiagooliveira.cashcontrol.domain.event.account.v1.CreditApplied;
 import dev.thiagooliveira.cashcontrol.domain.event.account.v1.CreditReverted;
 import dev.thiagooliveira.cashcontrol.domain.event.account.v1.DebitApplied;
@@ -83,6 +84,8 @@ public class TransactionEventListener {
             .orElseThrow(() -> InfrastructureException.notFound("Template not found"));
     template.update(event);
     this.templateRepository.save(template);
+
+    this.transactionService.update(new UpdateScheduledTransactionCommand(event));
   }
 
   @EventListener

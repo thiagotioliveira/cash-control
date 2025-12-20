@@ -251,7 +251,7 @@ public class TransactionController {
                 form.getAmount()));
       } else {
         transactionService.update(
-            new UpdateScheduledTransactionCommand(
+            new UpdateTransactionTemplateCommand(
                 securityContext.getUser().organizationId(),
                 securityContext.getUser().id(),
                 accountId,

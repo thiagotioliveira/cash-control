@@ -6,7 +6,6 @@ import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
 import dev.thiagooliveira.cashcontrol.application.outbound.TransactionRepository;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.UpdateScheduledTransactionCommand;
 import dev.thiagooliveira.cashcontrol.domain.transaction.Transaction;
-import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionTemplate;
 
 public class UpdateScheduledTransaction {
 
@@ -24,67 +23,34 @@ public class UpdateScheduledTransaction {
   }
 
   public void execute(UpdateScheduledTransactionCommand command) {
-    var transaction =
+    var transactions =
         this.transactionRepository
-            .findByOrganizationIdAndAccountIdAndId(
-                command.organizationId(), command.accountId(), command.transactionId())
-            .orElseThrow(() -> ApplicationException.notFound("Transaction not found"));
+            .findAllByTransactionTemplateIdAndAccountId(command.templateId(), command.accountId())
+            .stream()
+            .filter(transaction -> transaction.status().isScheduled())
+            .toList();
 
-    if (!transaction.status().isScheduled()) {
-      throw ApplicationException.badRequest("transaction must be scheduled");
-    }
+    transactions.forEach(
+        t -> {
+          var pastEvents = eventStore.load(command.organizationId(), t.transactionId());
 
-    var pastEvents =
-        eventStore.load(command.organizationId(), transaction.transactionTemplateId().get());
+          if (pastEvents.isEmpty()) {
+            throw ApplicationException.notFound("template not found");
+          }
 
-    if (pastEvents.isEmpty()) {
-      throw ApplicationException.notFound("template not found");
-    }
+          var transaction = Transaction.rehydrate(pastEvents);
+          transaction.update(
+              command.userId(), command.amount(), command.description(), command.dueDay());
 
-    var template = TransactionTemplate.rehydrate(pastEvents);
-    template.update(
-        command.userId(),
-        command.amount(),
-        command.description(),
-        command.dueDate(),
-        command.endDueDate());
+          var newEventsTransaction = transaction.pendingEvents();
+          eventStore.append(
+              command.organizationId(),
+              transaction.getId(),
+              newEventsTransaction,
+              transaction.getVersion() - newEventsTransaction.size());
+          newEventsTransaction.forEach(publisher::publishEvent);
 
-    var newEvents = template.pendingEvents();
-    eventStore.append(
-        command.organizationId(),
-        template.getId(),
-        newEvents,
-        template.getVersion() - newEvents.size());
-    newEvents.forEach(publisher::publishEvent);
-
-    template.markEventsCommitted();
-
-    transactionRepository
-        .findAllByTransactionTemplateIdAndAccountId(template.getId(), command.accountId())
-        .stream()
-        .filter(t -> t.status().isScheduled())
-        .forEach(
-            t -> {
-              var pastEventsTransaction =
-                  eventStore.load(command.organizationId(), t.transactionId());
-
-              if (pastEventsTransaction.isEmpty()) {
-                throw ApplicationException.notFound("transaction not found");
-              }
-
-              var transactionScheduled = Transaction.rehydrate(pastEventsTransaction);
-              transactionScheduled.update(
-                  command.userId(), command.amount(), command.description(), command.dueDate());
-
-              var newEventsTransaction = transactionScheduled.pendingEvents();
-              eventStore.append(
-                  command.organizationId(),
-                  transactionScheduled.getId(),
-                  newEventsTransaction,
-                  transactionScheduled.getVersion() - newEventsTransaction.size());
-              newEventsTransaction.forEach(publisher::publishEvent);
-
-              transactionScheduled.markEventsCommitted();
-            });
+          transaction.markEventsCommitted();
+        });
   }
 }

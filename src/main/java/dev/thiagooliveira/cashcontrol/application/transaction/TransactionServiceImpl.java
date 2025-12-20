@@ -13,6 +13,7 @@ public class TransactionServiceImpl implements TransactionService {
   private final ConfirmTransaction confirmTransaction;
   private final ConfirmScheduledTransaction confirmScheduledTransaction;
   private final CreateTransactionTemplate createTransactionTemplate;
+  private final UpdateTransactionTemplate updateTransactionTemplate;
   private final UpdateScheduledTransaction updateScheduledTransaction;
   private final RevertTransaction revertTransaction;
   private final ConfirmRevertTransaction confirmRevertTransaction;
@@ -23,6 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
       ConfirmTransaction confirmTransaction,
       ConfirmScheduledTransaction confirmScheduledTransaction,
       CreateTransactionTemplate createTransactionTemplate,
+      UpdateTransactionTemplate updateTransactionTemplate,
       UpdateScheduledTransaction updateScheduledTransaction,
       RevertTransaction revertTransaction,
       ConfirmRevertTransaction confirmRevertTransaction) {
@@ -31,6 +33,7 @@ public class TransactionServiceImpl implements TransactionService {
     this.confirmTransaction = confirmTransaction;
     this.confirmScheduledTransaction = confirmScheduledTransaction;
     this.createTransactionTemplate = createTransactionTemplate;
+    this.updateTransactionTemplate = updateTransactionTemplate;
     this.updateScheduledTransaction = updateScheduledTransaction;
     this.revertTransaction = revertTransaction;
     this.confirmRevertTransaction = confirmRevertTransaction;
@@ -69,6 +72,11 @@ public class TransactionServiceImpl implements TransactionService {
   @Override
   public void confirm(ConfirmRevertTransactionCommand command) {
     this.confirmRevertTransaction.execute(command);
+  }
+
+  @Override
+  public void update(UpdateTransactionTemplateCommand command) {
+    this.updateTransactionTemplate.execute(command);
   }
 
   @Override

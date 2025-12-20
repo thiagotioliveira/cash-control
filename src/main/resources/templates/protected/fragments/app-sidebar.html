@@ -12,8 +12,8 @@
                         <img th:src="@{/assets/img/avatar/man.png}" alt="image" class="imaged  w36">
                     </div>
                     <div class="in">
-                        <strong>Thiago Oliveira</strong>
-                        <div class="text-muted">thiago@thiagoti.com</div>
+                        <strong th:text="${context.user.name}"></strong>
+                        <div class="text-muted" th:text="${context.user.email}"></div>
                     </div>
                     <a href="#" class="btn btn-link btn-icon sidebar-close" data-bs-dismiss="modal">
                         <ion-icon name="close-outline"></ion-icon>
