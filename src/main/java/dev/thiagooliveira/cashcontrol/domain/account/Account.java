@@ -64,11 +64,11 @@ public class Account extends Aggregate {
     return account;
   }
 
-  public void credit(UUID transactionId, UUID userId, BigDecimal amount) {
+  public void credit(UUID transactionId, UUID userId, BigDecimal amount, Instant occurredAt) {
     validate(amount);
     apply(
         new CreditApplied(
-            organizationId, id, transactionId, userId, amount, Instant.now(), getVersion() + 1));
+            organizationId, id, transactionId, userId, amount, occurredAt, getVersion() + 1));
   }
 
   public void revertCredit(UUID transactionId, UUID userId, BigDecimal amount) {
@@ -78,11 +78,11 @@ public class Account extends Aggregate {
             organizationId, id, transactionId, userId, amount, Instant.now(), getVersion() + 1));
   }
 
-  public void debit(UUID transactionId, UUID userId, BigDecimal amount) {
+  public void debit(UUID transactionId, UUID userId, BigDecimal amount, Instant occurredAt) {
     validate(amount);
     apply(
         new DebitApplied(
-            organizationId, id, transactionId, userId, amount, Instant.now(), getVersion() + 1));
+            organizationId, id, transactionId, userId, amount, occurredAt, getVersion() + 1));
   }
 
   public void revertDebit(UUID transactionId, UUID userId, BigDecimal amount) {

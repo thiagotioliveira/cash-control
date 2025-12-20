@@ -9,34 +9,28 @@ import java.util.UUID;
 public class TransactionServiceImpl implements TransactionService {
 
   private final GetTransactions getTransactions;
-  private final CreateDeposit createDeposit;
-  private final CreateWithdrawal createWithdrawal;
+  private final CreateTransaction createTransaction;
   private final ConfirmTransaction confirmTransaction;
   private final ConfirmScheduledTransaction confirmScheduledTransaction;
-  private final CreatePayable createPayable;
-  private final CreateReceivable createReceivable;
+  private final CreateTransactionTemplate createTransactionTemplate;
   private final UpdateScheduledTransaction updateScheduledTransaction;
   private final RevertTransaction revertTransaction;
   private final ConfirmRevertTransaction confirmRevertTransaction;
 
   public TransactionServiceImpl(
       GetTransactions getTransactions,
-      CreateDeposit createDeposit,
-      CreateWithdrawal createWithdrawal,
+      CreateTransaction createTransaction,
       ConfirmTransaction confirmTransaction,
       ConfirmScheduledTransaction confirmScheduledTransaction,
-      CreatePayable createPayable,
-      CreateReceivable createReceivable,
+      CreateTransactionTemplate createTransactionTemplate,
       UpdateScheduledTransaction updateScheduledTransaction,
       RevertTransaction revertTransaction,
       ConfirmRevertTransaction confirmRevertTransaction) {
     this.getTransactions = getTransactions;
-    this.createDeposit = createDeposit;
-    this.createWithdrawal = createWithdrawal;
+    this.createTransaction = createTransaction;
     this.confirmTransaction = confirmTransaction;
     this.confirmScheduledTransaction = confirmScheduledTransaction;
-    this.createPayable = createPayable;
-    this.createReceivable = createReceivable;
+    this.createTransactionTemplate = createTransactionTemplate;
     this.updateScheduledTransaction = updateScheduledTransaction;
     this.revertTransaction = revertTransaction;
     this.confirmRevertTransaction = confirmRevertTransaction;
@@ -58,13 +52,8 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public void createDeposit(CreateDepositCommand command) {
-    this.createDeposit.execute(command);
-  }
-
-  @Override
-  public void createWithdrawal(CreateWithdrawalCommand command) {
-    this.createWithdrawal.execute(command);
+  public void create(CreateTransactionCommand command) {
+    this.createTransaction.execute(command);
   }
 
   @Override
@@ -88,13 +77,8 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public void createPayable(CreatePayableCommand command) {
-    this.createPayable.execute(command);
-  }
-
-  @Override
-  public void createReceivable(CreateReceivableCommand command) {
-    this.createReceivable.execute(command);
+  public void createTemplate(CreateTransactionTemplateCommand command) {
+    this.createTransactionTemplate.execute(command);
   }
 
   @Override

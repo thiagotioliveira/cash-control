@@ -24,7 +24,8 @@ public class ApplyCredit {
     }
 
     var account = Account.rehydrate(pastEvents);
-    account.credit(command.transactionId(), command.userId(), command.amount());
+    account.credit(
+        command.transactionId(), command.userId(), command.amount(), command.occurredAt());
 
     var newEvents = account.pendingEvents();
     eventStore.append(

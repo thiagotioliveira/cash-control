@@ -34,18 +34,19 @@ public class Transaction extends Aggregate {
     this.occurredAt = Optional.empty();
   }
 
-  public static Transaction createDeposit(
+  public static Transaction create(
       UUID organizationId,
       UUID accountId,
       UUID userId,
       UUID categoryId,
       Instant occurredAt,
       String description,
-      BigDecimal amount) {
+      BigDecimal amount,
+      TransactionType type) {
     validateOccurredAt(occurredAt);
     validate(amount);
-    var deposit = new Transaction();
-    deposit.apply(
+    var transaction = new Transaction();
+    transaction.apply(
         new TransactionRequested(
             UUID.randomUUID(),
             accountId,
@@ -55,35 +56,9 @@ public class Transaction extends Aggregate {
             description,
             amount,
             occurredAt,
-            TransactionType.CREDIT,
+            type,
             1));
-    return deposit;
-  }
-
-  public static Transaction createWithdrawal(
-      UUID organizationId,
-      UUID accountId,
-      UUID userId,
-      UUID categoryId,
-      Instant occurredAt,
-      String description,
-      BigDecimal amount) {
-    validateOccurredAt(occurredAt);
-    validate(amount);
-    var withdrawal = new Transaction();
-    withdrawal.apply(
-        new TransactionRequested(
-            UUID.randomUUID(),
-            accountId,
-            organizationId,
-            userId,
-            categoryId,
-            description,
-            amount,
-            occurredAt,
-            TransactionType.DEBIT,
-            1));
-    return withdrawal;
+    return transaction;
   }
 
   public static Transaction createScheduled(TransactionTemplate template, LocalDate dueDate) {
@@ -112,7 +87,7 @@ public class Transaction extends Aggregate {
     }
     this.apply(
         new TransactionConfirmed(
-            organizationId, accountId, id, userId, balanceAfter, Instant.now(), getVersion() + 1));
+            organizationId, accountId, id, userId, balanceAfter, occurredAt, getVersion() + 1));
   }
 
   public void confirmScheduled(UUID userId, Instant occurredAt, BigDecimal amount) {

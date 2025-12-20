@@ -132,49 +132,55 @@ public class TransactionController {
     try {
       if (categories.type().isCredit()) {
         if (form.getOccurredAt() != null) {
-          transactionService.createDeposit(
-              new CreateDepositCommand(
+          transactionService.create(
+              new CreateTransactionCommand(
                   securityContext.getUser().organizationId(),
                   securityContext.getUser().id(),
                   accountId,
                   form.getOccurredAt().atZone(zoneId).toInstant(),
                   form.getCategoryId(),
                   form.getAmount(),
-                  form.getDescription()));
+                  form.getDescription(),
+                  TransactionType.CREDIT));
         } else {
-          transactionService.createReceivable(
-              new CreateReceivableCommand(
+          transactionService.createTemplate(
+              new CreateTransactionTemplateCommand(
                   securityContext.getUser().organizationId(),
                   securityContext.getUser().id(),
                   accountId,
                   form.getCategoryId(),
+                  Optional.ofNullable(form.getDescription()),
                   form.getAmount(),
                   form.getStartDueDate(),
                   Recurrence.valueOf(form.getRecurrence()),
-                  Optional.ofNullable(form.getInstallments())));
+                  Optional.ofNullable(form.getInstallments()),
+                  TransactionType.CREDIT));
         }
       } else {
         if (form.getOccurredAt() != null) {
-          transactionService.createWithdrawal(
-              new CreateWithdrawalCommand(
+          transactionService.create(
+              new CreateTransactionCommand(
                   securityContext.getUser().organizationId(),
                   securityContext.getUser().id(),
                   accountId,
                   form.getOccurredAt().atZone(zoneId).toInstant(),
                   form.getCategoryId(),
                   form.getAmount(),
-                  form.getDescription()));
+                  form.getDescription(),
+                  TransactionType.DEBIT));
         } else {
-          transactionService.createPayable(
-              new CreatePayableCommand(
+          transactionService.createTemplate(
+              new CreateTransactionTemplateCommand(
                   securityContext.getUser().organizationId(),
                   securityContext.getUser().id(),
                   accountId,
                   form.getCategoryId(),
+                  Optional.ofNullable(form.getDescription()),
                   form.getAmount(),
                   form.getStartDueDate(),
                   Recurrence.valueOf(form.getRecurrence()),
-                  Optional.ofNullable(form.getInstallments())));
+                  Optional.ofNullable(form.getInstallments()),
+                  TransactionType.DEBIT));
         }
       }
       return String.format("redirect:/protected/accounts/%s/transactions", accountId);

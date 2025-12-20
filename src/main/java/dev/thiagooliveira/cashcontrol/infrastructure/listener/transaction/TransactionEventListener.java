@@ -66,12 +66,7 @@ public class TransactionEventListener {
   }
 
   @EventListener
-  public void on(PayableCreated event) {
-    templateRepository.save(new TransactionTemplateEntity(event));
-  }
-
-  @EventListener
-  public void on(ReceivableCreated event) {
+  public void on(TransactionTemplateCreated event) {
     templateRepository.save(new TransactionTemplateEntity(event));
   }
 

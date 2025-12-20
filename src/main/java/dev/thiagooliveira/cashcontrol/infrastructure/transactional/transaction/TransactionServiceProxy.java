@@ -33,8 +33,8 @@ public class TransactionServiceProxy implements TransactionService {
   }
 
   @Override
-  public void createDeposit(CreateDepositCommand command) {
-    this.transactionService.createDeposit(command);
+  public void create(CreateTransactionCommand command) {
+    this.transactionService.create(command);
   }
 
   @Override
@@ -58,18 +58,8 @@ public class TransactionServiceProxy implements TransactionService {
   }
 
   @Override
-  public void createWithdrawal(CreateWithdrawalCommand command) {
-    this.transactionService.createWithdrawal(command);
-  }
-
-  @Override
-  public void createPayable(CreatePayableCommand command) {
-    this.transactionService.createPayable(command);
-  }
-
-  @Override
-  public void createReceivable(CreateReceivableCommand command) {
-    this.transactionService.createReceivable(command);
+  public void createTemplate(CreateTransactionTemplateCommand command) {
+    this.transactionService.createTemplate(command);
   }
 
   @Override

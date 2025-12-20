@@ -15,7 +15,7 @@
                 <div th:title="${#strings.isEmpty(t.description) ? '-' : t.description}">
                     <strong th:text="${t.categoryName}"></strong>
                     <p th:class="${t.status.isScheduled() ? 'text-warning' : ''}"
-                       th:text="${(t.status.isConfirmed() ? t.occurredAtFormatted : t.statusFormatted)}"></p>
+                       th:text="${t.status.isConfirmed() ? t.occurredAtFormatted : (t.statusFormatted + ' ' + t.dueDateFormatted)}"></p>
                 </div>
             </div>
             <div class="right">

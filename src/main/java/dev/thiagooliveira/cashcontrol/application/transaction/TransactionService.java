@@ -14,7 +14,7 @@ public interface TransactionService {
 
   Optional<TransactionSummary> get(GetTransactionCommand command);
 
-  void createDeposit(CreateDepositCommand command);
+  void create(CreateTransactionCommand command);
 
   void confirm(ConfirmTransactionCommand command);
 
@@ -24,11 +24,7 @@ public interface TransactionService {
 
   void update(UpdateScheduledTransactionCommand command);
 
-  void createWithdrawal(CreateWithdrawalCommand command);
-
-  void createPayable(CreatePayableCommand command);
-
-  void createReceivable(CreateReceivableCommand command);
+  void createTemplate(CreateTransactionTemplateCommand command);
 
   void revertTransaction(RevertTransactionCommand command);
 }

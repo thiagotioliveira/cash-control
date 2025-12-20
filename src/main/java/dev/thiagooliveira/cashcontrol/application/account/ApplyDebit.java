@@ -24,7 +24,8 @@ public class ApplyDebit {
     }
 
     var account = Account.rehydrate(pastEvents);
-    account.debit(command.transactionId(), command.userId(), command.amount());
+    account.debit(
+        command.transactionId(), command.userId(), command.amount(), command.occurredAt());
 
     var newEvents = account.pendingEvents();
     eventStore.append(

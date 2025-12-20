@@ -2,11 +2,9 @@ package dev.thiagooliveira.cashcontrol.domain.transaction;
 
 import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
-import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.PayableCreated;
-import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.ReceivableCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionTemplateCreated;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionTemplateUpdated;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
-import dev.thiagooliveira.cashcontrol.shared.FormattersUtils;
 import dev.thiagooliveira.cashcontrol.shared.Recurrence;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;
@@ -58,7 +56,7 @@ public class TransactionTemplate extends Aggregate {
     this.totalInstallments = totalInstallments;
   }
 
-  public static TransactionTemplate createPayable(
+  public static TransactionTemplate create(
       UUID organizationId,
       UUID accountId,
       UUID userId,
@@ -67,11 +65,12 @@ public class TransactionTemplate extends Aggregate {
       String description,
       LocalDate startDueDate,
       Recurrence recurrence,
-      Optional<Integer> installments) {
+      Optional<Integer> installments,
+      TransactionType type) {
     validate(amount);
-    var payable = new TransactionTemplate();
-    payable.apply(
-        new PayableCreated(
+    var template = new TransactionTemplate();
+    template.apply(
+        new TransactionTemplateCreated(
             UUID.randomUUID(),
             organizationId,
             accountId,
@@ -82,38 +81,10 @@ public class TransactionTemplate extends Aggregate {
             startDueDate,
             recurrence,
             installments.orElse(null),
+            type,
             Instant.now(),
             1));
-    return payable;
-  }
-
-  public static TransactionTemplate createReceivable(
-      UUID organizationId,
-      UUID accountId,
-      UUID userId,
-      UUID categoryId,
-      BigDecimal amount,
-      String description,
-      LocalDate startDueDate,
-      Recurrence recurrence,
-      Optional<Integer> installments) {
-    validate(amount);
-    var receivable = new TransactionTemplate();
-    receivable.apply(
-        new ReceivableCreated(
-            UUID.randomUUID(),
-            organizationId,
-            accountId,
-            userId,
-            categoryId,
-            amount,
-            description,
-            startDueDate,
-            recurrence,
-            installments.orElse(null),
-            Instant.now(),
-            1));
-    return receivable;
+    return template;
   }
 
   public void update(
@@ -141,9 +112,7 @@ public class TransactionTemplate extends Aggregate {
   public static TransactionTemplate rehydrate(List<DomainEvent> events) {
     TransactionTemplate template = null;
     for (DomainEvent event : events) {
-      if (event instanceof PayableCreated pc) {
-        template = new TransactionTemplate();
-      } else if (event instanceof ReceivableCreated rc) {
+      if (event instanceof TransactionTemplateCreated pc) {
         template = new TransactionTemplate();
       } else if (template == null) {
         throw DomainException.badRequest("Template rehydration failed");
@@ -161,31 +130,17 @@ public class TransactionTemplate extends Aggregate {
   @Override
   public void whenTemplate(DomainEvent event) {
     switch (event) {
-      case PayableCreated ev -> {
+      case TransactionTemplateCreated ev -> {
         id = ev.templateId();
         organizationId = ev.organizationId();
         accountId = ev.accountId();
         userId = ev.userId();
         categoryId = ev.categoryId();
-        startDate = ev.occurredAt().atZone(FormattersUtils.zoneId).toLocalDate();
+        startDate = ev.startDueDate();
         originalStartDate = startDate;
         description = ev.description();
         amount = ev.amount();
-        type = TransactionType.DEBIT;
-        recurrence = ev.recurrence();
-        totalInstallments = ev.installments();
-      }
-      case ReceivableCreated ev -> {
-        id = ev.templateId();
-        organizationId = ev.organizationId();
-        accountId = ev.accountId();
-        userId = ev.userId();
-        categoryId = ev.categoryId();
-        startDate = ev.occurredAt().atZone(FormattersUtils.zoneId).toLocalDate();
-        originalStartDate = startDate;
-        description = ev.description();
-        amount = ev.amount();
-        type = TransactionType.CREDIT;
+        type = ev.type();
         recurrence = ev.recurrence();
         totalInstallments = ev.installments();
       }

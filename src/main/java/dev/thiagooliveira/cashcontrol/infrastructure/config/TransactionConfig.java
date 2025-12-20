@@ -41,12 +41,10 @@ public class TransactionConfig {
                 eventPublisher,
                 transactionTemplateRepository(transactionTemplateJpaRepository),
                 transactionRepository),
-            createDeposit(eventStore, eventPublisher, categoryService, transactionRepository),
-            createWithdrawal(eventStore, eventPublisher, categoryService, transactionRepository),
+            createTransaction(eventStore, eventPublisher, categoryService, transactionRepository),
             confirmTransaction(eventStore, eventPublisher),
             confirmScheduledTransaction(eventStore, eventPublisher, transactionRepository),
-            createPayable(eventStore, eventPublisher, categoryService),
-            createReceivable(eventStore, eventPublisher, categoryService),
+            createTransactionTemplate(eventStore, eventPublisher, categoryService),
             updateScheduledTransaction(eventStore, eventPublisher, transactionRepository),
             revertTransaction(eventStore, eventPublisher, transactionRepository),
             confirmRevertTransaction(eventStore, eventPublisher)));
@@ -70,30 +68,18 @@ public class TransactionConfig {
         eventStore, eventPublisher, templateRepository, transactionRepository);
   }
 
-  private CreateDeposit createDeposit(
+  private CreateTransaction createTransaction(
       EventStore eventStore,
       EventPublisher eventPublisher,
       CategoryService categoryService,
       TransactionRepository transactionRepository) {
-    return new CreateDeposit(eventStore, eventPublisher, categoryService, transactionRepository);
+    return new CreateTransaction(
+        eventStore, eventPublisher, categoryService, transactionRepository);
   }
 
-  private CreateWithdrawal createWithdrawal(
-      EventStore eventStore,
-      EventPublisher eventPublisher,
-      CategoryService categoryService,
-      TransactionRepository transactionRepository) {
-    return new CreateWithdrawal(eventStore, eventPublisher, categoryService, transactionRepository);
-  }
-
-  private CreatePayable createPayable(
+  private CreateTransactionTemplate createTransactionTemplate(
       EventStore eventStore, EventPublisher eventPublisher, CategoryService categoryService) {
-    return new CreatePayable(eventStore, eventPublisher, categoryService);
-  }
-
-  private CreateReceivable createReceivable(
-      EventStore eventStore, EventPublisher eventPublisher, CategoryService categoryService) {
-    return new CreateReceivable(eventStore, eventPublisher, categoryService);
+    return new CreateTransactionTemplate(eventStore, eventPublisher, categoryService);
   }
 
   private ConfirmTransaction confirmTransaction(

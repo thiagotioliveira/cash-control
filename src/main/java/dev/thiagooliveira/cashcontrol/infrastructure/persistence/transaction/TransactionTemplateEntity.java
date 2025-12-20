@@ -1,7 +1,6 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction;
 
-import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.PayableCreated;
-import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.ReceivableCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionTemplateCreated;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionTemplateUpdated;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionTemplateSummary;
 import dev.thiagooliveira.cashcontrol.shared.DueDateUtils;
@@ -53,35 +52,14 @@ public class TransactionTemplateEntity {
 
   public TransactionTemplateEntity() {}
 
-  public TransactionTemplateEntity(PayableCreated event) {
+  public TransactionTemplateEntity(TransactionTemplateCreated event) {
     this.id = event.templateId();
     this.organizationId = event.organizationId();
     this.accountId = event.accountId();
     this.description = event.description();
     this.amount = event.amount();
     this.categoryId = event.categoryId();
-    this.type = TransactionType.DEBIT;
-    this.recurrence = event.recurrence();
-    this.originalStartDate = event.startDueDate();
-    this.startDate = this.originalStartDate;
-    if (event.installments() != null) {
-      this.totalInstallments = event.installments();
-      var dueDate = event.startDueDate();
-      for (int i = 0; i < this.totalInstallments; i++) {
-        this.endDate = dueDate;
-        dueDate = DueDateUtils.nextDueDate(dueDate, event.recurrence());
-      }
-    }
-  }
-
-  public TransactionTemplateEntity(ReceivableCreated event) {
-    this.id = event.templateId();
-    this.organizationId = event.organizationId();
-    this.accountId = event.accountId();
-    this.description = event.description();
-    this.amount = event.amount();
-    this.categoryId = event.categoryId();
-    this.type = TransactionType.CREDIT;
+    this.type = event.type();
     this.recurrence = event.recurrence();
     this.originalStartDate = event.startDueDate();
     this.startDate = this.originalStartDate;

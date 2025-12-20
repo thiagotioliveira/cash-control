@@ -15,5 +15,5 @@ public record TransactionTemplateSummary(
     String description,
     BigDecimal amount,
     Recurrence recurrence,
-    LocalDate startDatev,
+    LocalDate startDate,
     Integer totalInstallments) {}
