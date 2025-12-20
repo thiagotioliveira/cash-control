@@ -29,7 +29,7 @@ public class CreateTransaction {
   public void execute(CreateTransactionCommand command) {
     var category =
         categoryService
-            .get(command.organizationId(), command.categoryId())
+            .get(command.organizationId(), command.accountId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
     if (!command.type().equals(category.type()))
       throw ApplicationException.badRequest("category must be " + category.type().name());

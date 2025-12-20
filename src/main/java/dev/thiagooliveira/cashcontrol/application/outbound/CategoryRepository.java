@@ -8,12 +8,14 @@ import java.util.UUID;
 
 public interface CategoryRepository {
 
-  List<CategorySummary> findAllByOrganizationId(UUID organizationId);
+  List<CategorySummary> findAllByOrganizationIdAndAccountId(UUID organizationId, UUID accountId);
 
-  Optional<CategorySummary> findByOrganizationIdAndId(UUID organizationId, UUID id);
+  Optional<CategorySummary> findByOrganizationIdAndAccountIdAndId(
+      UUID organizationId, UUID accountId, UUID id);
 
-  Optional<CategorySummary> findByOrganizationIdAndNameAndType(
-      UUID organizationId, String name, TransactionType type);
+  Optional<CategorySummary> findByOrganizationIdAndAccountIdAndNameAndType(
+      UUID organizationId, UUID accountId, String name, TransactionType type);
 
-  boolean existsByOrganizationIdAndHashColor(UUID organizationId, String hashColor);
+  boolean existsByOrganizationIdAndAccountIdAndHashColor(
+      UUID organizationId, UUID accountId, String hashColor);
 }

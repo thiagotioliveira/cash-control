@@ -10,7 +10,7 @@
             </div>
             <div class="modal-body">
                 <div class="action-sheet-content">
-                    <form action="#" th:action="@{${c.getId() == null ? '/protected/categories' : '/protected/categories/' + c.getId()}}" method="post">
+                    <form action="#" th:action="@{${c.getId() == null ? '/protected/accounts/'+c.accountId+'/categories' : '/protected/accounts/'+c.accountId+'/categories/' + c.getId()}}" method="post">
                         <input type="hidden" th:name="id" th:value="${c.id}" />
                         <div class="form-group basic">
                             <div class="input-wrapper">

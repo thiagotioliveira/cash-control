@@ -45,7 +45,7 @@ public class IndexController {
         accountService
             .get(securityContext.getUser().organizationId(), accountId)
             .orElseThrow(() -> InfrastructureException.badRequest("something wrong"));
-    var categories = categoryService.get(securityContext.getUser().organizationId());
+    var categories = categoryService.get(securityContext.getUser().organizationId(), accountId);
     var today = LocalDate.now(zoneId);
     var transactions =
         transactionService.get(

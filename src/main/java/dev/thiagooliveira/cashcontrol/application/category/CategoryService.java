@@ -10,7 +10,7 @@ public interface CategoryService {
 
   CategorySummary createCategory(CreateCategoryCommand command);
 
-  List<CategorySummary> get(UUID organizationId);
+  List<CategorySummary> get(UUID organizationId, UUID accountId);
 
-  Optional<CategorySummary> get(UUID organizationId, UUID categoryId);
+  Optional<CategorySummary> get(UUID organizationId, UUID accountId, UUID categoryId);
 }

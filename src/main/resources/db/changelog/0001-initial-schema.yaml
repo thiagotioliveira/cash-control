@@ -228,6 +228,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: account_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
                   name: name
                   type: varchar(255)
                   constraints:
@@ -248,6 +253,12 @@ databaseChangeLog:
             referencedTableName: organizations
             referencedColumnNames: id
             constraintName: fk_categories_organizations
+        - addForeignKeyConstraint:
+            baseTableName: categories
+            baseColumnNames: account_id
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_categories_accounts
   - changeSet:
       id: create-transaction-templates
       author: thiago

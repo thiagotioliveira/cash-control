@@ -23,12 +23,12 @@ public class CategoryServiceProxy implements CategoryService {
   }
 
   @Override
-  public List<CategorySummary> get(UUID organizationId) {
-    return this.categoryService.get(organizationId);
+  public List<CategorySummary> get(UUID organizationId, UUID accountId) {
+    return this.categoryService.get(organizationId, accountId);
   }
 
   @Override
-  public Optional<CategorySummary> get(UUID organizationId, UUID categoryId) {
-    return this.categoryService.get(organizationId, categoryId);
+  public Optional<CategorySummary> get(UUID organizationId, UUID accountId, UUID categoryId) {
+    return this.categoryService.get(organizationId, accountId, categoryId);
   }
 }

@@ -32,6 +32,16 @@ public class ProtectedRedirectController {
     }
   }
 
+  @GetMapping("/categories")
+  public String redirectCategories() {
+    if (securityContext.getUser() != null) {
+      var account = getAccountSummary(securityContext.getUser().organizationId());
+      return String.format("redirect:/protected/accounts/%s/categories", account.id());
+    } else {
+      return "redirect:/register";
+    }
+  }
+
   @GetMapping("/reports")
   public String redirectReport() {
     if (securityContext.getUser() != null) {

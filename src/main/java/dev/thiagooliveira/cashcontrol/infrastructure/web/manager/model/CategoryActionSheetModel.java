@@ -7,21 +7,24 @@ public class CategoryActionSheetModel {
 
   private final String title;
   private final UUID id;
+  private final UUID accountId;
   private final String name;
   private final String type;
   private final String hashColor;
 
   public CategoryActionSheetModel(
-      String title, UUID id, String name, String hashColor, String type) {
+      String title, UUID id, UUID accountId, String name, String hashColor, String type) {
     this.title = title;
     this.id = id;
+    this.accountId = accountId;
     this.name = name;
     this.hashColor = hashColor;
     this.type = type;
   }
 
-  public CategoryActionSheetModel(String title) {
+  public CategoryActionSheetModel(String title, UUID accountId) {
     this.title = title;
+    this.accountId = accountId;
     this.id = null;
     this.name = null;
     this.hashColor = "000000";
@@ -34,6 +37,10 @@ public class CategoryActionSheetModel {
 
   public UUID getId() {
     return id;
+  }
+
+  public UUID getAccountId() {
+    return accountId;
   }
 
   public String getName() {

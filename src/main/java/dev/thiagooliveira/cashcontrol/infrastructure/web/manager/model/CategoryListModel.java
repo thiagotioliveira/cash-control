@@ -12,7 +12,7 @@ public class CategoryListModel {
   public CategoryListModel(List<CategorySummary> categories) {
     this.content =
         categories.stream()
-            .map(c -> new CategoryItem(c.id(), c.name(), c.hashColor(), c.type()))
+            .map(c -> new CategoryItem(c.id(), c.accountId(), c.name(), c.hashColor(), c.type()))
             .toList();
   }
 
@@ -22,12 +22,15 @@ public class CategoryListModel {
 
   public static class CategoryItem {
     private final UUID id;
+    private final UUID accountId;
     private final String name;
     private final String hashColor;
     private final TransactionType type;
 
-    public CategoryItem(UUID id, String name, String hashColor, TransactionType type) {
+    public CategoryItem(
+        UUID id, UUID accountId, String name, String hashColor, TransactionType type) {
       this.id = id;
+      this.accountId = accountId;
       this.name = name;
       this.hashColor = hashColor;
       this.type = type;
@@ -35,7 +38,7 @@ public class CategoryListModel {
 
     public CategoryActionSheetModel toActionSheetModel() {
       return new CategoryActionSheetModel(
-          "Editar", id, name, hashColor.substring(1), type.toString());
+          "Editar", id, accountId, name, hashColor.substring(1), type.toString());
     }
 
     public UUID getId() {

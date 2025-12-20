@@ -16,29 +16,33 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   }
 
   @Override
-  public List<CategorySummary> findAllByOrganizationId(UUID organizationId) {
-    return this.repository.findAllByOrganizationId(organizationId).stream()
+  public List<CategorySummary> findAllByOrganizationIdAndAccountId(
+      UUID organizationId, UUID accountId) {
+    return this.repository.findAllByOrganizationIdAndAccountId(organizationId, accountId).stream()
         .map(CategoryEntity::toDomain)
         .toList();
   }
 
   @Override
-  public Optional<CategorySummary> findByOrganizationIdAndId(UUID organizationId, UUID id) {
+  public Optional<CategorySummary> findByOrganizationIdAndAccountIdAndId(
+      UUID organizationId, UUID accountId, UUID id) {
     return this.repository
-        .findByOrganizationIdAndId(organizationId, id)
+        .findByOrganizationIdAndAccountIdAndId(organizationId, accountId, id)
         .map(CategoryEntity::toDomain);
   }
 
   @Override
-  public Optional<CategorySummary> findByOrganizationIdAndNameAndType(
-      UUID organizationId, String name, TransactionType type) {
+  public Optional<CategorySummary> findByOrganizationIdAndAccountIdAndNameAndType(
+      UUID organizationId, UUID accountId, String name, TransactionType type) {
     return this.repository
-        .findByOrganizationIdAndNameAndType(organizationId, name, type)
+        .findByOrganizationIdAndAccountIdAndNameAndType(organizationId, accountId, name, type)
         .map(CategoryEntity::toDomain);
   }
 
   @Override
-  public boolean existsByOrganizationIdAndHashColor(UUID organizationId, String hashColor) {
-    return this.repository.existsByOrganizationIdAndHashColor(organizationId, hashColor);
+  public boolean existsByOrganizationIdAndAccountIdAndHashColor(
+      UUID organizationId, UUID accountId, String hashColor) {
+    return this.repository.existsByOrganizationIdAndAccountIdAndHashColor(
+        organizationId, accountId, hashColor);
   }
 }

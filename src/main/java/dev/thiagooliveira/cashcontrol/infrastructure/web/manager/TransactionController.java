@@ -105,7 +105,7 @@ public class TransactionController {
       Model model) {
     var categories =
         categoryService
-            .get(securityContext.getUser().organizationId(), form.getCategoryId())
+            .get(securityContext.getUser().organizationId(), accountId, form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     form.setCategoryName(categories.name());
     if (form.getDescription() == null) {
@@ -127,7 +127,7 @@ public class TransactionController {
       RedirectAttributes redirectAttributes) {
     var categories =
         categoryService
-            .get(securityContext.getUser().organizationId(), form.getCategoryId())
+            .get(securityContext.getUser().organizationId(), accountId, form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     try {
       if (categories.type().isCredit()) {

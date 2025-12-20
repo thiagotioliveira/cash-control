@@ -8,12 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryJpaRepository extends JpaRepository<CategoryEntity, UUID> {
 
-  Optional<CategoryEntity> findByOrganizationIdAndId(UUID organizationId, UUID id);
+  Optional<CategoryEntity> findByOrganizationIdAndAccountIdAndId(
+      UUID organizationId, UUID accountId, UUID id);
 
-  Optional<CategoryEntity> findByOrganizationIdAndNameAndType(
-      UUID organizationId, String name, TransactionType type);
+  Optional<CategoryEntity> findByOrganizationIdAndAccountIdAndNameAndType(
+      UUID organizationId, UUID accountId, String name, TransactionType type);
 
-  boolean existsByOrganizationIdAndHashColor(UUID organizationId, String hashColor);
+  boolean existsByOrganizationIdAndAccountIdAndHashColor(
+      UUID organizationId, UUID accountId, String hashColor);
 
-  List<CategoryEntity> findAllByOrganizationId(UUID organizationId);
+  List<CategoryEntity> findAllByOrganizationIdAndAccountId(UUID organizationId, UUID accountId);
 }

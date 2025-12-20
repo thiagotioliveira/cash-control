@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/protected/categories")
+@RequestMapping("/protected/accounts")
 public class CategoryController {
 
   private final SecurityContext securityContext;
@@ -28,16 +28,17 @@ public class CategoryController {
     this.categoryService = categoryService;
   }
 
-  @GetMapping
-  public String index(Model model) {
-    var categories = categoryService.get(securityContext.getUser().organizationId());
+  @GetMapping("/{accountId}/categories")
+  public String index(@PathVariable UUID accountId, Model model) {
+    var categories = categoryService.get(securityContext.getUser().organizationId(), accountId);
     model.addAttribute("categories", new CategoryListModel(categories));
-    model.addAttribute("category", new CategoryActionSheetModel("Nova Categoria"));
+    model.addAttribute("category", new CategoryActionSheetModel("Nova Categoria", accountId));
     return "protected/categories/category-list";
   }
 
-  @PostMapping
+  @PostMapping("/{accountId}/categories")
   public String postCategory(
+      @PathVariable UUID accountId,
       @ModelAttribute CategoryActionSheetModel.CategoryForm form,
       Model model,
       RedirectAttributes redirectAttributes) {
@@ -45,6 +46,7 @@ public class CategoryController {
       categoryService.createCategory(
           new CreateCategoryCommand(
               securityContext.getUser().organizationId(),
+              accountId,
               form.getName(),
               form.getHashColor(),
               TransactionType.valueOf(form.getType())));
@@ -53,11 +55,12 @@ public class CategoryController {
     } catch (DomainException | ApplicationException e) {
       redirectAttributes.addFlashAttribute("alert", AlertModel.error(e.getMessage()));
     }
-    return "redirect:/protected/categories";
+    return String.format("redirect:/protected/accounts/%s/categories", accountId);
   }
 
-  @PostMapping("/{categoryId}")
+  @PostMapping("/{accountId}/categories/{categoryId}")
   public String postCategory(
+      @PathVariable UUID accountId,
       @PathVariable UUID categoryId,
       @ModelAttribute CategoryActionSheetModel.CategoryForm form,
       Model model,
@@ -66,7 +69,7 @@ public class CategoryController {
       throw InfrastructureException.badRequest("Edição não implementado!");
     } catch (InfrastructureException e) {
       redirectAttributes.addFlashAttribute("alert", AlertModel.error(e.getMessage()));
-      return "redirect:/protected/categories";
+      return String.format("redirect:/protected/accounts/%s/categories", accountId);
     }
   }
 }

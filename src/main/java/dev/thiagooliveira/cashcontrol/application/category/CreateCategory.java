@@ -23,18 +23,22 @@ public class CreateCategory {
 
   public CategorySummary execute(CreateCategoryCommand command) {
     if (repository
-        .findByOrganizationIdAndNameAndType(
-            command.organizationId(), command.name(), command.type())
+        .findByOrganizationIdAndAccountIdAndNameAndType(
+            command.organizationId(), command.accountId(), command.name(), command.type())
         .isPresent()) {
       throw ApplicationException.badRequest("category already exists");
     }
-    if (repository.existsByOrganizationIdAndHashColor(
-        command.organizationId(), command.hashColor())) {
+    if (repository.existsByOrganizationIdAndAccountIdAndHashColor(
+        command.organizationId(), command.accountId(), command.hashColor())) {
       throw ApplicationException.badRequest("color already exists");
     }
     var category =
         Category.create(
-            command.organizationId(), command.name(), command.hashColor(), command.type());
+            command.organizationId(),
+            command.accountId(),
+            command.name(),
+            command.hashColor(),
+            command.type());
     var events = category.pendingEvents();
 
     eventStore.append(

@@ -16,6 +16,9 @@ public class CategoryEntity {
   private UUID organizationId;
 
   @Column(nullable = false)
+  private UUID accountId;
+
+  @Column(nullable = false)
   private String name;
 
   @Column(nullable = false)
@@ -33,10 +36,11 @@ public class CategoryEntity {
     this.hashColor = event.hashColor();
     this.type = event.type();
     this.organizationId = event.organizationId();
+    this.accountId = event.accountId();
   }
 
   public CategorySummary toDomain() {
-    return new CategorySummary(id, name, hashColor, type);
+    return new CategorySummary(id, accountId, name, hashColor, type);
   }
 
   public UUID getId() {
@@ -77,5 +81,13 @@ public class CategoryEntity {
 
   public void setOrganizationId(UUID organizationId) {
     this.organizationId = organizationId;
+  }
+
+  public UUID getAccountId() {
+    return accountId;
+  }
+
+  public void setAccountId(UUID accountId) {
+    this.accountId = accountId;
   }
 }

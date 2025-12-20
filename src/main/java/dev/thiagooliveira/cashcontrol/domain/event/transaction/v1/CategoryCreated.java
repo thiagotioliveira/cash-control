@@ -11,6 +11,7 @@ public record CategoryCreated(
     String hashColor,
     TransactionType type,
     UUID organizationId,
+    UUID accountId,
     Instant occurredAt,
     int version)
     implements DomainEvent {
