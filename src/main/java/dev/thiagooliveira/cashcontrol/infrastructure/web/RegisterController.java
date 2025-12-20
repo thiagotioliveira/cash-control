@@ -8,10 +8,13 @@ import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException
 import dev.thiagooliveira.cashcontrol.application.user.UserService;
 import dev.thiagooliveira.cashcontrol.application.user.dto.RegisterUserCommand;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
+import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.AlertModel;
 import dev.thiagooliveira.cashcontrol.shared.Currency;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,13 +24,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/register")
 public class RegisterController {
-
+  private final SecurityContext securityContext;
+  private final PlatformTransactionManager txManager;
   private final UserService userService;
   private final BankService bankService;
   private final AccountService accountService;
 
   public RegisterController(
-      UserService userService, BankService bankService, AccountService accountService) {
+      SecurityContext securityContext,
+      PlatformTransactionManager txManager,
+      UserService userService,
+      BankService bankService,
+      AccountService accountService) {
+    this.securityContext = securityContext;
+    this.txManager = txManager;
     this.userService = userService;
     this.bankService = bankService;
     this.accountService = accountService;
@@ -40,8 +50,8 @@ public class RegisterController {
   }
 
   @PostMapping
-  @Transactional
   public String register(@ModelAttribute RegisterForm form, Model model) {
+    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
     try {
       var user =
           this.userService.register(
@@ -49,13 +59,15 @@ public class RegisterController {
                   form.username, form.email, form.password, form.confirmPassword));
       var bank =
           this.bankService.createBank(
-              new CreateBankCommand(
-                  user.organizationId(), form.bankName, Currency.valueOf(form.bankCurrency)));
+              new CreateBankCommand(user.organizationId(), form.bankName, Currency.EUR));
       var account =
           this.accountService.createAccount(
               new CreateAccountCommand(user.organizationId(), bank.id(), form.accountName));
+      txManager.commit(status);
       return "redirect:/protected/accounts/" + account.id();
     } catch (ApplicationException | DomainException e) {
+      txManager.rollback(status);
+      securityContext.invalidate();
       model.addAttribute("form", form);
       model.addAttribute("alert", AlertModel.error(e.getMessage()));
       return "register";
@@ -68,7 +80,6 @@ public class RegisterController {
     private String password;
     private String confirmPassword;
     private String bankName;
-    private String bankCurrency;
     private String accountName;
 
     public RegisterForm() {}
@@ -119,14 +130,6 @@ public class RegisterController {
 
     public void setAccountName(String accountName) {
       this.accountName = accountName;
-    }
-
-    public String getBankCurrency() {
-      return bankCurrency;
-    }
-
-    public void setBankCurrency(String bankCurrency) {
-      this.bankCurrency = bankCurrency;
     }
   }
 }

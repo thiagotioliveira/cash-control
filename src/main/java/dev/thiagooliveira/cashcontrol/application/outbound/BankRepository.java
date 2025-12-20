@@ -9,4 +9,6 @@ public interface BankRepository {
   boolean existsByOrganizationIdAndName(UUID organizationId, String name);
 
   Optional<BankSummary> findByOrganizationIdAndId(UUID organizationId, UUID id);
+
+  Optional<BankSummary> findByOrganizationIdAndName(UUID organizationId, String name);
 }

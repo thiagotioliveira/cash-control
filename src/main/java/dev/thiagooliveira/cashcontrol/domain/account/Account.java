@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.apache.logging.log4j.util.Strings;
 
 public class Account extends Aggregate {
   private UUID id;
@@ -18,36 +19,16 @@ public class Account extends Aggregate {
   private BigDecimal balance;
   private Instant updatedAt;
 
-  private Account(
-      UUID id,
-      UUID organizationId,
-      UUID bankId,
-      String name,
-      BigDecimal balance,
-      Instant updatedAt) {
-    this.id = id;
-    this.organizationId = organizationId;
-    this.bankId = bankId;
-    this.name = name;
-    this.balance = balance;
-    this.updatedAt = updatedAt;
-  }
-
-  private Account(UUID organizationId, UUID bankId, String name, Instant updatedAt) {
-    this(UUID.randomUUID(), organizationId, bankId, name, BigDecimal.ZERO, updatedAt);
-  }
+  private Account() {}
 
   public static Account create(UUID organizationId, UUID bankId, String name) {
-    var account = new Account(organizationId, bankId, name, Instant.now());
+    if (Strings.isBlank(name)) {
+      throw DomainException.badRequest("invalid name for account");
+    }
+    var account = new Account();
     account.apply(
         new AccountCreated(
-            account.id,
-            account.name,
-            account.bankId,
-            account.balance,
-            organizationId,
-            account.updatedAt,
-            1));
+            UUID.randomUUID(), name, bankId, BigDecimal.ZERO, organizationId, Instant.now(), 1));
     return account;
   }
 
@@ -55,7 +36,7 @@ public class Account extends Aggregate {
     Account account = null;
     for (DomainEvent event : events) {
       if (event instanceof AccountCreated ac) {
-        account = new Account(ac.accountId(), ac.bankId(), ac.name(), ac.occurredAt());
+        account = new Account();
       } else if (account == null) {
         throw DomainException.badRequest("Account rehydration failed");
       }

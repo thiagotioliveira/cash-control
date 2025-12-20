@@ -15,22 +15,13 @@ import java.util.*;
 
 public class TransactionListModel {
 
+  private final UUID accountId;
   private final Map<LocalDate, List<TransactionItem>> content =
       new TreeMap<>(Comparator.reverseOrder());
 
-  public TransactionListModel(List<TransactionSummary> transactions) {
-    transactions
-        //            .stream()
-        //        .sorted(
-        //            (t1, t2) ->
-        //                t1.occurredAt()
-        //                    .map(date -> date)
-        //                    .orElse(t1.dueDate().atStartOfDay(zoneId).toInstant())
-        //                    .compareTo(
-        //                        t2.occurredAt()
-        //                            .map(date -> date)
-        //                            .orElse(t2.dueDate().atStartOfDay(zoneId).toInstant())))
-        .forEach(
+  public TransactionListModel(UUID accountId, List<TransactionSummary> transactions) {
+    this.accountId = accountId;
+    transactions.forEach(
         t -> {
           LocalDate key =
               t.occurredAt().map(date -> date.atZone(zoneId).toLocalDate()).orElse(t.dueDate());
@@ -57,6 +48,10 @@ public class TransactionListModel {
       return "Ontem";
     }
     return dtf.format(key);
+  }
+
+  public UUID getAccountId() {
+    return accountId;
   }
 
   public Map<LocalDate, List<TransactionItem>> getContent() {

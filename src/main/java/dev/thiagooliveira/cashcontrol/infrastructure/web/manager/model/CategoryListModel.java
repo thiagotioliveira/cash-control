@@ -7,13 +7,19 @@ import java.util.UUID;
 
 public class CategoryListModel {
 
+  private final UUID accountId;
   private final List<CategoryItem> content;
 
-  public CategoryListModel(List<CategorySummary> categories) {
+  public CategoryListModel(UUID accountId, List<CategorySummary> categories) {
+    this.accountId = accountId;
     this.content =
         categories.stream()
             .map(c -> new CategoryItem(c.id(), c.accountId(), c.name(), c.hashColor(), c.type()))
             .toList();
+  }
+
+  public UUID getAccountId() {
+    return accountId;
   }
 
   public List<CategoryItem> getContent() {

@@ -8,4 +8,6 @@ public interface BankJpaRepository extends JpaRepository<BankEntity, UUID> {
   boolean existsByOrganizationIdAndName(UUID organizationId, String name);
 
   Optional<BankEntity> findByOrganizationIdAndId(UUID organizationId, UUID id);
+
+  Optional<BankEntity> findByOrganizationIdAndName(UUID organizationId, String name);
 }

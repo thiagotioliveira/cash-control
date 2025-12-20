@@ -10,4 +10,6 @@ public interface BankService {
   BankSummary createBank(CreateBankCommand command);
 
   Optional<BankSummary> get(UUID organizationId, UUID bankId);
+
+  Optional<BankSummary> get(UUID organizationId, String name);
 }

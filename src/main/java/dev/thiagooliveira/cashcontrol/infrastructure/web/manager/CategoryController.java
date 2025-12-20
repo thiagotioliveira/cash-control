@@ -31,7 +31,7 @@ public class CategoryController {
   @GetMapping("/{accountId}/categories")
   public String index(@PathVariable UUID accountId, Model model) {
     var categories = categoryService.get(securityContext.getUser().organizationId(), accountId);
-    model.addAttribute("categories", new CategoryListModel(categories));
+    model.addAttribute("categories", new CategoryListModel(accountId, categories));
     model.addAttribute("category", new CategoryActionSheetModel("Nova Categoria", accountId));
     return "protected/categories/category-list";
   }

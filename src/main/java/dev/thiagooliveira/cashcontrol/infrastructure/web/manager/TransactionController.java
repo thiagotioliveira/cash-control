@@ -57,7 +57,7 @@ public class TransactionController {
         transactionService.get(
             new GetTransactionsCommand(
                 securityContext.getUser().organizationId(), accountId, startDate, endDate));
-    return buildGetTransactionModel(transactions, type, status, model);
+    return buildGetTransactionModel(accountId, transactions, type, status, model);
   }
 
   @GetMapping("/{accountId}/transactions")
@@ -74,7 +74,7 @@ public class TransactionController {
                 accountId,
                 today.with(TemporalAdjusters.firstDayOfMonth()),
                 today.with(TemporalAdjusters.lastDayOfMonth())));
-    return buildGetTransactionModel(transactions, type, status, model);
+    return buildGetTransactionModel(accountId, transactions, type, status, model);
   }
 
   @PostMapping("/{accountId}/transactions/{transactionId}/review")
@@ -203,7 +203,9 @@ public class TransactionController {
   public String getTransaction(
       @PathVariable UUID accountId, @PathVariable UUID transactionId, Model model) {
     var transaction = getTransactionItem(accountId, transactionId);
-    model.addAttribute("transaction", new TransactionDetailsModel(transaction, "/protected/"));
+    model.addAttribute(
+        "transaction",
+        new TransactionDetailsModel(transaction, "/protected/accounts/" + accountId));
     return "protected/transactions/transaction-details";
   }
 
@@ -262,7 +264,9 @@ public class TransactionController {
                 Optional.empty()));
       }
       var transaction = getTransactionItem(accountId, transactionId);
-      model.addAttribute("transaction", new TransactionDetailsModel(transaction, "/protected/"));
+      model.addAttribute(
+          "transaction",
+          new TransactionDetailsModel(transaction, "/protected/accounts/" + accountId));
       model.addAttribute("alert", AlertModel.success("Transação atualizada com sucesso!"));
       return "protected/transactions/transaction-details";
     } catch (DomainException | ApplicationException e) {
@@ -273,6 +277,7 @@ public class TransactionController {
   }
 
   private static String buildGetTransactionModel(
+      UUID accountId,
       List<TransactionSummary> transactions,
       TransactionType type,
       TransactionStatus status,
@@ -280,6 +285,7 @@ public class TransactionController {
     model.addAttribute(
         "transactions",
         new TransactionListModel(
+            accountId,
             transactions.stream()
                 .filter(
                     t -> {

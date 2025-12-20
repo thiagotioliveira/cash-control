@@ -91,7 +91,7 @@ public class IndexController {
                 .reduce(BigDecimal.ZERO, BigDecimal::add)));
     model.addAttribute("context", securityContext);
     model.addAttribute("account", new AccountModel(account));
-    model.addAttribute("transactions", new TransactionListModel(transactionsConfirmed));
+    model.addAttribute("transactions", new TransactionListModel(accountId, transactionsConfirmed));
     model.addAttribute(
         "transactionCarouselSlide", new TransactionCarouselSlideModel(transactionsScheduled));
     model.addAttribute(
@@ -99,7 +99,7 @@ public class IndexController {
         new TransactionActionSheetModel(
             accountId,
             "Deposito",
-            account.currency(),
+            account.bank().currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getCredit(),
             false,
             true,
@@ -110,7 +110,7 @@ public class IndexController {
         new TransactionActionSheetModel(
             accountId,
             "Retirada",
-            account.currency(),
+            account.bank().currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
             false,
             true,
@@ -121,7 +121,7 @@ public class IndexController {
         new TransactionActionSheetModel(
             accountId,
             "Pagamento",
-            account.currency(),
+            account.bank().currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
             true,
             false,
@@ -132,7 +132,7 @@ public class IndexController {
         new TransactionActionSheetModel(
             accountId,
             "Recebimento",
-            account.currency(),
+            account.bank().currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getCredit(),
             true,
             false,

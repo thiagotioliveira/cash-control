@@ -22,6 +22,11 @@ public class WebSecurityContext implements SecurityContext {
   }
 
   @Override
+  public void invalidate() {
+    this.user = null;
+  }
+
+  @Override
   public UserSummary getUser() {
     return this.user;
   }

@@ -7,4 +7,6 @@ public interface SecurityContext {
   UserSummary getUser();
 
   void setUser(UserSummary user);
+
+  void invalidate();
 }

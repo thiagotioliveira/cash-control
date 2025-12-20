@@ -80,29 +80,13 @@
                     </div>
 
                     <div class="form-group basic">
-                        <div class="row">
-                            <div class="col">
-                                <div class="input-wrapper">
-                                    <label class="label" for="bank-name">Banco</label>
-                                    <input type="text" class="form-control" id="bank-name" placeholder="Nome da banco"
-                                           th:name="bankName" th:value="${form.bankName}">
-                                    <i class="clear-input">
-                                        <ion-icon name="close-circle"></ion-icon>
-                                    </i>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group basic">
-                                    <div class="input-wrapper">
-                                        <label class="label" for="bank-currency">Moeda</label>
-                                        <select class="form-control custom-select" id="bank-currency"
-                                                th:name="bankCurrency" th:value="${form.bankCurrency}">
-                                            <option value="EUR">Euro</option>
-                                            <option value="BRL">Real Brasileiro</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="input-wrapper">
+                            <label class="label" for="bank-name">Banco</label>
+                            <select class="form-control custom-select" id="bank-name"
+                                    th:name="bankName" th:value="${form.bankName}">
+                                <option value="ActivoBank">Activo Bank</option>
+                                <option value="Millenium">Millenium</option>
+                            </select>
                         </div>
                     </div>
 

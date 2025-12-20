@@ -12,9 +12,9 @@
         <img th:src="@{/assets/img/logo.png}" alt="logo" class="logo">
     </div>
     <div class="right">
-        <a href="#" class="headerButton" th:if="${false}">
-            <ion-icon class="icon" name="notifications-outline"></ion-icon>
-            <span class="badge badge-danger">4</span>
+        <a th:href="@{'/protected/accounts'}" class="headerButton" >
+            <ion-icon name="wallet-outline"></ion-icon>
+            <span class="badge badge-danger" th:if="${false}">4</span>
         </a>
         <a href="#" class="headerButton">
             <img th:src="@{/assets/img/avatar/man.png}" alt="image" class="imaged w32">

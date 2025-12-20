@@ -19,7 +19,7 @@
                 <!-- Balance -->
                 <div class="balance">
                     <div class="left">
-                        <span class="title" th:text="${account.getNameFormatted()}"></span>
+                        <span class="title" th:text="${account.name + ' (' + account.getUpdatedAtFormatted() +')'}"></span>
                         <h1 class="total" th:text="${account.balance}"></h1>
                     </div>
                     <div class="right" th:if="${false}">

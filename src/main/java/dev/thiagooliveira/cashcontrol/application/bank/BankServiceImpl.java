@@ -25,4 +25,9 @@ public class BankServiceImpl implements BankService {
   public Optional<BankSummary> get(UUID organizationId, UUID bankId) {
     return bankRepository.findByOrganizationIdAndId(organizationId, bankId);
   }
+
+  @Override
+  public Optional<BankSummary> get(UUID organizationId, String name) {
+    return this.bankRepository.findByOrganizationIdAndName(organizationId, name);
+  }
 }

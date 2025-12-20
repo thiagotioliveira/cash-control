@@ -1,6 +1,7 @@
 package dev.thiagooliveira.cashcontrol.infrastructure.persistence.account;
 
 import dev.thiagooliveira.cashcontrol.domain.account.AccountSummary;
+import dev.thiagooliveira.cashcontrol.domain.bank.BankSummary;
 import dev.thiagooliveira.cashcontrol.domain.event.account.v1.*;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionConfirmed;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.bank.BankEntity;
@@ -72,8 +73,7 @@ public class AccountEntity {
     return new AccountSummary(
         this.id,
         this.name,
-        this.bank.getId(),
-        this.bank.getCurrency(),
+        new BankSummary(this.bank.getId(), this.bank.getName(), this.bank.getCurrency()),
         this.updatedAt,
         this.balance);
   }

@@ -25,4 +25,9 @@ public class BankServiceProxy implements BankService {
   public Optional<BankSummary> get(UUID organizationId, UUID bankId) {
     return this.bankService.get(organizationId, bankId);
   }
+
+  @Override
+  public Optional<BankSummary> get(UUID organizationId, String name) {
+    return this.bankService.get(organizationId, name);
+  }
 }

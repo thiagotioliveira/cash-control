@@ -22,4 +22,11 @@ public class BankRepositoryAdapter implements BankRepository {
   public Optional<BankSummary> findByOrganizationIdAndId(UUID organizationId, UUID id) {
     return this.repository.findByOrganizationIdAndId(organizationId, id).map(BankEntity::toDomain);
   }
+
+  @Override
+  public Optional<BankSummary> findByOrganizationIdAndName(UUID organizationId, String name) {
+    return this.repository
+        .findByOrganizationIdAndName(organizationId, name)
+        .map(BankEntity::toDomain);
+  }
 }
