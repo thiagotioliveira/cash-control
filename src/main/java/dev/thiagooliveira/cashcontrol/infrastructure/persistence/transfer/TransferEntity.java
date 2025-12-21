@@ -74,12 +74,12 @@ public class TransferEntity {
 
   public TransferStatus increaseStatus() {
     if (this.status == TransferStatus.PENDING) {
-      this.status = TransferStatus.STARTED;
+      this.status = TransferStatus.IN_PROGRESS;
       return this.status;
-    } else if (this.status == TransferStatus.STARTED) {
+    } else if (this.status == TransferStatus.IN_PROGRESS) {
       return TransferStatus.CONFIRMED;
     } else if (this.status == TransferStatus.CONFIRMED) {
-      throw InfrastructureException.conflict("Transfer already confirmed");
+      throw InfrastructureException.conflict("transfer already confirmed");
     } else {
       throw InfrastructureException.conflict("something went wrong");
     }

@@ -3,11 +3,9 @@ package dev.thiagooliveira.cashcontrol.infrastructure.listener.transfer;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.RevertTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.transfer.TransferService;
+import dev.thiagooliveira.cashcontrol.application.transfer.dto.ConfirmRevertTransferCommand;
 import dev.thiagooliveira.cashcontrol.application.transfer.dto.ConfirmTransferCommand;
-import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.RevertTransactionRequested;
-import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransactionConfirmed;
-import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransferConfirmed;
-import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransferRequested;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.*;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionJpaRepository;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transfer.TransferEntity;
@@ -68,26 +66,30 @@ public class TransferEventListener {
   }
 
   @EventListener
-  public void on(RevertTransactionRequested event) {
-    if (event.getTransferId().isPresent()) {
-      var otherTransfer =
-          this.transactionJpaRepository
-              .findByOrganizationIdAndTransferId(
-                  event.getOrganizationId(), event.getTransferId().get())
-              .stream()
-              .filter(t -> !t.getId().equals(event.getTransactionId()))
-              .findFirst();
-      otherTransfer.ifPresent(
-          transactionEntity -> {
-            this.transactionService.revertTransaction(
-                new RevertTransactionCommand(
-                    event.getOrganizationId(),
-                    transactionEntity.getAccount().getId(),
-                    transactionEntity.getId(),
-                    event.getUserId()));
-            this.transferJpaRepository.deleteById(event.getTransferId().get());
-          });
-    }
+  public void on(RevertTransferRequested event) {
+    var transactions =
+        this.transactionJpaRepository
+            .findByOrganizationIdAndTransferId(event.organizationId(), event.transferId())
+            .stream()
+            .toList();
+
+    var credit =
+        transactions.stream().filter(t -> t.getType().isCredit()).findFirst().orElseThrow();
+    this.transactionService.revert(
+        new RevertTransactionCommand(
+            event.organizationId(), credit.getAccount().getId(), credit.getId(), event.userId()));
+    var debit = transactions.stream().filter(t -> t.getType().isDebit()).findFirst().orElseThrow();
+    this.transactionService.revert(
+        new RevertTransactionCommand(
+            event.organizationId(), debit.getAccount().getId(), debit.getId(), event.userId()));
+    this.transferService.confirmRevert(
+        new ConfirmRevertTransferCommand(
+            event.organizationId(), event.transferId(), event.userId()));
+  }
+
+  @EventListener
+  public void on(TransferReverted event) {
+    this.transferJpaRepository.deleteById(event.transferId());
   }
 
   private Optional<TransferEntity> findById(UUID id) {

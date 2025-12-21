@@ -90,7 +90,7 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public void revertTransaction(RevertTransactionCommand command) {
+  public void revert(RevertTransactionCommand command) {
     this.revertTransaction.execute(command);
   }
 }

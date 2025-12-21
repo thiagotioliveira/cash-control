@@ -2,8 +2,10 @@ package dev.thiagooliveira.cashcontrol.domain.transaction;
 
 import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.RevertTransferRequested;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransferConfirmed;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransferRequested;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.TransferReverted;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.shared.TransferStatus;
 import java.math.BigDecimal;
@@ -63,6 +65,18 @@ public class Transfer extends Aggregate {
     this.apply(new TransferConfirmed(id, occurredAt, getVersion() + 1));
   }
 
+  public void revert(UUID userId) {
+    this.apply(
+        new RevertTransferRequested(organizationId, id, userId, occurredAt, getVersion() + 1));
+  }
+
+  public void confirmRevert(UUID userId) {
+    if (!this.status.isPendingRevert()) {
+      throw DomainException.badRequest("status must be pending");
+    }
+    this.apply(new TransferReverted(organizationId, id, userId, occurredAt, getVersion() + 1));
+  }
+
   public static Transfer rehydrate(List<DomainEvent> events) {
     Transfer transfer = null;
     for (DomainEvent event : events) {
@@ -99,6 +113,12 @@ public class Transfer extends Aggregate {
       }
       case TransferConfirmed ev -> {
         this.status = TransferStatus.CONFIRMED;
+      }
+      case RevertTransferRequested ev -> {
+        this.status = TransferStatus.PENDING_REVERT;
+      }
+      case TransferReverted ev -> {
+        this.status = TransferStatus.DELETED;
       }
       default -> throw DomainException.badRequest("unhandled event " + event);
     }

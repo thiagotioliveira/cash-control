@@ -28,5 +28,5 @@ public interface TransactionService {
 
   void createTemplate(CreateTransactionTemplateCommand command);
 
-  void revertTransaction(RevertTransactionCommand command);
+  void revert(RevertTransactionCommand command);
 }

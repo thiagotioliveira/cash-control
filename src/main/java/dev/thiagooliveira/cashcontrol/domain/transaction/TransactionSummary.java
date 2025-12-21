@@ -15,6 +15,7 @@ public record TransactionSummary(
     Optional<String> userName,
     Currency currency,
     Optional<UUID> transactionTemplateId,
+    Optional<UUID> transferId,
     Optional<Instant> occurredAt,
     LocalDate dueDate,
     String description,

@@ -119,6 +119,7 @@ public class TransactionEntity {
         this.transactionTemplate != null
             ? Optional.of(this.transactionTemplate.getId())
             : Optional.empty(),
+        this.transferId != null ? Optional.of(this.transferId) : Optional.empty(),
         Optional.ofNullable(this.occurredAt),
         this.dueDate,
         this.description,

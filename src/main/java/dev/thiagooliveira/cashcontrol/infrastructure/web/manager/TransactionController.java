@@ -7,6 +7,8 @@ import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.*;
+import dev.thiagooliveira.cashcontrol.application.transfer.TransferService;
+import dev.thiagooliveira.cashcontrol.application.transfer.dto.RevertTransferCommand;
 import dev.thiagooliveira.cashcontrol.domain.account.AccountSummary;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
@@ -34,16 +36,19 @@ public class TransactionController {
   private final SecurityContext securityContext;
   private final AccountService accountService;
   private final TransactionService transactionService;
+  private final TransferService transferService;
   private final CategoryService categoryService;
 
   public TransactionController(
       SecurityContext securityContext,
       AccountService accountService,
       TransactionService transactionService,
+      TransferService transferService,
       CategoryService categoryService) {
     this.securityContext = securityContext;
     this.accountService = accountService;
     this.transactionService = transactionService;
+    this.transferService = transferService;
     this.categoryService = categoryService;
   }
 
@@ -199,7 +204,7 @@ public class TransactionController {
   @GetMapping("/{accountId}/transactions/{transactionId}/review")
   public String getReviewTransaction(
       @PathVariable UUID accountId, @PathVariable UUID transactionId, Model model) {
-    var transaction = getTransactionItem(accountId, transactionId);
+    var transaction = getTransaction(accountId, transactionId);
     model.addAttribute("transaction", new TransactionActionSheetModel.TransactionForm(transaction));
     return "protected/transactions/transaction-review";
   }
@@ -207,7 +212,7 @@ public class TransactionController {
   @GetMapping("/{accountId}/transactions/{transactionId:[0-9a-fA-F\\-]{36}}")
   public String getTransaction(
       @PathVariable UUID accountId, @PathVariable UUID transactionId, Model model) {
-    var transaction = getTransactionItem(accountId, transactionId);
+    var transaction = getTransaction(accountId, transactionId);
     model.addAttribute(
         "transaction",
         new TransactionDetailsModel(transaction, "/protected/accounts/" + accountId));
@@ -220,12 +225,21 @@ public class TransactionController {
       @PathVariable UUID transactionId,
       RedirectAttributes redirectAttributes) {
     try {
-      transactionService.revertTransaction(
-          new RevertTransactionCommand(
-              securityContext.getUser().organizationId(),
-              accountId,
-              transactionId,
-              securityContext.getUser().id()));
+      var transaction = getTransaction(accountId, transactionId);
+      if (transaction.transferId().isPresent()) {
+        transferService.revert(
+            new RevertTransferCommand(
+                securityContext.getUser().organizationId(),
+                transaction.transferId().get(),
+                securityContext.getUser().id()));
+      } else {
+        transactionService.revert(
+            new RevertTransactionCommand(
+                securityContext.getUser().organizationId(),
+                accountId,
+                transactionId,
+                securityContext.getUser().id()));
+      }
       redirectAttributes.addFlashAttribute(
           "alert", AlertModel.success("Transação revertida com sucesso!"));
       return String.format("redirect:/protected/accounts/%s/transactions", accountId);
@@ -268,7 +282,7 @@ public class TransactionController {
                 form.getStartDueDate(),
                 Optional.empty()));
       }
-      var transaction = getTransactionItem(accountId, transactionId);
+      var transaction = getTransaction(accountId, transactionId);
       model.addAttribute(
           "transaction",
           new TransactionDetailsModel(transaction, "/protected/accounts/" + accountId));
@@ -281,12 +295,12 @@ public class TransactionController {
     }
   }
 
-  private TransactionSummary getTransactionItem(UUID accountId, UUID transactionId) {
+  private TransactionSummary getTransaction(UUID accountId, UUID transactionId) {
     return transactionService
         .get(
             new GetTransactionCommand(
                 securityContext.getUser().organizationId(), accountId, transactionId))
-        .orElseThrow(() -> InfrastructureException.notFound("Transaction not found"));
+        .orElseThrow(() -> InfrastructureException.notFound("transaction not found"));
   }
 
   private AccountSummary getAccount(UUID accountId) {

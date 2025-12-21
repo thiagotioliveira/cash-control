@@ -68,7 +68,7 @@ public class TransactionServiceProxy implements TransactionService {
   }
 
   @Override
-  public void revertTransaction(RevertTransactionCommand command) {
-    this.transactionService.revertTransaction(command);
+  public void revert(RevertTransactionCommand command) {
+    this.transactionService.revert(command);
   }
 }

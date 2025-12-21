@@ -4,10 +4,7 @@ import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventPublisher;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
-import dev.thiagooliveira.cashcontrol.application.transfer.ConfirmTransfer;
-import dev.thiagooliveira.cashcontrol.application.transfer.CreateTransfer;
-import dev.thiagooliveira.cashcontrol.application.transfer.TransferService;
-import dev.thiagooliveira.cashcontrol.application.transfer.TransferServiceImpl;
+import dev.thiagooliveira.cashcontrol.application.transfer.*;
 import dev.thiagooliveira.cashcontrol.infrastructure.listener.transfer.TransferEventListener;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionJpaRepository;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transfer.TransferJpaRepository;
@@ -34,7 +31,9 @@ public class TransferConfig {
     return new TransferServiceProxy(
         new TransferServiceImpl(
             createTransfer(eventStore, publisher, categoryService),
-            confirmTransfer(eventStore, publisher)));
+            confirmTransfer(eventStore, publisher),
+            revertTransfer(eventStore, publisher),
+            confirmRevertTransfer(eventStore, publisher)));
   }
 
   private CreateTransfer createTransfer(
@@ -44,5 +43,14 @@ public class TransferConfig {
 
   private ConfirmTransfer confirmTransfer(EventStore eventStore, EventPublisher publisher) {
     return new ConfirmTransfer(eventStore, publisher);
+  }
+
+  private RevertTransfer revertTransfer(EventStore eventStore, EventPublisher publisher) {
+    return new RevertTransfer(eventStore, publisher);
+  }
+
+  private ConfirmRevertTransfer confirmRevertTransfer(
+      EventStore eventStore, EventPublisher publisher) {
+    return new ConfirmRevertTransfer(eventStore, publisher);
   }
 }
