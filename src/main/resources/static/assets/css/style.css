@@ -5269,7 +5269,14 @@ textarea,
   color: #27173E;
 }
 
-.transactions .item {
+.transactions .truncated {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.categories .item {
   background: #ffffff;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.09);
   border-radius: 10px;
@@ -5280,8 +5287,30 @@ textarea,
   justify-content: space-between;
 }
 
+.transactions .item {
+  background: #ffffff;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.09);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.categories .item:last-child {
+  margin-bottom: 0;
+}
+
 .transactions .item:last-child {
   margin-bottom: 0;
+}
+
+.categories .item p {
+  font-size: 11px;
+  margin: 0;
+  color: #958d9e;
+  font-weight: 500;
 }
 
 .transactions .item p {
@@ -5291,6 +5320,13 @@ textarea,
   font-weight: 500;
 }
 
+.categories .item .detail {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  line-height: 1.2em;
+}
+
 .transactions .item .detail {
   display: flex;
   align-items: center;
@@ -5298,8 +5334,19 @@ textarea,
   line-height: 1.2em;
 }
 
+.categories .item .detail .image-block {
+  margin-right: 16px;
+}
+
 .transactions .item .detail .image-block {
   margin-right: 16px;
+}
+
+.categories .item .detail strong {
+  display: block;
+  font-weight: 500;
+  color: #27173E;
+  margin-bottom: 3px;
 }
 
 .transactions .item .detail strong {
@@ -5309,8 +5356,18 @@ textarea,
   margin-bottom: 3px;
 }
 
+.categories .item .right {
+  padding-left: 10px;
+}
+
 .transactions .item .right {
   padding-left: 10px;
+}
+
+.categories .item .right .price {
+  font-weight: 700;
+  color: #27173E;
+  letter-spacing: -0.03em;
 }
 
 .transactions .item .right .price {
@@ -6611,10 +6668,22 @@ body.rtl-mode .section-heading .title {
   padding-left: 16px;
 }
 
+html[dir="rtl"] .categories .item .detail .image-block,
+body.rtl-mode .categories .item .detail .image-block {
+  margin-right: 0;
+  margin-left: 16px;
+}
+
 html[dir="rtl"] .transactions .item .detail .image-block,
 body.rtl-mode .transactions .item .detail .image-block {
   margin-right: 0;
   margin-left: 16px;
+}
+
+html[dir="rtl"] .categories .item .right,
+body.rtl-mode .categories .item .right {
+  padding-left: 0;
+  padding-right: 10px;
 }
 
 html[dir="rtl"] .transactions .item .right,
@@ -7509,15 +7578,31 @@ body.dark-mode .stat-box .value {
   color: #fff;
 }
 
+body.dark-mode .categories .item {
+  background: #161129;
+}
+
 body.dark-mode .transactions .item {
   background: #161129;
+}
+
+body.dark-mode .categories .item p {
+  color: #8f82a5;
 }
 
 body.dark-mode .transactions .item p {
   color: #8f82a5;
 }
 
+body.dark-mode .categories .item .detail strong {
+  color: #fff;
+}
+
 body.dark-mode .transactions .item .detail strong {
+  color: #fff;
+}
+
+body.dark-mode .categories .item .right .price {
   color: #fff;
 }
 

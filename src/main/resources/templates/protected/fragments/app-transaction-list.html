@@ -6,16 +6,17 @@
     <p th:class="text-center">Não existe transação.</p>
 </div>
 <div class="section mt-2" th:each="entry : ${transactions.content}">
-    <div class="section-title" th:text="${transactions.keyFormatted(entry.key)}"></div>
+    <div class="section-title text-secondary" th:text="${transactions.keyFormatted(entry.key)}"></div>
     <div class="transactions" th:each="t : ${entry.value}">
         <!-- item -->
-        <a th:href="@{'/protected/accounts/'+${t.accountId}+'/transactions/' + ${t.id}}" class="item mb-2">
+        <a th:href="@{'/protected/accounts/'+${t.accountId}+'/transactions/' + ${t.id}}" class="item mb-1">
             <div class="detail">
                 <img th:src="@{/assets/img/1.jpg}" alt="img" class="image-block imaged w48" th:if="${false}">
                 <div th:title="${#strings.isEmpty(t.description) ? '-' : t.description}">
                     <strong th:text="${t.categoryName}"></strong>
                     <p th:class="${t.status.isScheduled() ? 'text-warning' : ''}"
                        th:text="${t.status.isConfirmed() ? t.occurredAtFormatted : (t.statusFormatted + ' ' + t.dueDateFormatted)}"></p>
+                    <p th:text="${t.description}" class="truncated"></p>
                 </div>
             </div>
             <div class="right">
