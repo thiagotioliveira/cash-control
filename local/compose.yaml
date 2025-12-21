@@ -6,6 +6,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://cashcontrol-db:5432/cash_control
     ports:
       - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - cashcontrol-network
 
@@ -16,10 +19,13 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: cash_control
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U app" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "5432:5432"
-    #volumes:
-    #  - /Users/thiago.oliveira/Dev/Personal/cash-control-prod/postgres-data:/var/lib/postgresql/data
     networks:
       - cashcontrol-network
 
