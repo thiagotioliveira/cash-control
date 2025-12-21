@@ -21,19 +21,12 @@ public class CreateTransfer {
   }
 
   public void execute(CreateTransferCommand command) {
-    var categoryFrom =
+    var category =
         categoryService
-            .get(command.organizationId(), command.accountIdFrom(), command.categoryIdFrom())
+            .get(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category from not found"));
-    if (!categoryFrom.type().isDebit()) {
-      throw ApplicationException.notFound("category from is not debit");
-    }
-    var categoryTo =
-        categoryService
-            .get(command.organizationId(), command.accountIdTo(), command.categoryIdTo())
-            .orElseThrow(() -> ApplicationException.notFound("category to not found"));
-    if (!categoryTo.type().isCredit()) {
-      throw ApplicationException.notFound("category from is not credit");
+    if (!category.type().isTransfer()) {
+      throw ApplicationException.notFound("category from is not transfer");
     }
 
     var transfer =
@@ -42,8 +35,7 @@ public class CreateTransfer {
             command.userId(),
             command.accountIdTo(),
             command.accountIdFrom(),
-            command.categoryIdTo(),
-            command.categoryIdFrom(),
+            command.categoryId(),
             command.occurredAt(),
             command.description(),
             command.amountFrom(),

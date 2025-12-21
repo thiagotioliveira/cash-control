@@ -52,4 +52,7 @@ public interface TransactionJpaRepository extends JpaRepository<TransactionEntit
 
   List<TransactionEntity> findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
       UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate);
+
+  List<TransactionEntity> findAllByOrganizationIdAndDueDateBetweenOrderByDueDateDesc(
+      UUID organizationId, LocalDate startDate, LocalDate endDate);
 }

@@ -127,6 +127,7 @@ public class TransactionEntity {
         this.category.getId(),
         this.category.getName(),
         this.category.getHashColor(),
+        this.category.getType(),
         this.type,
         this.status,
         this.transactionTemplate != null

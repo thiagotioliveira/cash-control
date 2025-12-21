@@ -1,7 +1,7 @@
 package dev.thiagooliveira.cashcontrol.application.category.dto;
 
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import java.util.UUID;
 
 public record CreateCategoryCommand(
-    UUID organizationId, UUID accountId, String name, String hashColor, TransactionType type) {}
+    UUID organizationId, String name, String hashColor, CategoryType type) {}

@@ -40,24 +40,16 @@ public class TransferController {
     this.transferService = transferService;
   }
 
-  @PostMapping("{accountId}/transfers/review")
+  @PostMapping("/{accountId}/transfers/review")
   public String postReview(
       @PathVariable UUID accountId,
       @ModelAttribute TransferActionSheetModel.TransferForm form,
       Model model) {
-    var categoryFrom =
+    var category =
         categoryService
-            .get(securityContext.getUser().organizationId(), accountId, form.getCategoryIdFrom())
-            .orElseThrow(() -> InfrastructureException.notFound("Category from not found"));
-    form.setCategoryNameFrom(categoryFrom.name());
-    var categoryTo =
-        categoryService
-            .get(
-                securityContext.getUser().organizationId(),
-                form.getAccountIdTo(),
-                form.getCategoryIdTo())
-            .orElseThrow(() -> InfrastructureException.notFound("Category to not found"));
-    form.setCategoryNameTo(categoryTo.name());
+            .get(securityContext.getUser().organizationId(), form.getCategoryId())
+            .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
+    form.setCategoryName(category.name());
 
     var accountFrom =
         accountService
@@ -74,7 +66,7 @@ public class TransferController {
     return "protected/transfers/transfer-review";
   }
 
-  @PostMapping("{accountId}/transfers")
+  @PostMapping("/{accountId}/transfers")
   public String postTransfer(
       @PathVariable UUID accountId,
       @ModelAttribute TransferActionSheetModel.TransferForm form,
@@ -86,8 +78,7 @@ public class TransferController {
               this.securityContext.getUser().id(),
               form.getAccountIdFrom(),
               form.getAccountIdTo(),
-              form.getCategoryIdFrom(),
-              form.getCategoryIdTo(),
+              form.getCategoryId(),
               form.getDescription(),
               form.getOccurredAt().atZone(zoneId).toInstant(),
               form.getAmountFrom(),
@@ -96,8 +87,7 @@ public class TransferController {
     } catch (ApplicationException | DomainException e) {
       model.addAttribute("alert", AlertModel.error(e.getMessage()));
       model.addAttribute("transfer", form);
-      model.addAttribute("alert", AlertModel.error(e.getMessage()));
-      return String.format("/protected/accounts/%s/transfers/review", accountId);
+      return "protected/transfers/transfer-review";
     }
   }
 }

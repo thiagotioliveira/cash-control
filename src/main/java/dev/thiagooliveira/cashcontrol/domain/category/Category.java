@@ -4,7 +4,7 @@ import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.CategoryCreated;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -14,22 +14,21 @@ public class Category extends Aggregate {
   private static final Pattern HEX_COLOR = Pattern.compile("^#?[0-9a-fA-F]{6}$");
 
   private UUID id;
-  private UUID accountId;
   private String name;
   private String hashColor;
-  private TransactionType type;
+  private CategoryType type;
 
   private Category() {}
 
   public static Category create(
-      UUID organizationId, UUID accountId, String name, String hashColor, TransactionType type) {
+      UUID organizationId, String name, String hashColor, CategoryType type) {
     if (Strings.isBlank(name)) throw DomainException.badRequest("name is required");
     if (type == null) throw DomainException.badRequest("type is required");
     if (!isHexColor(hashColor)) throw DomainException.badRequest("Invalid hex color");
     var category = new Category();
     category.apply(
         new CategoryCreated(
-            UUID.randomUUID(), name, hashColor, type, organizationId, accountId, Instant.now(), 1));
+            UUID.randomUUID(), name, hashColor, type, organizationId, Instant.now(), 1));
     return category;
   }
 
@@ -41,10 +40,6 @@ public class Category extends Aggregate {
     return id;
   }
 
-  public UUID getAccountId() {
-    return accountId;
-  }
-
   public String getName() {
     return name;
   }
@@ -53,7 +48,7 @@ public class Category extends Aggregate {
     return hashColor;
   }
 
-  public TransactionType getType() {
+  public CategoryType getType() {
     return type;
   }
 
@@ -67,7 +62,6 @@ public class Category extends Aggregate {
     switch (event) {
       case CategoryCreated ev -> {
         id = ev.aggregateId();
-        accountId = ev.accountId();
         name = ev.name();
         hashColor = ev.hashColor();
         type = ev.type();

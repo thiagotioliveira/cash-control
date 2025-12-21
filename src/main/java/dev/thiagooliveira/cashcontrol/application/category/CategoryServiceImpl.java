@@ -23,13 +23,12 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
-  public List<CategorySummary> get(UUID organizationId, UUID accountId) {
-    return this.repository.findAllByOrganizationIdAndAccountId(organizationId, accountId);
+  public List<CategorySummary> get(UUID organizationId) {
+    return this.repository.findAllByOrganizationId(organizationId);
   }
 
   @Override
-  public Optional<CategorySummary> get(UUID organizationId, UUID accountId, UUID categoryId) {
-    return this.repository.findByOrganizationIdAndAccountIdAndId(
-        organizationId, accountId, categoryId);
+  public Optional<CategorySummary> get(UUID organizationId, UUID categoryId) {
+    return this.repository.findByOrganizationIdAndId(organizationId, categoryId);
   }
 }

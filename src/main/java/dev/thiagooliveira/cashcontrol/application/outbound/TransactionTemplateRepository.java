@@ -10,4 +10,8 @@ public interface TransactionTemplateRepository {
   List<TransactionTemplateSummary>
       findAllByOrganizationIdAndAccountIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
           UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate);
+
+  List<TransactionTemplateSummary>
+      findAllByOrganizationIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
+          UUID organizationId, LocalDate startDate, LocalDate endDate);
 }

@@ -228,11 +228,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: account_id
-                  type: uuid
-                  constraints:
-                    nullable: false
-              - column:
                   name: name
                   type: varchar(255)
                   constraints:
@@ -253,12 +248,6 @@ databaseChangeLog:
             referencedTableName: organizations
             referencedColumnNames: id
             constraintName: fk_categories_organizations
-        - addForeignKeyConstraint:
-            baseTableName: categories
-            baseColumnNames: account_id
-            referencedTableName: accounts
-            referencedColumnNames: id
-            constraintName: fk_categories_accounts
   - changeSet:
       id: create-transaction-templates
       author: thiago
@@ -379,12 +368,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: category_id_from
-                  type: uuid
-                  constraints:
-                    nullable: false
-              - column:
-                  name: category_id_to
+                  name: category_id
                   type: uuid
                   constraints:
                     nullable: false
@@ -439,16 +423,10 @@ databaseChangeLog:
             constraintName: fk_transfers_account_to
         - addForeignKeyConstraint:
             baseTableName: transfers
-            baseColumnNames: category_id_from
+            baseColumnNames: category_id
             referencedTableName: categories
             referencedColumnNames: id
-            constraintName: fk_transfers_category_from
-        - addForeignKeyConstraint:
-            baseTableName: transfers
-            baseColumnNames: category_id_to
-            referencedTableName: categories
-            referencedColumnNames: id
-            constraintName: fk_transfers_category_to
+            constraintName: fk_transfers_category
   - changeSet:
       id: create-transactions
       author: thiago

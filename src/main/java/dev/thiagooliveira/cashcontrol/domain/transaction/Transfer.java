@@ -15,9 +15,8 @@ public class Transfer extends Aggregate {
   private UUID id;
   private UUID organizationId;
   private UUID accountIdTo;
-  private UUID categoryIdTo;
   private UUID accountIdFrom;
-  private UUID categoryIdFrom;
+  private UUID categoryId;
   private String description;
   private Instant occurredAt;
   private BigDecimal amountFrom;
@@ -32,8 +31,7 @@ public class Transfer extends Aggregate {
       UUID userId,
       UUID accountIdTo,
       UUID accountIdFrom,
-      UUID categoryIdTo,
-      UUID categoryIdFrom,
+      UUID categoryId,
       Instant occurredAt,
       String description,
       BigDecimal amountFrom,
@@ -41,6 +39,9 @@ public class Transfer extends Aggregate {
     validateOccurredAt(occurredAt);
     validate(amountFrom);
     validate(amountTo);
+    if (!amountFrom.equals(amountTo)) {
+      throw DomainException.badRequest("Amount must be equal");
+    }
     Transfer transfer = new Transfer();
     transfer.apply(
         new TransferRequested(
@@ -49,8 +50,7 @@ public class Transfer extends Aggregate {
             userId,
             accountIdTo,
             accountIdFrom,
-            categoryIdTo,
-            categoryIdFrom,
+            categoryId,
             description,
             amountFrom,
             amountTo,
@@ -89,8 +89,7 @@ public class Transfer extends Aggregate {
         this.organizationId = ev.organizationId();
         this.accountIdTo = ev.accountIdTo();
         this.accountIdFrom = ev.accountIdFrom();
-        this.categoryIdTo = ev.categoryIdTo();
-        this.categoryIdFrom = ev.categoryIdFrom();
+        this.categoryId = ev.categoryId();
         this.description = ev.description();
         this.occurredAt = ev.occurredAt();
         this.amountFrom = ev.amountFrom();
@@ -129,16 +128,8 @@ public class Transfer extends Aggregate {
     return accountIdTo;
   }
 
-  public UUID getCategoryIdTo() {
-    return categoryIdTo;
-  }
-
   public UUID getAccountIdFrom() {
     return accountIdFrom;
-  }
-
-  public UUID getCategoryIdFrom() {
-    return categoryIdFrom;
   }
 
   public String getDescription() {
@@ -159,5 +150,13 @@ public class Transfer extends Aggregate {
 
   public UUID getUserId() {
     return userId;
+  }
+
+  public UUID getCategoryId() {
+    return categoryId;
+  }
+
+  public TransferStatus getStatus() {
+    return status;
   }
 }

@@ -24,16 +24,12 @@
                     <span th:text="${transfer.accountNameFrom}"></span>
                 </li>
                 <li>
-                    <strong>Categoria de Origem</strong>
-                    <span th:text="${transfer.categoryNameFrom}"></span>
+                    <strong>Categoria</strong>
+                    <span th:text="${transfer.categoryName}"></span>
                 </li>
                 <li>
                     <strong>Conta de Destino</strong>
                     <span th:text="${transfer.accountNameTo}"></span>
-                </li>
-                <li>
-                    <strong>Categoria de Destino</strong>
-                    <span th:text="${transfer.categoryNameTo}"></span>
                 </li>
                 <li>
                     <strong>Descrição</strong>
@@ -48,7 +44,7 @@
                     <h3 class="m-0" th:text="${transfer.getAmountFromFormatted()}"></h3>
                 </li>
                 <li>
-                    <strong>Recorrencia</strong>
+                    <strong>Valor de Destino</strong>
                     <h3 class="m-0" th:text="${transfer.getAmountToFormatted()}"></h3>
                 </li>
             </ul>
@@ -68,10 +64,8 @@
                     <input type="hidden" th:name="accountIdFrom" th:value="${transfer.accountIdFrom}" />
                     <input type="hidden" th:name="symbolFrom" th:value="${transfer.symbolFrom}" />
                     <input type="hidden" th:name="symbolTo" th:value="${transfer.symbolTo}" />
-                    <input type="hidden" th:name="categoryIdFrom" th:value="${transfer.categoryIdFrom}" />
-                    <input type="hidden" th:name="categoryNameFrom" th:value="${transfer.categoryNameFrom}" />
-                    <input type="hidden" th:name="categoryIdTo" th:value="${transfer.categoryIdTo}" />
-                    <input type="hidden" th:name="categoryNameTo" th:value="${transfer.categoryNameTo}" />
+                    <input type="hidden" th:name="categoryId" th:value="${transfer.categoryId}" />
+                    <input type="hidden" th:name="categoryName" th:value="${transfer.categoryName}" />
                     <input type="hidden" th:name="accountIdTo" th:value="${transfer.accountIdTo}" />
                     <input type="hidden" th:name="accountNameTo" th:value="${transfer.accountNameTo}" />
                     <input type="hidden" th:name="description" th:value="${transfer.description}" />

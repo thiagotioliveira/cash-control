@@ -1,21 +1,19 @@
 package dev.thiagooliveira.cashcontrol.application.outbound;
 
 import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface CategoryRepository {
 
-  List<CategorySummary> findAllByOrganizationIdAndAccountId(UUID organizationId, UUID accountId);
+  List<CategorySummary> findAllByOrganizationId(UUID organizationId);
 
-  Optional<CategorySummary> findByOrganizationIdAndAccountIdAndId(
-      UUID organizationId, UUID accountId, UUID id);
+  Optional<CategorySummary> findByOrganizationIdAndId(UUID organizationId, UUID id);
 
-  Optional<CategorySummary> findByOrganizationIdAndAccountIdAndNameAndType(
-      UUID organizationId, UUID accountId, String name, TransactionType type);
+  Optional<CategorySummary> findByOrganizationIdAndNameAndType(
+      UUID organizationId, String name, CategoryType type);
 
-  boolean existsByOrganizationIdAndAccountIdAndHashColor(
-      UUID organizationId, UUID accountId, String hashColor);
+  boolean existsByOrganizationIdAndHashColor(UUID organizationId, String hashColor);
 }

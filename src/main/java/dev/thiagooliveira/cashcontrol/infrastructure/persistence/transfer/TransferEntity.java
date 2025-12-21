@@ -33,12 +33,8 @@ public class TransferEntity {
   private AccountEntity accountTo;
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id_from", nullable = false)
-  private CategoryEntity categoryFrom;
-
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id_to", nullable = false)
-  private CategoryEntity categoryTo;
+  @JoinColumn(name = "category_id", nullable = false)
+  private CategoryEntity category;
 
   @Column(nullable = false)
   private Instant occurredAt;
@@ -67,10 +63,8 @@ public class TransferEntity {
     this.accountFrom.setId(event.accountIdFrom());
     this.accountTo = new AccountEntity();
     this.accountTo.setId(event.accountIdTo());
-    this.categoryFrom = new CategoryEntity();
-    this.categoryFrom.setId(event.categoryIdFrom());
-    this.categoryTo = new CategoryEntity();
-    this.categoryTo.setId(event.categoryIdTo());
+    this.category = new CategoryEntity();
+    this.category.setId(event.categoryId());
     this.occurredAt = event.occurredAt();
     this.description = event.description();
     this.amountFrom = event.amountFrom();
@@ -135,20 +129,12 @@ public class TransferEntity {
     this.accountTo = accountTo;
   }
 
-  public CategoryEntity getCategoryFrom() {
-    return categoryFrom;
+  public CategoryEntity getCategory() {
+    return category;
   }
 
-  public void setCategoryFrom(CategoryEntity categoryFrom) {
-    this.categoryFrom = categoryFrom;
-  }
-
-  public CategoryEntity getCategoryTo() {
-    return categoryTo;
-  }
-
-  public void setCategoryTo(CategoryEntity categoryTo) {
-    this.categoryTo = categoryTo;
+  public void setCategory(CategoryEntity category) {
+    this.category = category;
   }
 
   public Instant getOccurredAt() {

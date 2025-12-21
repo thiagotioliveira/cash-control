@@ -6,35 +6,28 @@ import dev.thiagooliveira.cashcontrol.shared.FormattersUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class TransferActionSheetModel {
   private UUID accountIdFrom;
   private List<AccountModel> accountsTo;
-  private List<CategoryModel> categoriesFrom;
-  private UUID categoryIdFrom;
-  private UUID categoryIdTo;
+  private List<CategoryModel> categories;
+  private UUID categoryId;
   private UUID accountIdTo;
   private String description;
   private String occurredAt;
-  private Map<UUID, List<CategoryModel>> categoriesTo;
   private BigDecimal amountFrom = BigDecimal.TEN;
   private BigDecimal amountTo = BigDecimal.TEN;
   private String symbolFrom = "€";
   private String symbolTo = "€";
 
   public TransferActionSheetModel(
-      UUID accountIdFrom,
-      List<CategoryModel> categoriesFrom,
-      List<AccountModel> accountsTo,
-      Map<UUID, List<CategoryModel>> categoriesTo) {
+      UUID accountIdFrom, List<CategoryModel> categories, List<AccountModel> accountsTo) {
     this.occurredAt = dtfHourOfDay.format(LocalDateTime.now(zoneId));
     this.accountIdFrom = accountIdFrom;
-    this.categoriesFrom = categoriesFrom;
+    this.categories = categories;
     this.accountsTo = accountsTo;
-    this.categoriesTo = categoriesTo;
   }
 
   public void setSymbolTo(String symbolTo) {
@@ -73,20 +66,20 @@ public class TransferActionSheetModel {
     this.accountIdFrom = accountIdFrom;
   }
 
-  public UUID getCategoryIdFrom() {
-    return categoryIdFrom;
+  public UUID getCategoryId() {
+    return categoryId;
   }
 
-  public void setCategoryIdFrom(UUID categoryIdFrom) {
-    this.categoryIdFrom = categoryIdFrom;
+  public void setCategoryId(UUID categoryId) {
+    this.categoryId = categoryId;
   }
 
-  public UUID getCategoryIdTo() {
-    return categoryIdTo;
+  public List<CategoryModel> getCategories() {
+    return categories;
   }
 
-  public void setCategoryIdTo(UUID categoryIdTo) {
-    this.categoryIdTo = categoryIdTo;
+  public void setCategories(List<CategoryModel> categories) {
+    this.categories = categories;
   }
 
   public String getSymbolFrom() {
@@ -105,14 +98,6 @@ public class TransferActionSheetModel {
     return accountsTo;
   }
 
-  public List<CategoryModel> getCategoriesFrom() {
-    return categoriesFrom;
-  }
-
-  public Map<UUID, List<CategoryModel>> getCategoriesTo() {
-    return categoriesTo;
-  }
-
   public BigDecimal getAmountFrom() {
     return amountFrom;
   }
@@ -125,10 +110,8 @@ public class TransferActionSheetModel {
     private UUID accountIdFrom;
     private String symbolFrom = "€";
     private String symbolTo = "€";
-    private UUID categoryIdFrom;
-    private String categoryNameFrom;
-    private UUID categoryIdTo;
-    private String categoryNameTo;
+    private UUID categoryId;
+    private String categoryName;
     private UUID accountIdTo;
     private String accountNameFrom;
     private String accountNameTo;
@@ -182,36 +165,20 @@ public class TransferActionSheetModel {
       this.symbolTo = symbolTo;
     }
 
-    public UUID getCategoryIdFrom() {
-      return categoryIdFrom;
+    public UUID getCategoryId() {
+      return categoryId;
     }
 
-    public void setCategoryIdFrom(UUID categoryIdFrom) {
-      this.categoryIdFrom = categoryIdFrom;
+    public void setCategoryId(UUID categoryId) {
+      this.categoryId = categoryId;
     }
 
-    public String getCategoryNameFrom() {
-      return categoryNameFrom;
+    public String getCategoryName() {
+      return categoryName;
     }
 
-    public void setCategoryNameFrom(String categoryNameFrom) {
-      this.categoryNameFrom = categoryNameFrom;
-    }
-
-    public UUID getCategoryIdTo() {
-      return categoryIdTo;
-    }
-
-    public void setCategoryIdTo(UUID categoryIdTo) {
-      this.categoryIdTo = categoryIdTo;
-    }
-
-    public String getCategoryNameTo() {
-      return categoryNameTo;
-    }
-
-    public void setCategoryNameTo(String categoryNameTo) {
-      this.categoryNameTo = categoryNameTo;
+    public void setCategoryName(String categoryName) {
+      this.categoryName = categoryName;
     }
 
     public String getDescription() {

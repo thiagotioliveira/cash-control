@@ -25,4 +25,16 @@ public class TransactionTemplateRepositoryAdapter implements TransactionTemplate
         .map(TransactionTemplateEntity::toDomain)
         .toList();
   }
+
+  @Override
+  public List<TransactionTemplateSummary>
+      findAllByOrganizationIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
+          UUID organizationId, LocalDate startDate, LocalDate endDate) {
+    return this.repository
+        .findAllByOrganizationIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrEndDateIsNull(
+            organizationId, startDate, endDate)
+        .stream()
+        .map(TransactionTemplateEntity::toDomain)
+        .toList();
+  }
 }

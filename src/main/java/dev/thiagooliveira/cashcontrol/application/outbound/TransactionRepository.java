@@ -20,6 +20,9 @@ public interface TransactionRepository {
   List<TransactionSummary> findAllByOrganizationIdAndAccountIdAndDueDateBetweenOrderByDueDateDesc(
       UUID organizationId, UUID accountId, LocalDate startDate, LocalDate endDate);
 
+  List<TransactionSummary> findAllByOrganizationIdAndDueDateBetweenOrderByDueDateDesc(
+      UUID organizationId, LocalDate startDate, LocalDate endDate);
+
   List<TransactionSummary> findAllByTransactionTemplateIdAndAccountId(
       UUID transactionTemplateId, UUID accountId);
 

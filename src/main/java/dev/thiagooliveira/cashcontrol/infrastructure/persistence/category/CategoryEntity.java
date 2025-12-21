@@ -2,7 +2,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.persistence.category;
 
 import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.CategoryCreated;
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import jakarta.persistence.*;
 import java.util.UUID;
 
@@ -16,9 +16,6 @@ public class CategoryEntity {
   private UUID organizationId;
 
   @Column(nullable = false)
-  private UUID accountId;
-
-  @Column(nullable = false)
   private String name;
 
   @Column(nullable = false)
@@ -26,7 +23,7 @@ public class CategoryEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private TransactionType type;
+  private CategoryType type;
 
   public CategoryEntity() {}
 
@@ -36,11 +33,10 @@ public class CategoryEntity {
     this.hashColor = event.hashColor();
     this.type = event.type();
     this.organizationId = event.organizationId();
-    this.accountId = event.accountId();
   }
 
   public CategorySummary toDomain() {
-    return new CategorySummary(id, accountId, name, hashColor, type);
+    return new CategorySummary(id, name, hashColor, type);
   }
 
   public UUID getId() {
@@ -67,11 +63,11 @@ public class CategoryEntity {
     this.hashColor = hashColor;
   }
 
-  public TransactionType getType() {
+  public CategoryType getType() {
     return type;
   }
 
-  public void setType(TransactionType type) {
+  public void setType(CategoryType type) {
     this.type = type;
   }
 
@@ -81,13 +77,5 @@ public class CategoryEntity {
 
   public void setOrganizationId(UUID organizationId) {
     this.organizationId = organizationId;
-  }
-
-  public UUID getAccountId() {
-    return accountId;
-  }
-
-  public void setAccountId(UUID accountId) {
-    this.accountId = accountId;
   }
 }

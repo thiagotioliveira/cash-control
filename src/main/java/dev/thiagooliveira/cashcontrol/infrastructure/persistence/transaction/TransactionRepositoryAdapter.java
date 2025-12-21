@@ -51,6 +51,17 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
   }
 
   @Override
+  public List<TransactionSummary> findAllByOrganizationIdAndDueDateBetweenOrderByDueDateDesc(
+      UUID organizationId, LocalDate startDate, LocalDate endDate) {
+    return this.repository
+        .findAllByOrganizationIdAndDueDateBetweenOrderByDueDateDesc(
+            organizationId, startDate, endDate)
+        .stream()
+        .map(TransactionEntity::toDomain)
+        .toList();
+  }
+
+  @Override
   public List<TransactionSummary> findAllByTransactionTemplateIdAndAccountId(
       UUID transactionTemplateId, UUID accountId) {
     return this.repository

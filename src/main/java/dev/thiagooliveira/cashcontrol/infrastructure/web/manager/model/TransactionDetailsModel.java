@@ -14,6 +14,7 @@ import java.util.UUID;
 public class TransactionDetailsModel {
   private final UUID id;
   private final UUID accountId;
+  private final String accountName;
   private final String title;
   private final String backLink;
   private final String description;
@@ -30,9 +31,10 @@ public class TransactionDetailsModel {
 
   public TransactionDetailsModel(TransactionSummary transaction, String backLink) {
     this.transaction = transaction;
-    this.title = "Detalhe da Transação";
+    this.title = "Detalhe d" + ((transaction.categoryType().isCredit()) ? "o Crédito" : (transaction.categoryType().isDebit() ? "o Debito" : "a Transferência"));
     this.backLink = backLink;
     this.id = transaction.transactionId();
+    this.accountName = transaction.accountName();
     this.accountId = transaction.accountId();
     this.currency = transaction.currency();
     this.description = transaction.description();
@@ -65,7 +67,11 @@ public class TransactionDetailsModel {
     return id;
   }
 
-  public UUID getAccountId() {
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public UUID getAccountId() {
     return accountId;
   }
 

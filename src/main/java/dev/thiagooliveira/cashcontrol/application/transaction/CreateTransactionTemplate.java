@@ -23,10 +23,11 @@ public class CreateTransactionTemplate {
   public void execute(CreateTransactionTemplateCommand command) {
     var category =
         categoryService
-            .get(command.organizationId(), command.accountId(), command.categoryId())
+            .get(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
-    if (!command.type().equals(category.type()))
-      throw ApplicationException.badRequest("category must be " + category.type().name());
+
+    if (!category.type().name().equals(command.type().name()))
+      throw ApplicationException.badRequest("category must be " + command.type().name());
 
     var template =
         TransactionTemplate.create(

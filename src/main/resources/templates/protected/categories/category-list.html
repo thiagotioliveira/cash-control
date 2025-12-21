@@ -7,7 +7,7 @@
 
 <div th:insert="~{protected/fragments/loader}"></div>
 
-<div th:insert="~{protected/fragments/page-header :: pageHeader('Categorias', ${'/protected/accounts/'+accountId}, true, '#categoryActionSheet', false, '')}"></div>
+<div th:insert="~{protected/fragments/page-header :: pageHeader('Categorias', ${'/protected/accounts'}, true, '#categoryActionSheet', false, '')}"></div>
 
 <!-- App Capsule -->
 <div id="appCapsule">
@@ -26,7 +26,7 @@
                 <img th:src="@{/assets/img/1.jpg}" alt="img" class="image-block imaged w48" th:if="${false}">
                 <div>
                     <strong th:text="${c.name}"></strong>
-                    <p th:class="${c.type.isCredit() ? 'text-success' : 'text-danger'}"
+                    <p th:class="${c.type.isCredit() ? 'text-success' : (c.type.isDebit() ? 'text-danger' : 'text-info')}"
                             th:text="${c.getTypeFormatted()}"></p>
                 </div>
             </div>

@@ -29,10 +29,14 @@ public class CreateTransaction {
   public void execute(CreateTransactionCommand command) {
     var category =
         categoryService
-            .get(command.organizationId(), command.accountId(), command.categoryId())
+            .get(command.organizationId(), command.categoryId())
             .orElseThrow(() -> ApplicationException.notFound("category not found"));
-    if (!command.type().equals(category.type()))
-      throw ApplicationException.badRequest("category must be " + category.type().name());
+
+    if (!category.type().isTransfer()) {
+      if (!category.type().name().equals(command.type().name()))
+        throw ApplicationException.badRequest("category must be " + command.type().name());
+    }
+
     if (this.transactionRepository.existsByOrganizationIdAndAccountIdAndOccurredAtAfter(
         command.organizationId(), command.accountId(), command.occurredAt())) {
       throw ApplicationException.badRequest("there are already more recent transactions");

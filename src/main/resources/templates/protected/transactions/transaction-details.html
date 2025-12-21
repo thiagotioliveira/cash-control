@@ -20,6 +20,10 @@
                 <h2 class="mb-2 mt-2" th:text="${transaction.categoryName}"></h2>
                 <ul class="listview flush transparent simple-listview no-space mt-3">
                     <li>
+                        <strong>Conta</strong>
+                        <span th:text="${transaction.accountName}"></span>
+                    </li>
+                    <li>
                         <strong>Status</strong>
                         <span th:class="${transaction.status.isConfirmed() ? 'text-success' : 'text-warning'}" th:text="${transaction.statusFormatted}"></span>
                     </li>

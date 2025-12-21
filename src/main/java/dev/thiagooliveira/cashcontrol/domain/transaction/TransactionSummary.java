@@ -1,9 +1,6 @@
 package dev.thiagooliveira.cashcontrol.domain.transaction;
 
-import dev.thiagooliveira.cashcontrol.shared.Currency;
-import dev.thiagooliveira.cashcontrol.shared.Recurrence;
-import dev.thiagooliveira.cashcontrol.shared.TransactionStatus;
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import dev.thiagooliveira.cashcontrol.shared.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -26,6 +23,7 @@ public record TransactionSummary(
     UUID categoryId,
     String categoryName,
     String categoryHashColor,
+    CategoryType categoryType,
     TransactionType type,
     TransactionStatus status,
     Optional<Recurrence> recurrence,

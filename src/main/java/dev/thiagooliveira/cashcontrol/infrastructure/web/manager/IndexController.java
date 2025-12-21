@@ -6,7 +6,6 @@ import dev.thiagooliveira.cashcontrol.application.account.AccountService;
 import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
-import dev.thiagooliveira.cashcontrol.domain.account.AccountSummary;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
@@ -15,7 +14,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +49,7 @@ public class IndexController {
         accountService.get(securityContext.getUser().organizationId()).stream()
             .filter(a -> !a.id().equals(accountId))
             .toList();
-    var categories = categoryService.get(securityContext.getUser().organizationId(), accountId);
+    var categories = categoryService.get(securityContext.getUser().organizationId());
     var today = LocalDate.now(zoneId);
     var transactions =
         transactionService.get(
@@ -104,7 +102,8 @@ public class IndexController {
         "depositActionSheet",
         new TransactionActionSheetModel(
             accountId,
-            "Deposito",
+            account.name(),
+            "Verificação de Deposito",
             account.bank().currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getCredit(),
             false,
@@ -115,7 +114,8 @@ public class IndexController {
         "withdrawActionSheet",
         new TransactionActionSheetModel(
             accountId,
-            "Retirada",
+            account.name(),
+            "Verificação de Retirada",
             account.bank().currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
             false,
@@ -126,7 +126,8 @@ public class IndexController {
         "payableActionSheet",
         new TransactionActionSheetModel(
             accountId,
-            "Pagamento",
+            account.name(),
+            "Verificação de Pagamento",
             account.bank().currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
             true,
@@ -137,7 +138,8 @@ public class IndexController {
         "receivableActionSheet",
         new TransactionActionSheetModel(
             accountId,
-            "Recebimento",
+            account.name(),
+            "Verificação de Recebimento",
             account.bank().currency(),
             new TransactionActionSheetModel.ListCategoryModel(categories).getCredit(),
             true,
@@ -149,18 +151,8 @@ public class IndexController {
         "transferActionSheet",
         new TransferActionSheetModel(
             accountId,
-            new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
-            otherAccounts.stream().map(AccountModel::new).toList(),
-            otherAccounts.stream()
-                .collect(
-                    Collectors.toMap(
-                        AccountSummary::id,
-                        a ->
-                            categoryService
-                                .get(securityContext.getUser().organizationId(), a.id())
-                                .stream()
-                                .map(CategoryModel::new)
-                                .toList()))));
+            new TransactionActionSheetModel.ListCategoryModel(categories).getTransfer(),
+            otherAccounts.stream().map(AccountModel::new).toList()));
     return "protected/index";
   }
 }

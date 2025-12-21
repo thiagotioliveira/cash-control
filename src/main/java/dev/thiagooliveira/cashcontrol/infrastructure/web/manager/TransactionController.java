@@ -95,7 +95,7 @@ public class TransactionController {
       @PathVariable UUID accountId,
       @ModelAttribute("transaction") TransactionActionSheetModel.TransactionForm form,
       Model model) {
-    return postReviewTransaction(accountId, form, model);
+    return String.format("redirect:/protected/accounts/%s", accountId);
   }
 
   @PostMapping("/{accountId}/transactions/review")
@@ -105,7 +105,7 @@ public class TransactionController {
       Model model) {
     var categories =
         categoryService
-            .get(securityContext.getUser().organizationId(), accountId, form.getCategoryId())
+            .get(securityContext.getUser().organizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     form.setCategoryName(categories.name());
     if (form.getDescription() == null) {
@@ -127,7 +127,7 @@ public class TransactionController {
       RedirectAttributes redirectAttributes) {
     var categories =
         categoryService
-            .get(securityContext.getUser().organizationId(), accountId, form.getCategoryId())
+            .get(securityContext.getUser().organizationId(), form.getCategoryId())
             .orElseThrow(() -> InfrastructureException.notFound("Category not found"));
     try {
       if (categories.type().isCredit()) {

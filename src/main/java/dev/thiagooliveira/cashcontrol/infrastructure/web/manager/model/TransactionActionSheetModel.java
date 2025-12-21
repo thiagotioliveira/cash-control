@@ -31,6 +31,7 @@ public class TransactionActionSheetModel {
   private final List<CategoryModel> categories;
   private final UUID id;
   private final UUID accountId;
+  private final String accountName;
   private final Currency currency;
   private final UUID categoryId;
   private final String categoryName;
@@ -50,6 +51,7 @@ public class TransactionActionSheetModel {
     this.showInstallmentInput = false;
     this.id = transaction.transactionId();
     this.accountId = transaction.accountId();
+    this.accountName = transaction.accountName();
     this.currency = transaction.currency();
     this.categoryId = transaction.categoryId();
     this.categoryName = transaction.categoryName();
@@ -70,6 +72,7 @@ public class TransactionActionSheetModel {
 
   public TransactionActionSheetModel(
       UUID accountId,
+      String accountName,
       String title,
       Currency currency,
       List<CategoryModel> categories,
@@ -87,6 +90,7 @@ public class TransactionActionSheetModel {
     this.categories = categories;
     this.id = null;
     this.accountId = accountId;
+    this.accountName = accountName;
     this.currency = currency;
     this.categoryId = null;
     this.categoryName = null;
@@ -178,9 +182,15 @@ public class TransactionActionSheetModel {
     return accountId;
   }
 
+  public String getAccountName() {
+    return accountName;
+  }
+
   public static class TransactionForm {
     private UUID id;
+    private String title;
     private UUID accountId;
+    private String accountName;
     private UUID categoryId;
     private String categoryName;
     private String symbol;
@@ -200,6 +210,7 @@ public class TransactionActionSheetModel {
     public TransactionForm(TransactionSummary transaction) {
       this.id = transaction.transactionId();
       this.accountId = transaction.accountId();
+      this.accountName = transaction.accountName();
       this.categoryId = transaction.categoryId();
       this.categoryName = transaction.categoryName();
       this.symbol = transaction.currency().getSymbol();
@@ -214,7 +225,15 @@ public class TransactionActionSheetModel {
       this.installments = transaction.installments().orElse(null);
     }
 
-    public UUID getId() {
+      public String getTitle() {
+          return title;
+      }
+
+      public void setTitle(String title) {
+          this.title = title;
+      }
+
+      public UUID getId() {
       return id;
     }
 
@@ -224,6 +243,14 @@ public class TransactionActionSheetModel {
 
     public void setAccountId(UUID accountId) {
       this.accountId = accountId;
+    }
+
+    public String getAccountName() {
+      return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+      this.accountName = accountName;
     }
 
     public void setId(UUID id) {
@@ -343,6 +370,7 @@ public class TransactionActionSheetModel {
 
     private final List<CategoryModel> credit;
     private final List<CategoryModel> debit;
+    private final List<CategoryModel> transfer;
 
     public ListCategoryModel(List<CategorySummary> categories) {
       this.credit =
@@ -353,6 +381,10 @@ public class TransactionActionSheetModel {
           categories.stream().filter(c -> c.type().isDebit()).toList().stream()
               .map(CategoryModel::new)
               .toList();
+      this.transfer =
+          categories.stream().filter(c -> c.type().isTransfer()).toList().stream()
+              .map(CategoryModel::new)
+              .toList();
     }
 
     public List<CategoryModel> getCredit() {
@@ -361,6 +393,10 @@ public class TransactionActionSheetModel {
 
     public List<CategoryModel> getDebit() {
       return debit;
+    }
+
+    public List<CategoryModel> getTransfer() {
+      return transfer;
     }
   }
 }

@@ -1,17 +1,11 @@
 package dev.thiagooliveira.cashcontrol.domain.category;
 
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import java.util.UUID;
 
-public record CategorySummary(
-    UUID id, UUID accountId, String name, String hashColor, TransactionType type) {
+public record CategorySummary(UUID id, String name, String hashColor, CategoryType type) {
 
   public CategorySummary(Category category) {
-    this(
-        category.getId(),
-        category.getAccountId(),
-        category.getName(),
-        category.getHashColor(),
-        category.getType());
+    this(category.getId(), category.getName(), category.getHashColor(), category.getType());
   }
 }

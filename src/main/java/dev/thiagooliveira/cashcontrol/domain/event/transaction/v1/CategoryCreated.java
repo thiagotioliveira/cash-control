@@ -1,7 +1,7 @@
 package dev.thiagooliveira.cashcontrol.domain.event.transaction.v1;
 
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
-import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -9,9 +9,8 @@ public record CategoryCreated(
     UUID categoryId,
     String name,
     String hashColor,
-    TransactionType type,
+    CategoryType type,
     UUID organizationId,
-    UUID accountId,
     Instant occurredAt,
     int version)
     implements DomainEvent {

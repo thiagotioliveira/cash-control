@@ -17,8 +17,8 @@
                             <div class="input-wrapper">
                                 <label class="label" th:for="${prefixId + 'transfer-category1'}">Categoria</label>
                                 <select class="form-control custom-select" th:id="${prefixId + 'transfer-category1'}"
-                                        th:name="categoryIdFrom" th:value="${t.categoryIdFrom}">
-                                    <option th:each="c : ${t.categoriesFrom}" th:text="${c.name}" th:value="${c.id}">
+                                        th:name="categoryId" th:value="${t.categoryId}">
+                                    <option th:each="c : ${t.categories}" th:text="${c.name}" th:value="${c.id}">
                                     </option>
                                 </select>
                             </div>
@@ -31,16 +31,6 @@
                                         th:name="accountIdTo" th:value="${t.accountIdTo}">
                                     <option th:each="a : ${t.accountsTo}" th:text="${a.name}" th:value="${a.id}">
                                     </option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group basic">
-                            <div class="input-wrapper">
-                                <label class="label" th:for="${prefixId + 'transfer-category2'}">Categoria</label>
-                                <select class="form-control custom-select" th:id="${prefixId + 'transfer-category2'}"
-                                        th:name="categoryIdTo" th:value="${t.categoryIdTo}">
-                                    <option value="">Selecione uma conta primeiro</option>
                                 </select>
                             </div>
                         </div>
@@ -98,51 +88,11 @@
         </div>
     </div>
     <script th:inline="javascript">
-        const categoriesTo = /*[[${t.categoriesTo}]]*/ {};
-        const accountSelectId = /*[[${prefixId} + 'transfer-accountTo']]*/ '';
-        const categorySelectId = /*[[${prefixId} + 'transfer-category2']]*/ '';
+        const valueFrom = document.getElementById('valueFrom');
+        const valueTo = document.getElementById('valueTo');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const accountSelect = document.getElementById(accountSelectId);
-            const categorySelect = document.getElementById(categorySelectId);
-
-            function populateCategories(accountId) {
-                categorySelect.innerHTML = '';
-
-                const categories = categoriesTo[accountId];
-
-                if (!categories || categories.length === 0) {
-                    const option = document.createElement('option');
-                    option.value = '';
-                    option.text = 'Nenhuma categoria disponível';
-                    categorySelect.appendChild(option);
-                    return;
-                }
-
-                categories.forEach(cat => {
-                    const option = document.createElement('option');
-                    option.value = cat.id;
-                    option.text = cat.name;
-                    categorySelect.appendChild(option);
-                });
-            }
-
-            accountSelect.addEventListener('change', e => {
-                populateCategories(e.target.value);
-            });
-
-            // inicializa se já houver conta selecionada
-            if (accountSelect.value) {
-                populateCategories(accountSelect.value);
-            }
-
-            // Configuração do valor
-            const valueFrom = document.getElementById('valueFrom');
-            const valueTo = document.getElementById('valueTo');
-
-            valueFrom.addEventListener('input', () => {
-                valueTo.value = valueFrom.value;
-            });
+        valueFrom.addEventListener('input', () => {
+            valueTo.value = valueFrom.value;
         });
     </script>
 </div>
