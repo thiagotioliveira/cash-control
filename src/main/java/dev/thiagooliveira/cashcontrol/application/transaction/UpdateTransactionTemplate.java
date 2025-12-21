@@ -51,6 +51,7 @@ public class UpdateTransactionTemplate {
     var newEvents = template.pendingEvents();
     eventStore.append(
         command.organizationId(),
+        command.userId(),
         template.getId(),
         newEvents,
         template.getVersion() - newEvents.size());

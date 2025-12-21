@@ -59,10 +59,11 @@ public class RegisterController {
                   form.username, form.email, form.password, form.confirmPassword));
       var bank =
           this.bankService.createBank(
-              new CreateBankCommand(user.organizationId(), form.bankName, Currency.EUR));
+              new CreateBankCommand(user.organizationId(), user.id(), form.bankName, Currency.EUR));
       var account =
           this.accountService.createAccount(
-              new CreateAccountCommand(user.organizationId(), bank.id(), form.accountName));
+              new CreateAccountCommand(
+                  user.organizationId(), user.id(), bank.id(), form.accountName));
       txManager.commit(status);
       return "redirect:/protected/accounts/" + account.id();
     } catch (ApplicationException | DomainException e) {

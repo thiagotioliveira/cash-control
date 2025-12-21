@@ -60,7 +60,8 @@ public class TransferEventListener {
 
               if (status.isConfirmed()) {
                 transferService.confirm(
-                    new ConfirmTransferCommand(transfer.getOrganizationId(), transfer.getId()));
+                    new ConfirmTransferCommand(
+                        event.organizationId(), event.userId(), transfer.getId()));
               }
             });
   }

@@ -29,6 +29,7 @@ public class RevertCredit {
     var newEvents = account.pendingEvents();
     eventStore.append(
         command.organizationId(),
+        command.userId(),
         account.getId(),
         newEvents,
         account.getVersion() - newEvents.size());

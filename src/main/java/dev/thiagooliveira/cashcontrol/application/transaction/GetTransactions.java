@@ -104,7 +104,11 @@ public class GetTransactions {
     var events = transaction.pendingEvents();
 
     eventStore.append(
-        organizationId, transaction.getId(), events, transaction.getVersion() - events.size());
+        organizationId,
+        template.getUserId(),
+        transaction.getId(),
+        events,
+        transaction.getVersion() - events.size());
 
     events.forEach(publisher::publishEvent);
     transaction.markEventsCommitted();

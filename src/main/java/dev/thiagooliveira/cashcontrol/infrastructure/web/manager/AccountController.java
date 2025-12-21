@@ -45,6 +45,7 @@ public class AccountController {
   @PostMapping
   public String postAccount(@ModelAttribute AccountActionSheetModel.AccountForm form, Model model) {
     var organizationId = securityContext.getUser().organizationId();
+    var userId = securityContext.getUser().id();
     try {
       var bankId =
           bankService
@@ -55,11 +56,11 @@ public class AccountController {
                       bankService
                           .createBank(
                               new CreateBankCommand(
-                                  organizationId, form.getBankName(), Currency.EUR))
+                                  organizationId, userId, form.getBankName(), Currency.EUR))
                           .id());
 
       accountService.createAccount(
-          new CreateAccountCommand(organizationId, bankId, form.getName()));
+          new CreateAccountCommand(organizationId, userId, bankId, form.getName()));
       model.addAttribute("alert", AlertModel.success("Conta criada com sucesso!"));
     } catch (ApplicationException | DomainException e) {
       model.addAttribute("alert", AlertModel.error(e.getMessage()));

@@ -46,6 +46,7 @@ public class RevertTransaction {
     var newEvents = transaction.pendingEvents();
     eventStore.append(
         command.organizationId(),
+        command.userId(),
         transaction.getId(),
         newEvents,
         transaction.getVersion() - newEvents.size());

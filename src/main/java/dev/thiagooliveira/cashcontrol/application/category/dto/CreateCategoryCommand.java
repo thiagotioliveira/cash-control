@@ -4,4 +4,4 @@ import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import java.util.UUID;
 
 public record CreateCategoryCommand(
-    UUID organizationId, String name, String hashColor, CategoryType type) {}
+    UUID organizationId, UUID userId, String name, String hashColor, CategoryType type) {}

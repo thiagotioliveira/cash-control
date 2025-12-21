@@ -43,7 +43,11 @@ public class CreateTransactionTemplate {
             command.type());
     var events = template.pendingEvents();
     eventStore.append(
-        command.organizationId(), template.getId(), events, template.getVersion() - events.size());
+        command.organizationId(),
+        command.userId(),
+        template.getId(),
+        events,
+        template.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
     template.markEventsCommitted();
   }

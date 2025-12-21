@@ -45,6 +45,7 @@ public class CategoryController {
       categoryService.createCategory(
           new CreateCategoryCommand(
               securityContext.getUser().organizationId(),
+              securityContext.getUser().id(),
               form.getName(),
               form.getHashColor(),
               CategoryType.valueOf(form.getType())));

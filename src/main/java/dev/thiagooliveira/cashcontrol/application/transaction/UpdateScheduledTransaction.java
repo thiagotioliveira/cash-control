@@ -45,6 +45,7 @@ public class UpdateScheduledTransaction {
           var newEventsTransaction = transaction.pendingEvents();
           eventStore.append(
               command.organizationId(),
+              command.userId(),
               transaction.getId(),
               newEventsTransaction,
               transaction.getVersion() - newEventsTransaction.size());

@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 
-public record CreateAccountCommand(UUID organizationId, UUID bankId, String name) {
+public record CreateAccountCommand(UUID organizationId, UUID userId, UUID bankId, String name) {
 
   public CreateAccountCommand {
     if (Objects.isNull(organizationId)) {

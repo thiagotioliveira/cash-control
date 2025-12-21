@@ -55,6 +55,7 @@ public class CreateTransaction {
     var events = transaction.pendingEvents();
     eventStore.append(
         command.organizationId(),
+        command.userId(),
         transaction.getId(),
         events,
         transaction.getVersion() - events.size());

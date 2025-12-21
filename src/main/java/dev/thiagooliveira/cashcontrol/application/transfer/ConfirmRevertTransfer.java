@@ -28,6 +28,7 @@ public class ConfirmRevertTransfer {
     var newEvents = transfer.pendingEvents();
     eventStore.append(
         command.organizationId(),
+        command.userId(),
         transfer.getId(),
         newEvents,
         transfer.getVersion() - newEvents.size());

@@ -42,7 +42,11 @@ public class CreateTransfer {
             command.amountTo());
     var events = transfer.pendingEvents();
     eventStore.append(
-        command.organizationId(), transfer.getId(), events, transfer.getVersion() - events.size());
+        command.organizationId(),
+        command.userId(),
+        transfer.getId(),
+        events,
+        transfer.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
     transfer.markEventsCommitted();
   }

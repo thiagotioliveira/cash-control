@@ -17,6 +17,9 @@ public class EventEntity {
   @Column(nullable = false)
   private UUID organizationId;
 
+  @Column(nullable = false)
+  private UUID userId;
+
   @Column(nullable = false, columnDefinition = "uuid")
   private UUID aggregateId;
 
@@ -90,5 +93,13 @@ public class EventEntity {
 
   public void setOrganizationId(UUID organizationId) {
     this.organizationId = organizationId;
+  }
+
+  public UUID getUserId() {
+    return userId;
+  }
+
+  public void setUserId(UUID userId) {
+    this.userId = userId;
   }
 }

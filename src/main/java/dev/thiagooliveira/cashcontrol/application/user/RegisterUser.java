@@ -28,11 +28,14 @@ public class RegisterUser {
       throw ApplicationException.badRequest("user already registered");
     }
 
+    var user = User.create(command.name(), command.email(), command.password());
+
     var organization = Organization.create(command.email());
 
     var events = organization.pendingEvents();
     eventStore.append(
         organization.getId(),
+        user.getId(),
         organization.getId(),
         events,
         organization.getVersion() - events.size());
@@ -40,14 +43,17 @@ public class RegisterUser {
 
     organization.markEventsCommitted();
 
-    var user = User.create(command.name(), command.email(), command.password());
     user.invite(organization.getId());
     user.join();
     user.register();
 
     events = user.pendingEvents();
     eventStore.append(
-        organization.getId(), user.getId(), events, user.getVersion() - events.size());
+        organization.getId(),
+        user.getId(),
+        user.getId(),
+        events,
+        user.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
 
     user.markEventsCommitted();

@@ -22,7 +22,11 @@ public class EventStoreAdapter implements EventStore {
 
   @Override
   public void append(
-      UUID organizationId, UUID aggregateId, List<DomainEvent> events, int expectedVersion) {
+      UUID organizationId,
+      UUID userId,
+      UUID aggregateId,
+      List<DomainEvent> events,
+      int expectedVersion) {
     List<EventEntity> current =
         repository.findByOrganizationIdAndAggregateIdOrderByVersion(organizationId, aggregateId);
 
@@ -35,6 +39,7 @@ public class EventStoreAdapter implements EventStore {
       try {
         EventEntity entity = new EventEntity();
         entity.setOrganizationId(organizationId);
+        entity.setUserId(userId);
         entity.setAggregateId(aggregateId);
         entity.setVersion(++version);
         entity.setEventType(

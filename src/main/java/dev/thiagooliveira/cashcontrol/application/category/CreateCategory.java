@@ -38,7 +38,11 @@ public class CreateCategory {
     var events = category.pendingEvents();
 
     eventStore.append(
-        command.organizationId(), category.getId(), events, category.getVersion() - events.size());
+        command.organizationId(),
+        command.userId(),
+        category.getId(),
+        events,
+        category.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
 
     category.markEventsCommitted();

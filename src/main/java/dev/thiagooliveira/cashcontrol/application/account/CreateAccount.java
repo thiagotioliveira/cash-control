@@ -29,7 +29,11 @@ public class CreateAccount {
     var events = account.pendingEvents();
 
     eventStore.append(
-        command.organizationId(), account.getId(), events, account.getVersion() - events.size());
+        command.organizationId(),
+        command.userId(),
+        account.getId(),
+        events,
+        account.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
 
     account.markEventsCommitted();

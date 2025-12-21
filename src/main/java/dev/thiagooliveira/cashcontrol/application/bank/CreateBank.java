@@ -27,7 +27,11 @@ public class CreateBank {
     var events = bank.pendingEvents();
 
     eventStore.append(
-        command.organizationId(), bank.getId(), events, bank.getVersion() - events.size());
+        command.organizationId(),
+        command.userId(),
+        bank.getId(),
+        events,
+        bank.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
 
     bank.markEventsCommitted();

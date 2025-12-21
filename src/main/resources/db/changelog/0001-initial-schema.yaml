@@ -23,6 +23,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
                   name: aggregate_id
                   type: UUID
                   constraints:
@@ -48,8 +53,10 @@ databaseChangeLog:
             constraintName: uq_event_store_aggregate_version
         - createIndex:
             tableName: event_store
-            indexName: idx_event_store_organization_id_aggregate_id
+            indexName: idx_event_store_organization_user_aggregate
             columns:
+              - column:
+                  name: user_id
               - column:
                   name: organization_id
               - column:
