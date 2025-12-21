@@ -61,6 +61,7 @@ public class ReportController {
             .filter(t -> t.status().isConfirmed())
             .toList();
     model.addAttribute("title", YearMonth.from(localDate));
+    model.addAttribute("accountId", accountId);
     model.addAttribute(
         "monthlyIncomeExpenses",
         monthlyIncomeExpensesMapper.toMonthlyIncomeExpensesData(transactions));
