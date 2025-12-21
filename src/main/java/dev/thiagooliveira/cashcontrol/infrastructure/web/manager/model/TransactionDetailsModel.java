@@ -31,7 +31,11 @@ public class TransactionDetailsModel {
 
   public TransactionDetailsModel(TransactionSummary transaction, String backLink) {
     this.transaction = transaction;
-    this.title = "Detalhe d" + ((transaction.categoryType().isCredit()) ? "o Crédito" : (transaction.categoryType().isDebit() ? "o Debito" : "a Transferência"));
+    this.title =
+        "Detalhe d"
+            + ((transaction.categoryType().isCredit())
+                ? "o Crédito"
+                : (transaction.categoryType().isDebit() ? "o Debito" : "a Transferência"));
     this.backLink = backLink;
     this.id = transaction.transactionId();
     this.accountName = transaction.accountName();
@@ -67,11 +71,11 @@ public class TransactionDetailsModel {
     return id;
   }
 
-    public String getAccountName() {
-        return accountName;
-    }
+  public String getAccountName() {
+    return accountName;
+  }
 
-    public UUID getAccountId() {
+  public UUID getAccountId() {
     return accountId;
   }
 

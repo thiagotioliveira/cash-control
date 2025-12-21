@@ -7,6 +7,7 @@ import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.*;
+import dev.thiagooliveira.cashcontrol.domain.account.AccountSummary;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
@@ -31,6 +32,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class TransactionController {
 
   private final SecurityContext securityContext;
+  private final AccountService accountService;
   private final TransactionService transactionService;
   private final CategoryService categoryService;
 
@@ -40,6 +42,7 @@ public class TransactionController {
       TransactionService transactionService,
       CategoryService categoryService) {
     this.securityContext = securityContext;
+    this.accountService = accountService;
     this.transactionService = transactionService;
     this.categoryService = categoryService;
   }
@@ -57,7 +60,7 @@ public class TransactionController {
         transactionService.get(
             new GetTransactionsCommand(
                 securityContext.getUser().organizationId(), accountId, startDate, endDate));
-    return buildGetTransactionModel(accountId, transactions, type, status, model);
+    return buildGetTransactionModel(getAccount(accountId), transactions, type, status, model);
   }
 
   @GetMapping("/{accountId}/transactions")
@@ -74,7 +77,7 @@ public class TransactionController {
                 accountId,
                 today.with(TemporalAdjusters.firstDayOfMonth()),
                 today.with(TemporalAdjusters.lastDayOfMonth())));
-    return buildGetTransactionModel(accountId, transactions, type, status, model);
+    return buildGetTransactionModel(getAccount(accountId), transactions, type, status, model);
   }
 
   @PostMapping("/{accountId}/transactions/{transactionId}/review")
@@ -278,16 +281,31 @@ public class TransactionController {
     }
   }
 
+  private TransactionSummary getTransactionItem(UUID accountId, UUID transactionId) {
+    return transactionService
+        .get(
+            new GetTransactionCommand(
+                securityContext.getUser().organizationId(), accountId, transactionId))
+        .orElseThrow(() -> InfrastructureException.notFound("Transaction not found"));
+  }
+
+  private AccountSummary getAccount(UUID accountId) {
+    return this.accountService
+        .get(securityContext.getUser().organizationId(), accountId)
+        .orElseThrow(() -> InfrastructureException.notFound("account not found"));
+  }
+
   private static String buildGetTransactionModel(
-      UUID accountId,
+      AccountSummary account,
       List<TransactionSummary> transactions,
       TransactionType type,
       TransactionStatus status,
       Model model) {
+    model.addAttribute("account", new AccountModel(account));
     model.addAttribute(
         "transactions",
         new TransactionListModel(
-            accountId,
+            account.id(),
             transactions.stream()
                 .filter(
                     t -> {
@@ -305,13 +323,5 @@ public class TransactionController {
                     })
                 .toList()));
     return "protected/transactions/transaction-list";
-  }
-
-  public TransactionSummary getTransactionItem(UUID accountId, UUID transactionId) {
-    return transactionService
-        .get(
-            new GetTransactionCommand(
-                securityContext.getUser().organizationId(), accountId, transactionId))
-        .orElseThrow(() -> InfrastructureException.notFound("Transaction not found"));
   }
 }

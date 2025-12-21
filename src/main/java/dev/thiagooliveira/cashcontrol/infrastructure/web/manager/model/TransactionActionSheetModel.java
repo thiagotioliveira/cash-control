@@ -225,15 +225,15 @@ public class TransactionActionSheetModel {
       this.installments = transaction.installments().orElse(null);
     }
 
-      public String getTitle() {
-          return title;
-      }
+    public String getTitle() {
+      return title;
+    }
 
-      public void setTitle(String title) {
-          this.title = title;
-      }
+    public void setTitle(String title) {
+      this.title = title;
+    }
 
-      public UUID getId() {
+    public UUID getId() {
       return id;
     }
 

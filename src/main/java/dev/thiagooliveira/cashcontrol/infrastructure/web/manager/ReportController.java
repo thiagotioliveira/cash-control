@@ -14,8 +14,6 @@ import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,13 +31,14 @@ public class ReportController {
   private final MonthlyIncomeExpensesMapper monthlyIncomeExpensesMapper;
 
   public ReportController(
-          SecurityContext securityContext, AccountService accountService,
-          TransactionService transactionService,
-          MonthlyCategoryMapper monthlyCategoryMapper,
-          MonthlyIncomeExpensesMapper monthlyIncomeExpensesMapper) {
+      SecurityContext securityContext,
+      AccountService accountService,
+      TransactionService transactionService,
+      MonthlyCategoryMapper monthlyCategoryMapper,
+      MonthlyIncomeExpensesMapper monthlyIncomeExpensesMapper) {
     this.securityContext = securityContext;
-      this.accountService = accountService;
-      this.transactionService = transactionService;
+    this.accountService = accountService;
+    this.transactionService = transactionService;
     this.monthlyCategoryMapper = monthlyCategoryMapper;
     this.monthlyIncomeExpensesMapper = monthlyIncomeExpensesMapper;
   }
@@ -80,12 +79,15 @@ public class ReportController {
             .toList();
 
     var accountName = "Todas as contas";
-    if(accountId.isPresent()) {
-        accountName = this.accountService.get(securityContext.getUser().organizationId(), accountId.get())
-                .orElseThrow(() -> InfrastructureException.notFound("account not found")).name();
+    if (accountId.isPresent()) {
+      accountName =
+          this.accountService
+              .get(securityContext.getUser().organizationId(), accountId.get())
+              .orElseThrow(() -> InfrastructureException.notFound("account not found"))
+              .name();
     }
-      String title = String.format("%s (%s)", accountName, YearMonth.from(localDate));
-      model.addAttribute("title", title);
+    String title = String.format("%s (%s)", accountName, YearMonth.from(localDate));
+    model.addAttribute("title", title);
     model.addAttribute(
         "monthlyIncomeExpenses",
         monthlyIncomeExpensesMapper.toMonthlyIncomeExpensesData(transactions));

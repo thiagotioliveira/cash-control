@@ -19,17 +19,7 @@
         <ul class="listview image-listview flush">
             <li th:each="account : ${accounts}">
                 <a th:href="@{'/protected/accounts/'+${account.id}}" class="item">
-                    <div class="img-wrapper">
-                        <img th:src="@{'/assets/img/bank/'+${account.bankImg}}" alt="img" class="image-block imaged w48">
-                    </div>
-                    <div class="in" style="margin-left: 10px;">
-                        <div>
-                            <div class="mb-05"><strong th:text="${account.name}"></strong></div>
-                            <div class="text-small mb-05">Saldo: <b th:text="${account.balance}"></b></div>
-                            <div class="text-xsmall" th:text="${account.getUpdatedAtFormatted()}"></div>
-                        </div>
-                        <span class="badge badge-primary badge-empty" th:if="${false}"></span>
-                    </div>
+                    <div th:replace="~{protected/fragments/app-account-item}"></div>
                 </a>
             </li>
         </ul>

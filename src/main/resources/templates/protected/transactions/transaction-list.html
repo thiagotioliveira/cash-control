@@ -12,7 +12,13 @@
 <!-- App Capsule -->
 <div id="appCapsule">
     <div th:insert="~{protected/fragments/alert}"></div>
-
+    <ul class="listview image-listview inset mt-2">
+        <li>
+            <div class="item">
+                <div th:replace="~{protected/fragments/app-account-item}"></div>
+            </div>
+        </li>
+    </ul>
     <div th:replace="~{protected/fragments/app-transaction-list}"></div>
 </div>
 <!-- * App Capsule -->
