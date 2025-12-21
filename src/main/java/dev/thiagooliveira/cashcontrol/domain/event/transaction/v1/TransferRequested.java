@@ -3,21 +3,24 @@ package dev.thiagooliveira.cashcontrol.domain.event.transaction.v1;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
-public record TransactionConfirmed(
+public record TransferRequested(
+    UUID id,
     UUID organizationId,
-    UUID accountId,
-    UUID transactionId,
-    Optional<UUID> transferId,
     UUID userId,
-    BigDecimal balanceAfter,
+    UUID accountIdTo,
+    UUID accountIdFrom,
+    UUID categoryIdTo,
+    UUID categoryIdFrom,
+    String description,
+    BigDecimal amountFrom,
+    BigDecimal amountTo,
     Instant occurredAt,
     int version)
     implements DomainEvent {
   @Override
   public UUID aggregateId() {
-    return transactionId;
+    return id;
   }
 }

@@ -346,6 +346,110 @@ databaseChangeLog:
             referencedColumnNames: id
             constraintName: fk_transaction_templates_categories
   - changeSet:
+      id: create-transfer
+      author: thiago
+      changes:
+        - createTable:
+            tableName: transfers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_id_from
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_id_to
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id_from
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id_to
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: occurred_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount_from
+                  type: numeric(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount_to
+                  type: numeric(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: transfers
+            baseColumnNames: organization_id
+            referencedTableName: organizations
+            referencedColumnNames: id
+            constraintName: fk_transfers_organizations
+        - addForeignKeyConstraint:
+            baseTableName: transfers
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_transfers_users
+        - addForeignKeyConstraint:
+            baseTableName: transfers
+            baseColumnNames: account_id_from
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_transfers_account_from
+        - addForeignKeyConstraint:
+            baseTableName: transfers
+            baseColumnNames: account_id_to
+            referencedTableName: accounts
+            referencedColumnNames: id
+            constraintName: fk_transfers_account_to
+        - addForeignKeyConstraint:
+            baseTableName: transfers
+            baseColumnNames: category_id_from
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_transfers_category_from
+        - addForeignKeyConstraint:
+            baseTableName: transfers
+            baseColumnNames: category_id_to
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_transfers_category_to
+  - changeSet:
       id: create-transactions
       author: thiago
       changes:
@@ -373,6 +477,9 @@ databaseChangeLog:
                   type: uuid
                   constraints:
                     nullable: true
+              - column:
+                  name: transfer_id
+                  type: uuid
               - column:
                   name: occurred_at
                   type: TIMESTAMP
@@ -441,6 +548,12 @@ databaseChangeLog:
             referencedTableName: transaction_templates
             referencedColumnNames: id
             constraintName: fk_transactions_transaction_templates
+        - addForeignKeyConstraint:
+            baseTableName: transactions
+            baseColumnNames: transfer_id
+            referencedTableName: transfers
+            referencedColumnNames: id
+            constraintName: fk_transactions_transfers
         - addForeignKeyConstraint:
             baseTableName: transactions
             baseColumnNames: category_id

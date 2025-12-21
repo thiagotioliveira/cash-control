@@ -28,6 +28,7 @@ public class Transaction extends Aggregate {
   private BigDecimal amount;
   private TransactionType type;
   private TransactionStatus status;
+  private Optional<UUID> transferId;
 
   private Transaction() {
     this.transactionTemplateId = Optional.empty();
@@ -42,7 +43,8 @@ public class Transaction extends Aggregate {
       Instant occurredAt,
       String description,
       BigDecimal amount,
-      TransactionType type) {
+      TransactionType type,
+      Optional<UUID> transferId) {
     validateOccurredAt(occurredAt);
     validate(amount);
     var transaction = new Transaction();
@@ -57,6 +59,7 @@ public class Transaction extends Aggregate {
             amount,
             occurredAt,
             type,
+            transferId,
             1));
     return transaction;
   }
@@ -87,7 +90,14 @@ public class Transaction extends Aggregate {
     }
     this.apply(
         new TransactionConfirmed(
-            organizationId, accountId, id, userId, balanceAfter, occurredAt, getVersion() + 1));
+            organizationId,
+            accountId,
+            id,
+            transferId,
+            userId,
+            balanceAfter,
+            occurredAt,
+            getVersion() + 1));
   }
 
   public void confirmScheduled(UUID userId, Instant occurredAt, BigDecimal amount) {
@@ -182,6 +192,7 @@ public class Transaction extends Aggregate {
         amount = ev.amount();
         type = ev.type();
         status = TransactionStatus.PENDING;
+        transferId = ev.transferId();
       }
       case TransactionConfirmed ev -> {
         status = TransactionStatus.CONFIRMED;

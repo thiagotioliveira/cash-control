@@ -37,7 +37,7 @@ public class CreateTransaction {
         command.organizationId(), command.accountId(), command.occurredAt())) {
       throw ApplicationException.badRequest("there are already more recent transactions");
     }
-    var deposit =
+    var transaction =
         Transaction.create(
             command.organizationId(),
             command.accountId(),
@@ -46,11 +46,15 @@ public class CreateTransaction {
             command.occurredAt(),
             command.description().orElse(command.type().isCredit() ? "Deposito" : "Retirada"),
             command.amount(),
-            command.type());
-    var events = deposit.pendingEvents();
+            command.type(),
+            command.transferId());
+    var events = transaction.pendingEvents();
     eventStore.append(
-        command.organizationId(), deposit.getId(), events, deposit.getVersion() - events.size());
+        command.organizationId(),
+        transaction.getId(),
+        events,
+        transaction.getVersion() - events.size());
     events.forEach(publisher::publishEvent);
-    deposit.markEventsCommitted();
+    transaction.markEventsCommitted();
   }
 }

@@ -20,5 +20,5 @@ spring:
 
 logging:
   level:
-    ROOT: OFF
+    ROOT: INFO
     dev.thiagooliveira: INFO

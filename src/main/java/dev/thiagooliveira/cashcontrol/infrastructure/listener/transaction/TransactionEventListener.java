@@ -3,6 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.listener.transaction;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.ConfirmRevertTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.ConfirmTransactionCommand;
+import dev.thiagooliveira.cashcontrol.application.transaction.dto.CreateTransactionCommand;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.UpdateScheduledTransactionCommand;
 import dev.thiagooliveira.cashcontrol.domain.event.account.v1.CreditApplied;
 import dev.thiagooliveira.cashcontrol.domain.event.account.v1.CreditReverted;
@@ -14,6 +15,8 @@ import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.Tra
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionJpaRepository;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionTemplateEntity;
 import dev.thiagooliveira.cashcontrol.infrastructure.persistence.transaction.TransactionTemplateJpaRepository;
+import dev.thiagooliveira.cashcontrol.shared.TransactionType;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
@@ -31,6 +34,33 @@ public class TransactionEventListener {
     this.transactionService = transactionService;
     this.templateRepository = templateRepository;
     this.repository = repository;
+  }
+
+  @Order(2)
+  @EventListener
+  public void on(TransferRequested event) {
+    this.transactionService.create(
+        new CreateTransactionCommand(
+            event.organizationId(),
+            event.userId(),
+            event.accountIdFrom(),
+            event.occurredAt(),
+            event.categoryIdFrom(),
+            event.amountFrom(),
+            event.description(),
+            TransactionType.DEBIT,
+            Optional.of(event.id())));
+    this.transactionService.create(
+        new CreateTransactionCommand(
+            event.organizationId(),
+            event.userId(),
+            event.accountIdTo(),
+            event.occurredAt(),
+            event.categoryIdTo(),
+            event.amountTo(),
+            event.description(),
+            TransactionType.CREDIT,
+            Optional.of(event.id())));
   }
 
   @Order(1)

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Transaction Action Sheet-->
+<div class="modal fade action-sheet" th:id="${prefixId}" tabindex="-1" role="dialog" th:fragment="transferActionSheet(t, prefixId)">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Transferência</h5>
+            </div>
+            <div class="modal-body">
+                <div class="action-sheet-content">
+                    <form th:action="@{${'/protected/accounts/'+t.accountIdFrom+'/transfers/review'}}" method="post">
+                        <input type="hidden" th:name="symbolFrom" th:value="${t.symbolFrom}" />
+                        <input type="hidden" th:name="symbolTo" th:value="${t.symbolTo}" />
+                        <div class="form-group basic">
+                            <div class="input-wrapper">
+                                <label class="label" th:for="${prefixId + 'transfer-category1'}">Categoria</label>
+                                <select class="form-control custom-select" th:id="${prefixId + 'transfer-category1'}"
+                                        th:name="categoryIdFrom" th:value="${t.categoryIdFrom}">
+                                    <option th:each="c : ${t.categoriesFrom}" th:text="${c.name}" th:value="${c.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <div class="input-wrapper">
+                                <label class="label" th:for="${prefixId + 'transfer-accountTo'}">Conta Destino</label>
+                                <select class="form-control custom-select" th:id="${prefixId + 'transfer-accountTo'}"
+                                        th:name="accountIdTo" th:value="${t.accountIdTo}">
+                                    <option th:each="a : ${t.accountsTo}" th:text="${a.name}" th:value="${a.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <div class="input-wrapper">
+                                <label class="label" th:for="${prefixId + 'transfer-category2'}">Categoria</label>
+                                <select class="form-control custom-select" th:id="${prefixId + 'transfer-category2'}"
+                                        th:name="categoryIdTo" th:value="${t.categoryIdTo}">
+                                    <option value="">Selecione uma conta primeiro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <div class="input-wrapper">
+                                <label class="label" th:for="${prefixId + 'transfer-description'}">Descrição</label>
+                                <input type="text" class="form-control" th:id="${prefixId + 'transfer-description'}" placeholder="Escreva uma descrição para essa transferencia"
+                                       th:name="description" th:value="${t.description}">
+                                <i class="clear-input">
+                                    <ion-icon name="close-circle"></ion-icon>
+                                </i>
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <div class="input-wrapper">
+                                <label class="label" th:for="${prefixId + 'transfer-occurredAt'}">Data da Transferêcia</label>
+                                <input type="datetime-local" step="1" class="form-control" th:id="${prefixId + 'transaction-occurredAt'}"
+                                       th:name="occurredAt" th:value="${t.occurredAt}">
+                                <i class="clear-input">
+                                    <ion-icon name="close-circle"></ion-icon>
+                                </i>
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <label class="label">Valor Origem</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" th:text="${t.symbolFrom}"></span>
+                                <input id="valueFrom" type="number" step=".01" class="form-control" placeholder="Informe o valor"
+                                       th:name="amountFrom" th:value="${t.amountFrom}">
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <label class="label">Valor Destino</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" th:text="${t.symbolTo}"></span>
+                                <input id="valueTo" type="number" step=".01" class="form-control" placeholder="Informe o valor"
+                                       th:name="amountTo" th:value="${t.amountTo}">
+                            </div>
+                        </div>
+
+                        <div class="form-group basic">
+                            <button type="submit" class="btn btn-primary btn-block btn-lg"
+                                    data-bs-dismiss="modal">
+                                <ion-icon name="save-outline"></ion-icon>
+                                Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        const categoriesTo = /*[[${t.categoriesTo}]]*/ {};
+        const accountSelectId = /*[[${prefixId} + 'transfer-accountTo']]*/ '';
+        const categorySelectId = /*[[${prefixId} + 'transfer-category2']]*/ '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const accountSelect = document.getElementById(accountSelectId);
+            const categorySelect = document.getElementById(categorySelectId);
+
+            function populateCategories(accountId) {
+                categorySelect.innerHTML = '';
+
+                const categories = categoriesTo[accountId];
+
+                if (!categories || categories.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.text = 'Nenhuma categoria disponível';
+                    categorySelect.appendChild(option);
+                    return;
+                }
+
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.text = cat.name;
+                    categorySelect.appendChild(option);
+                });
+            }
+
+            accountSelect.addEventListener('change', e => {
+                populateCategories(e.target.value);
+            });
+
+            // inicializa se já houver conta selecionada
+            if (accountSelect.value) {
+                populateCategories(accountSelect.value);
+            }
+
+            // Configuração do valor
+            const valueFrom = document.getElementById('valueFrom');
+            const valueTo = document.getElementById('valueTo');
+
+            valueFrom.addEventListener('input', () => {
+                valueTo.value = valueFrom.value;
+            });
+        });
+    </script>
+</div>
+<!-- * Transaction Action Sheet -->
+</html>

@@ -4,6 +4,7 @@ import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 public record TransactionRequested(
@@ -16,6 +17,7 @@ public record TransactionRequested(
     BigDecimal amount,
     Instant occurredAt,
     TransactionType type,
+    Optional<UUID> transferId,
     int version)
     implements DomainEvent {
 

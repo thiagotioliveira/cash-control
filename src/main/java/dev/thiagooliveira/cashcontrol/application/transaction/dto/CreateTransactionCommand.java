@@ -14,7 +14,8 @@ public record CreateTransactionCommand(
     UUID categoryId,
     BigDecimal amount,
     Optional<String> description,
-    TransactionType type) {
+    TransactionType type,
+    Optional<UUID> transferId) {
   public CreateTransactionCommand(
       UUID organizationId,
       UUID userId,
@@ -22,8 +23,18 @@ public record CreateTransactionCommand(
       Instant occurredAt,
       UUID categoryId,
       BigDecimal amount,
-      TransactionType type) {
-    this(organizationId, userId, accountId, occurredAt, categoryId, amount, Optional.empty(), type);
+      TransactionType type,
+      Optional<UUID> transferId) {
+    this(
+        organizationId,
+        userId,
+        accountId,
+        occurredAt,
+        categoryId,
+        amount,
+        Optional.empty(),
+        type,
+        transferId);
   }
 
   public CreateTransactionCommand(
@@ -34,7 +45,8 @@ public record CreateTransactionCommand(
       UUID categoryId,
       BigDecimal amount,
       String description,
-      TransactionType type) {
+      TransactionType type,
+      Optional<UUID> transferId) {
     this(
         organizationId,
         userId,
@@ -43,6 +55,7 @@ public record CreateTransactionCommand(
         categoryId,
         amount,
         Optional.of(description),
-        type);
+        type,
+        transferId);
   }
 }

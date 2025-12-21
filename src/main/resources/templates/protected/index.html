@@ -52,15 +52,24 @@
                             <div class="icon-wrapper bg-warning">
                                 <ion-icon name="alert-outline"></ion-icon>
                             </div>
-                            <strong>Pagamento</strong>
+                            <strong>Despesa</strong>
                         </a>
                     </div>
                     <div class="item">
                         <a href="#" data-bs-toggle="modal" data-bs-target="#receivableActionSheet">
                             <div class="icon-wrapper bg-primary">
-                                <ion-icon name="wallet-outline"></ion-icon>
+                                <ion-icon name="download-outline"></ion-icon>
                             </div>
-                            <strong>Recebimento</strong>
+                            <strong>Renda</strong>
+                        </a>
+                    </div>
+
+                    <div class="item">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#transferActionSheet">
+                            <div class="icon-wrapper bg-info">
+                                <ion-icon name="swap-vertical-outline"></ion-icon>
+                            </div>
+                            <strong>Transarencia</strong>
                         </a>
                     </div>
 
@@ -77,6 +86,8 @@
         <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${payableActionSheet}, 'payableActionSheet')}"></div>
 
         <div th:replace="~{protected/fragments/app-transaction-action-sheet :: transactionActionSheet(${receivableActionSheet}, 'receivableActionSheet')}"></div>
+
+        <div th:replace="~{protected/fragments/app-transfer-action-sheet :: transferActionSheet(${transferActionSheet}, 'transferActionSheet')}"></div>
 
         <!-- Stats -->
         <div class="section">

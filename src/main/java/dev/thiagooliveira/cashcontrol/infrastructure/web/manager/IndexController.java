@@ -6,6 +6,7 @@ import dev.thiagooliveira.cashcontrol.application.account.AccountService;
 import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.transaction.TransactionService;
 import dev.thiagooliveira.cashcontrol.application.transaction.dto.GetTransactionsCommand;
+import dev.thiagooliveira.cashcontrol.domain.account.AccountSummary;
 import dev.thiagooliveira.cashcontrol.domain.transaction.TransactionSummary;
 import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +47,10 @@ public class IndexController {
         accountService
             .get(securityContext.getUser().organizationId(), accountId)
             .orElseThrow(() -> InfrastructureException.badRequest("something wrong"));
+    var otherAccounts =
+        accountService.get(securityContext.getUser().organizationId()).stream()
+            .filter(a -> !a.id().equals(accountId))
+            .toList();
     var categories = categoryService.get(securityContext.getUser().organizationId(), accountId);
     var today = LocalDate.now(zoneId);
     var transactions =
@@ -138,6 +144,23 @@ public class IndexController {
             false,
             true,
             true));
+
+    model.addAttribute(
+        "transferActionSheet",
+        new TransferActionSheetModel(
+            accountId,
+            new TransactionActionSheetModel.ListCategoryModel(categories).getDebit(),
+            otherAccounts.stream().map(AccountModel::new).toList(),
+            otherAccounts.stream()
+                .collect(
+                    Collectors.toMap(
+                        AccountSummary::id,
+                        a ->
+                            categoryService
+                                .get(securityContext.getUser().organizationId(), a.id())
+                                .stream()
+                                .map(CategoryModel::new)
+                                .toList()))));
     return "protected/index";
   }
 }

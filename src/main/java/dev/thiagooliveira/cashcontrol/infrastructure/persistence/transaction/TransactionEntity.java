@@ -37,6 +37,8 @@ public class TransactionEntity {
   @JoinColumn(name = "transaction_template_id")
   private TransactionTemplateEntity transactionTemplate;
 
+  @Column private UUID transferId;
+
   @Column private Instant occurredAt;
 
   @Column(nullable = false)
@@ -74,6 +76,7 @@ public class TransactionEntity {
     this.account = new AccountEntity();
     this.account.setId(event.accountId());
     this.transactionTemplate = null;
+    this.transferId = event.transferId().orElse(null);
     this.occurredAt = null;
     this.originalDueDate = event.occurredAt().atZone(FormattersUtils.zoneId).toLocalDate();
     this.dueDate = this.originalDueDate;
@@ -93,6 +96,7 @@ public class TransactionEntity {
     this.account.setId(event.accountId());
     this.transactionTemplate = new TransactionTemplateEntity();
     this.transactionTemplate.setId(event.templateId());
+    this.transferId = null;
     this.occurredAt = null;
     this.originalDueDate = event.dueDate();
     this.dueDate = this.originalDueDate;
@@ -267,5 +271,13 @@ public class TransactionEntity {
 
   public void setAccount(AccountEntity account) {
     this.account = account;
+  }
+
+  public UUID getTransferId() {
+    return transferId;
+  }
+
+  public void setTransferId(UUID transferId) {
+    this.transferId = transferId;
   }
 }

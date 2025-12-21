@@ -141,7 +141,8 @@ public class TransactionController {
                   form.getCategoryId(),
                   form.getAmount(),
                   form.getDescription(),
-                  TransactionType.CREDIT));
+                  TransactionType.CREDIT,
+                  Optional.empty()));
         } else {
           transactionService.createTemplate(
               new CreateTransactionTemplateCommand(
@@ -167,7 +168,8 @@ public class TransactionController {
                   form.getCategoryId(),
                   form.getAmount(),
                   form.getDescription(),
-                  TransactionType.DEBIT));
+                  TransactionType.DEBIT,
+                  Optional.empty()));
         } else {
           transactionService.createTemplate(
               new CreateTransactionTemplateCommand(
