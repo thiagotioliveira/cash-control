@@ -4,12 +4,14 @@ import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import dev.thiagooliveira.cashcontrol.shared.TransactionType;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 public class RevertTransactionRequested implements DomainEvent {
   private UUID organizationId;
   private UUID userId;
   private UUID accountId;
+  private Optional<UUID> transferId;
   private UUID transactionId;
   private TransactionType type;
   private BigDecimal amount;
@@ -24,6 +26,7 @@ public class RevertTransactionRequested implements DomainEvent {
       UUID userId,
       UUID accountId,
       UUID transactionId,
+      Optional<UUID> transferId,
       TransactionType type,
       BigDecimal amount,
       Instant occurredAt,
@@ -31,11 +34,16 @@ public class RevertTransactionRequested implements DomainEvent {
     this.organizationId = organizationId;
     this.userId = userId;
     this.accountId = accountId;
+    this.transferId = transferId;
     this.transactionId = transactionId;
     this.type = type;
     this.amount = amount;
     this.occurredAt = occurredAt;
     this.version = version;
+  }
+
+  public Optional<UUID> getTransferId() {
+    return transferId;
   }
 
   @Override

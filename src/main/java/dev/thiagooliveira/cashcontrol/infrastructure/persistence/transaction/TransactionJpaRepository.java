@@ -44,6 +44,9 @@ public interface TransactionJpaRepository extends JpaRepository<TransactionEntit
   Optional<TransactionEntity> findByOrganizationIdAndAccountIdAndId(
       UUID organizationId, UUID accountId, UUID id);
 
+  Optional<TransactionEntity> findByOrganizationIdAndTransferId(
+      UUID organizationId, UUID transferId);
+
   List<TransactionEntity> findAllByTransactionTemplateIdAndAccountId(
       UUID transactionTemplateId, UUID accountId);
 

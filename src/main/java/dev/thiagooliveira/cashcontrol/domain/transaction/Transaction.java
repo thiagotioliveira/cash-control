@@ -136,7 +136,15 @@ public class Transaction extends Aggregate {
     }
     apply(
         new RevertTransactionRequested(
-            organizationId, userId, accountId, id, type, amount, Instant.now(), getVersion() + 1));
+            organizationId,
+            userId,
+            accountId,
+            id,
+            transferId,
+            type,
+            amount,
+            Instant.now(),
+            getVersion() + 1));
   }
 
   public void update(UUID userId, BigDecimal amount, String description, int dueDay) {
