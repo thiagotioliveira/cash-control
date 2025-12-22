@@ -92,7 +92,13 @@ public class ReportController {
         "monthlyIncomeExpenses",
         monthlyIncomeExpensesMapper.toMonthlyIncomeExpensesData(transactions));
     model.addAttribute(
-        "monthlyCategory", monthlyCategoryMapper.toMonthlyCategoryData(transactions));
+        "monthlyRevenueByCategory",
+        monthlyCategoryMapper.toMonthlyCategoryData(
+            transactions.stream().filter(c -> c.categoryType().isCredit()).toList()));
+    model.addAttribute(
+        "monthlyExpensesByCategory",
+        monthlyCategoryMapper.toMonthlyCategoryData(
+            transactions.stream().filter(c -> c.categoryType().isDebit()).toList()));
     return "protected/reports/report";
   }
 }

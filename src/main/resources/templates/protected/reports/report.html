@@ -21,10 +21,19 @@
     </div>
 
     <div class="section mt-3">
-        <div class="section-title">Receita x Despesa (por Categoria)</div>
+        <div class="section-title">Receita (por Categoria)</div>
         <div class="card">
             <div class="card-body">
-                <div id="monthly-category"></div>
+                <div id="monthly-revenue-by-category"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section mt-3">
+        <div class="section-title">Despesa (por Categoria)</div>
+        <div class="card">
+            <div class="card-body">
+                <div id="monthly-expenses-by-category"></div>
             </div>
         </div>
     </div>
@@ -89,42 +98,72 @@
 
     // ---
 
-    const monthlyCategoryData = /*[[${monthlyCategory}]]*/ [];
+    const createMonthlyPieCharts = (data, containerSelector) => {
+        const container = document.querySelector(containerSelector);
 
-    const monthlyCategoryContainer = document.querySelector("#monthly-category");
+        data.forEach(({ yearMonth, transactions }) => {
+            const pieDiv = document.createElement("div");
+            pieDiv.id = `pieChart-${yearMonth}`;
+            pieDiv.style.height = "350px";
+            pieDiv.style.marginBottom = "30px";
+            container.appendChild(pieDiv);
 
-    monthlyCategoryData.forEach(d => {
-        const pieDiv = document.createElement("div");
-        pieDiv.id = "pieChart-" + d.yearMonth;
-        pieDiv.style.height = "350px";
-        pieDiv.style.marginBottom = "30px";
-        monthlyCategoryContainer.appendChild(pieDiv);
+            const categories = transactions.map(t => t.categoryName);
+            const amounts = transactions.map(t => t.amount);
+            const colors = transactions.map(t => t.categoryHashColor);
+            const total = amounts.reduce((sum, value) => sum + value, 0);
 
-        const categories = d.transactions.map(t => t.categoryName);
-        const amounts = d.transactions.map(t => t.amount);
-        const colors = d.transactions.map(t => t.categoryHashColor);
+            const options = {
+                chart: {
+                    type: "pie",
+                    height: 350
+                },
+                labels: categories,
+                series: amounts,
+                colors,
+                tooltip: {
+                    y: {
+                        formatter: value => `${((value / total) * 100).toFixed(2)}%`
+                    }
+                },
+                legend: {
+                    position: "bottom"
+                },
+                dataLabels: {
+                    formatter: (percent, opts) => {
+                        const value = opts.w.globals.series[opts.seriesIndex];
+                        const formattedAmount = new Intl.NumberFormat("pt-PT", {
+                            style: "currency",
+                            currency: "EUR"
+                        }).format(value);
 
-        var pieOptions = {
-            chart: { type: 'pie', height: 350 },
-            labels: categories,
-            series: amounts,
-            colors: colors,
-            tooltip: { y: { formatter: val => {
-                        const total = amounts.reduce((a, b) => a + b, 0);
-                        const percent = (val / total) * 100;
-                        return percent.toFixed(2) + '%';
-                    } } },
-            legend: { position: 'bottom' },
-            dataLabels: { formatter: val => val.toFixed(2) + '%' },
-            title: {
-                text: "",//"Distribuição por categoria - " + d.yearMonth,
-                align: 'center'
-            }
-        };
+                        return `${formattedAmount} (${percent.toFixed(0)}%)`;
+                    }
+                },
+                title: {
+                    text: "",
+                    align: "center"
+                }
+            };
 
-        var monthlyCategoryChart = new ApexCharts(pieDiv, pieOptions);
-        monthlyCategoryChart.render();
-    });
+            new ApexCharts(pieDiv, options).render();
+        });
+    };
+
+    // Dados vindos do backend
+    const monthlyExpensesByCategoryData = /*[[${monthlyExpensesByCategory}]]*/ [];
+    const monthlyRevenueByCategoryData = /*[[${monthlyRevenueByCategory}]]*/ [];
+
+    // Renderização
+    createMonthlyPieCharts(
+        monthlyExpensesByCategoryData,
+        "#monthly-expenses-by-category"
+    );
+
+    createMonthlyPieCharts(
+        monthlyRevenueByCategoryData,
+        "#monthly-revenue-by-category"
+    );
 
     /*]]>*/
 </script>
