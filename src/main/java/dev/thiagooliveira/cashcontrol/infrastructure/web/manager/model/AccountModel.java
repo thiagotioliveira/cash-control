@@ -18,7 +18,8 @@ public class AccountModel {
   private final Instant updatedAt;
   private final String name;
   private final String bankName;
-  private final String bankImg;
+  private final String bankImg1;
+  private final String bankImg0;
   private final String balance;
 
   public AccountModel(AccountSummary account) {
@@ -31,14 +32,17 @@ public class AccountModel {
         .map(String::toLowerCase)
         .toList()
         .contains(this.bankName.toLowerCase())) {
-      this.bankImg = "activobank.png";
+      this.bankImg0 = "activobank.png";
+        this.bankImg1 = "activobank-1.png";
     } else if (milleniumBankNames.stream()
         .map(String::toLowerCase)
         .toList()
         .contains(this.bankName.toLowerCase())) {
-      this.bankImg = "millenium.png";
+      this.bankImg0 = "millenium.png";
+        this.bankImg1 = "millenium-1.png";
     } else {
-      this.bankImg = "na.png";
+      this.bankImg0 = "na.png";
+        this.bankImg1 = "na.png";
     }
     this.balance = symbol + " " + df.format(account.balance());
   }
@@ -59,8 +63,12 @@ public class AccountModel {
     return bankName;
   }
 
-  public String getBankImg() {
-    return bankImg;
+  public String getBankImg1() {
+    return bankImg1;
+  }
+
+  public String getBankImg0() {
+      return bankImg0;
   }
 
   public UUID getId() {
