@@ -12,69 +12,70 @@
 
     <!-- App Capsule -->
     <div id="appCapsule">
-
         <!-- Wallet Card -->
         <div class="section wallet-card-section pt-1">
-            <div class="wallet-card">
-                <!-- Balance -->
-                <div class="balance">
-                    <div class="left">
-                        <span class="title" th:text="${account.name + ' (' + account.getUpdatedAtFormatted() +')'}"></span>
-                        <h1 class="total" th:text="${account.balance}"></h1>
+            <div class="compact-container">
+                <div class="wallet-card">
+                    <!-- Balance -->
+                    <div class="balance">
+                        <div class="left">
+                            <span class="title" th:text="${account.name + ' (' + account.getUpdatedAtFormatted() +')'}"></span>
+                            <h1 class="total" th:text="${account.balance}"></h1>
+                        </div>
+                        <div class="right" th:if="${false}">
+                            <a href="#" class="button" data-bs-toggle="modal" data-bs-target="#depositActionSheet">
+                                <ion-icon name="add-outline"></ion-icon>
+                            </a>
+                        </div>
                     </div>
-                    <div class="right" th:if="${false}">
-                        <a href="#" class="button" data-bs-toggle="modal" data-bs-target="#depositActionSheet">
-                            <ion-icon name="add-outline"></ion-icon>
-                        </a>
-                    </div>
-                </div>
-                <!-- * Balance -->
-                <!-- Wallet Footer -->
-                <div class="wallet-footer">
-                    <div class="item">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#depositActionSheet">
-                            <div class="icon-wrapper bg-success">
-                                <ion-icon name="arrow-down-outline"></ion-icon>
-                            </div>
-                            <strong>Deposito</strong>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#withdrawActionSheet">
-                            <div class="icon-wrapper bg-danger">
-                                <ion-icon name="arrow-up-outline"></ion-icon>
-                            </div>
-                            <strong>Retirada</strong>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#payableActionSheet">
-                            <div class="icon-wrapper bg-warning">
-                                <ion-icon name="alert-outline"></ion-icon>
-                            </div>
-                            <strong>Despesa</strong>
-                        </a>
-                    </div>
-                    <div class="item">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#receivableActionSheet">
-                            <div class="icon-wrapper bg-primary">
-                                <ion-icon name="download-outline"></ion-icon>
-                            </div>
-                            <strong>Renda</strong>
-                        </a>
-                    </div>
+                    <!-- * Balance -->
+                    <!-- Wallet Footer -->
+                    <div class="wallet-footer">
+                        <div class="item">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#depositActionSheet">
+                                <div class="icon-wrapper bg-success">
+                                    <ion-icon name="arrow-down-outline"></ion-icon>
+                                </div>
+                                <strong>Deposito</strong>
+                            </a>
+                        </div>
+                        <div class="item">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#withdrawActionSheet">
+                                <div class="icon-wrapper bg-danger">
+                                    <ion-icon name="arrow-up-outline"></ion-icon>
+                                </div>
+                                <strong>Retirada</strong>
+                            </a>
+                        </div>
+                        <div class="item">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#payableActionSheet">
+                                <div class="icon-wrapper bg-warning">
+                                    <ion-icon name="alert-outline"></ion-icon>
+                                </div>
+                                <strong>Despesa</strong>
+                            </a>
+                        </div>
+                        <div class="item">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#receivableActionSheet">
+                                <div class="icon-wrapper bg-primary">
+                                    <ion-icon name="download-outline"></ion-icon>
+                                </div>
+                                <strong>Renda</strong>
+                            </a>
+                        </div>
 
-                    <div class="item">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#transferActionSheet">
-                            <div class="icon-wrapper bg-info">
-                                <ion-icon name="swap-vertical-outline"></ion-icon>
-                            </div>
-                            <strong>Transarencia</strong>
-                        </a>
-                    </div>
+                        <div class="item">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#transferActionSheet">
+                                <div class="icon-wrapper bg-info">
+                                    <ion-icon name="swap-vertical-outline"></ion-icon>
+                                </div>
+                                <strong>Transarencia</strong>
+                            </a>
+                        </div>
 
+                    </div>
+                    <!-- * Wallet Footer -->
                 </div>
-                <!-- * Wallet Footer -->
             </div>
         </div>
         <!-- Wallet Card -->
@@ -89,66 +90,68 @@
 
         <div th:replace="~{protected/fragments/app-transfer-action-sheet :: transferActionSheet(${transferActionSheet}, 'transferActionSheet')}"></div>
 
-        <!-- Stats -->
-        <div class="section">
-            <div class="row mt-2">
-                <div class="col-6">
-                    <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=CREDIT&status=CONFIRMED'}}">
-                        <div class="stat-box">
-                            <div class="title">Entradas</div>
-                            <div class="value text-success" th:text="${income}"></div>
-                        </div>
-                    </a>
+        <div class="compact-container">
+            <!-- Stats -->
+            <div>
+                <div class="row mt-2">
+                    <div class="col-6">
+                        <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=CREDIT&status=CONFIRMED'}}">
+                            <div class="stat-box">
+                                <div class="title">Entradas</div>
+                                <div class="value text-success" th:text="${income}"></div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=DEBIT&status=CONFIRMED'}}">
+                            <div class="stat-box">
+                                <div class="title">Saídas</div>
+                                <div class="value text-danger" th:text="${expenses}"></div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=DEBIT&status=CONFIRMED'}}">
-                        <div class="stat-box">
-                            <div class="title">Saídas</div>
-                            <div class="value text-danger" th:text="${expenses}"></div>
-                        </div>
-                    </a>
+                <div class="row mt-2">
+                    <div class="col-6">
+                        <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=CREDIT&status=SCHEDULED'}}">
+                            <div class="stat-box">
+                                <div class="title">Entradas Previstas</div>
+                                <div class="value" th:text="${incomePending}"></div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=DEBIT&status=SCHEDULED'}}">
+                            <div class="stat-box">
+                                <div class="title">Saídas Previstas</div>
+                                <div class="value" th:text="${expensesPending}"></div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="row mt-2">
-                <div class="col-6">
-                    <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=CREDIT&status=SCHEDULED'}}">
-                        <div class="stat-box">
-                            <div class="title">Entradas Previstas</div>
-                            <div class="value" th:text="${incomePending}"></div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-6">
-                    <a th:href="@{${'/protected/accounts/'+account.id+'/transactions?type=DEBIT&status=SCHEDULED'}}">
-                        <div class="stat-box">
-                            <div class="title">Saídas Previstas</div>
-                            <div class="value" th:text="${expensesPending}"></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <!-- * Stats -->
+            <!-- * Stats -->
 
-        <!-- Monthly Bills -->
-        <div class="section full mt-4">
-            <div class="section-heading padding">
-                <h2 class="title">Contas do mês</h2>
-                <a href="#" class="link" th:if="${false}">Ver todas</a>
+            <!-- Monthly Bills -->
+            <div class="section full mt-4">
+                <div class="section-heading padding">
+                    <h2 class="title">Contas do mês</h2>
+                    <a href="#" class="link" th:if="${false}">Ver todas</a>
+                </div>
+                <section th:replace="~{protected/fragments/app-transaction-carousel-slide}"></section>
             </div>
-            <section th:replace="~{protected/fragments/app-transaction-carousel-slide}"></section>
-        </div>
-        <!-- * Monthly Bills -->
+            <!-- * Monthly Bills -->
 
-        <!-- Transactions -->
-        <div class="mt-4">
-            <div class="section section-heading">
-                <h2 class="title">Transações</h2>
-                <a th:href="@{${'/protected/accounts/'+ account.id +'/transactions'}}" class="link">Ver todas</a>
+            <!-- Transactions -->
+            <div class="mt-4">
+                <div class="section section-heading">
+                    <h2 class="title">Transações</h2>
+                    <a th:href="@{${'/protected/accounts/'+ account.id +'/transactions'}}" class="link">Ver todas</a>
+                </div>
+                <div th:insert="~{protected/fragments/app-transaction-list}"></div>
             </div>
-            <div th:insert="~{protected/fragments/app-transaction-list}"></div>
-        </div>
         <!-- * Transactions -->
+        </div>
     </div>
     <!-- * App Capsule -->
 

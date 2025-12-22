@@ -10,6 +10,7 @@ import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureExc
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.AlertModel;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.CategoryActionSheetModel;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.CategoryListModel;
+import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.MenuDataModel;
 import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import java.util.UUID;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,7 @@ public class CategoryController {
   @GetMapping
   public String index(Model model) {
     var categories = categoryService.get(securityContext.getUser().organizationId());
+      model.addAttribute("menu", MenuDataModel.categories());
     model.addAttribute("categories", new CategoryListModel(categories));
     model.addAttribute("category", new CategoryActionSheetModel("Nova Categoria"));
     return "protected/categories/category-list";

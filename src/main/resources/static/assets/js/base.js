@@ -19,7 +19,7 @@ const Finapp = {
     //-------------------------------------------------------------------
     // Dark Mode Settings
     Dark_Mode: {
-        default: true, // Set dark mode as main theme
+        default: false, // Set dark mode as main theme
         local_mode: { // Activate dark mode between certain times of the day
             enable: true, // Enable or disable local dark mode
             start_time: 20, // Start at 20:00

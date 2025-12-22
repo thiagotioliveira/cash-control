@@ -17,6 +17,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.compact-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 15px;
+  position: relative;
+}
+
 a {
   color: #6236FF;
   outline: 0 !important;

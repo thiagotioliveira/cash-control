@@ -10,7 +10,7 @@
     <div th:insert="~{protected/fragments/page-header :: pageHeader(${transaction.title}, ${transaction.backLink}, ${transaction.status.isScheduled()}, ${'#transactionActionSheet-'+transaction.getId()}, ${transaction.status.isConfirmed()}, '#dialogRevertTransaction')}"></div>
 
     <!-- App Capsule -->
-    <div id="appCapsule">
+    <div id="appCapsule" class="compact-container">
 
         <div th:insert="~{protected/fragments/alert}"></div>
 

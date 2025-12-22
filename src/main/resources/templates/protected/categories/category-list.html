@@ -10,7 +10,7 @@
 <div th:insert="~{protected/fragments/page-header :: pageHeader('Categorias', ${'/protected/accounts'}, true, '#categoryActionSheet', false, '')}"></div>
 
 <!-- App Capsule -->
-<div id="appCapsule">
+<div id="appCapsule" class="compact-container">
 
     <div th:insert="~{protected/fragments/alert}"></div>
 
@@ -44,6 +44,8 @@
     <!-- * Categories -->
 </div>
 <!-- * App Capsule -->
+
+<div th:insert="~{protected/fragments/app-bottom-menu}"></div>
 
 <!-- ========= JS Files =========  -->
 <!-- Bootstrap -->

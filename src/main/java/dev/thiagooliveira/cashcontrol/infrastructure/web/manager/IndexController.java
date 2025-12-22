@@ -95,6 +95,7 @@ public class IndexController {
                 .reduce(BigDecimal.ZERO, BigDecimal::add)));
     model.addAttribute("context", securityContext);
     model.addAttribute("account", new AccountModel(account));
+    model.addAttribute("menu", MenuDataModel.home());
     model.addAttribute("transactions", new TransactionListModel(accountId, transactionsConfirmed));
     model.addAttribute(
         "transactionCarouselSlide", new TransactionCarouselSlideModel(transactionsScheduled));
