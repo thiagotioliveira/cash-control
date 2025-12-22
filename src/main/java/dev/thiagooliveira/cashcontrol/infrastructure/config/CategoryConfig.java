@@ -3,6 +3,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.config;
 import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.category.CategoryServiceImpl;
 import dev.thiagooliveira.cashcontrol.application.category.CreateCategory;
+import dev.thiagooliveira.cashcontrol.application.category.UpdateCategory;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventPublisher;
 import dev.thiagooliveira.cashcontrol.application.outbound.EventStore;
@@ -27,7 +28,9 @@ public class CategoryConfig {
     var categoryRepository = categoryRepository(repository);
     return new CategoryServiceProxy(
         new CategoryServiceImpl(
-            categoryRepository, createCategory(categoryRepository, eventStore, publisher)));
+            categoryRepository,
+            createCategory(categoryRepository, eventStore, publisher),
+            updateCategory(eventStore, publisher, categoryRepository)));
   }
 
   private CategoryRepository categoryRepository(CategoryJpaRepository repository) {
@@ -37,5 +40,10 @@ public class CategoryConfig {
   private CreateCategory createCategory(
       CategoryRepository repository, EventStore eventStore, EventPublisher publisher) {
     return new CreateCategory(repository, eventStore, publisher);
+  }
+
+  private UpdateCategory updateCategory(
+      EventStore eventStore, EventPublisher publisher, CategoryRepository categoryRepository) {
+    return new UpdateCategory(categoryRepository, eventStore, publisher);
   }
 }

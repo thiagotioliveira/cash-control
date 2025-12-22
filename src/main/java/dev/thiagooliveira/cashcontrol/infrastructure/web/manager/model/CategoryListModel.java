@@ -34,8 +34,7 @@ public class CategoryListModel {
     }
 
     public CategoryActionSheetModel toActionSheetModel() {
-      return new CategoryActionSheetModel(
-          "Editar", id, name, hashColor.substring(1), type.toString());
+      return new CategoryActionSheetModel("Editar", id, name, hashColor, type.toString());
     }
 
     public UUID getId() {

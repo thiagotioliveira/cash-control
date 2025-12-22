@@ -2,6 +2,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.persistence.category;
 
 import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.CategoryCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.CategoryUpdated;
 import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -33,6 +34,11 @@ public class CategoryEntity {
     this.hashColor = event.hashColor();
     this.type = event.type();
     this.organizationId = event.organizationId();
+  }
+
+  public void update(CategoryUpdated event) {
+    this.name = event.name();
+    this.hashColor = event.hashColor();
   }
 
   public CategorySummary toDomain() {

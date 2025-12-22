@@ -3,9 +3,11 @@ package dev.thiagooliveira.cashcontrol.domain.category;
 import dev.thiagooliveira.cashcontrol.domain.Aggregate;
 import dev.thiagooliveira.cashcontrol.domain.event.DomainEvent;
 import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.CategoryCreated;
+import dev.thiagooliveira.cashcontrol.domain.event.transaction.v1.CategoryUpdated;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.shared.CategoryType;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.util.Strings;
@@ -17,6 +19,7 @@ public class Category extends Aggregate {
   private String name;
   private String hashColor;
   private CategoryType type;
+  private UUID organizationId;
 
   private Category() {}
 
@@ -30,6 +33,10 @@ public class Category extends Aggregate {
         new CategoryCreated(
             UUID.randomUUID(), name, hashColor, type, organizationId, Instant.now(), 1));
     return category;
+  }
+
+  public void update(String name, String hashColor, UUID userId) {
+    this.apply(new CategoryUpdated(id, name, hashColor, userId, Instant.now(), getVersion() + 1));
   }
 
   private static boolean isHexColor(String value) {
@@ -52,6 +59,19 @@ public class Category extends Aggregate {
     return type;
   }
 
+  public static Category rehydrate(List<DomainEvent> events) {
+    Category category = null;
+    for (DomainEvent event : events) {
+      if (event instanceof CategoryCreated ac) {
+        category = new Category();
+      } else if (category == null) {
+        throw DomainException.badRequest("Category rehydration failed");
+      }
+      category.applyFromHistory(event);
+    }
+    return category;
+  }
+
   @Override
   public UUID aggregateId() {
     return id;
@@ -65,6 +85,11 @@ public class Category extends Aggregate {
         name = ev.name();
         hashColor = ev.hashColor();
         type = ev.type();
+        organizationId = ev.organizationId();
+      }
+      case CategoryUpdated ev -> {
+        name = ev.name();
+        hashColor = ev.hashColor();
       }
       default -> throw DomainException.badRequest("unhandled event " + event);
     }

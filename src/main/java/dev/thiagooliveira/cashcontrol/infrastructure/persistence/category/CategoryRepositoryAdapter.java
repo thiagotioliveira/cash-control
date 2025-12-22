@@ -38,7 +38,10 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
   }
 
   @Override
-  public boolean existsByOrganizationIdAndHashColor(UUID organizationId, String hashColor) {
-    return this.repository.existsByOrganizationIdAndHashColor(organizationId, hashColor);
+  public List<CategorySummary> findAllByOrganizationIdAndHashColor(
+      UUID organizationId, String hashColor) {
+    return this.repository.findAllByOrganizationIdAndHashColor(organizationId, hashColor).stream()
+        .map(CategoryEntity::toDomain)
+        .toList();
   }
 }

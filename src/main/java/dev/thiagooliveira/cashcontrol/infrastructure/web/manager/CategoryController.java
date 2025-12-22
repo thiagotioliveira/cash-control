@@ -2,6 +2,7 @@ package dev.thiagooliveira.cashcontrol.infrastructure.web.manager;
 
 import dev.thiagooliveira.cashcontrol.application.category.CategoryService;
 import dev.thiagooliveira.cashcontrol.application.category.dto.CreateCategoryCommand;
+import dev.thiagooliveira.cashcontrol.application.category.dto.UpdateCategoryCommand;
 import dev.thiagooliveira.cashcontrol.application.exception.ApplicationException;
 import dev.thiagooliveira.cashcontrol.domain.exception.DomainException;
 import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
@@ -64,7 +65,16 @@ public class CategoryController {
       Model model,
       RedirectAttributes redirectAttributes) {
     try {
-      throw InfrastructureException.badRequest("Edição não implementado!");
+      this.categoryService.update(
+          new UpdateCategoryCommand(
+              securityContext.getUser().organizationId(),
+              securityContext.getUser().id(),
+              categoryId,
+              form.getName(),
+              form.getHashColor()));
+      redirectAttributes.addFlashAttribute(
+          "alert", AlertModel.success("Categoria atualizada com sucesso!"));
+      return "redirect:/protected/categories";
     } catch (InfrastructureException e) {
       redirectAttributes.addFlashAttribute("alert", AlertModel.error(e.getMessage()));
       return "redirect:/protected/categories";

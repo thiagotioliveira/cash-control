@@ -1,6 +1,7 @@
 package dev.thiagooliveira.cashcontrol.application.category;
 
 import dev.thiagooliveira.cashcontrol.application.category.dto.CreateCategoryCommand;
+import dev.thiagooliveira.cashcontrol.application.category.dto.UpdateCategoryCommand;
 import dev.thiagooliveira.cashcontrol.application.outbound.CategoryRepository;
 import dev.thiagooliveira.cashcontrol.domain.category.CategorySummary;
 import java.util.List;
@@ -11,10 +12,13 @@ public class CategoryServiceImpl implements CategoryService {
 
   private final CategoryRepository repository;
   private final CreateCategory createCategory;
+  private final UpdateCategory updateCategory;
 
-  public CategoryServiceImpl(CategoryRepository repository, CreateCategory createCategory) {
+  public CategoryServiceImpl(
+      CategoryRepository repository, CreateCategory createCategory, UpdateCategory updateCategory) {
     this.repository = repository;
     this.createCategory = createCategory;
+    this.updateCategory = updateCategory;
   }
 
   @Override
@@ -30,5 +34,10 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   public Optional<CategorySummary> get(UUID organizationId, UUID categoryId) {
     return this.repository.findByOrganizationIdAndId(organizationId, categoryId);
+  }
+
+  @Override
+  public CategorySummary update(UpdateCategoryCommand command) {
+    return this.updateCategory.execute(command);
   }
 }

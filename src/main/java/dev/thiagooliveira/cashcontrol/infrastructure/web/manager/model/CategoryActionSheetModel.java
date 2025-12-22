@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public class CategoryActionSheetModel {
 
+  private boolean showTypeInput;
   private final String title;
   private final UUID id;
   private final String name;
@@ -14,6 +15,7 @@ public class CategoryActionSheetModel {
   public CategoryActionSheetModel(
       String title, UUID id, String name, String hashColor, String type) {
     this.title = title;
+    this.showTypeInput = false;
     this.id = id;
     this.name = name;
     this.hashColor = hashColor;
@@ -22,6 +24,7 @@ public class CategoryActionSheetModel {
 
   public CategoryActionSheetModel(String title) {
     this.title = title;
+    this.showTypeInput = true;
     this.id = null;
     this.name = null;
     this.hashColor = "000000";
@@ -46,6 +49,10 @@ public class CategoryActionSheetModel {
 
   public String getType() {
     return type;
+  }
+
+  public boolean isShowTypeInput() {
+    return showTypeInput;
   }
 
   public static class CategoryForm {

@@ -15,5 +15,5 @@ public interface CategoryRepository {
   Optional<CategorySummary> findByOrganizationIdAndNameAndType(
       UUID organizationId, String name, CategoryType type);
 
-  boolean existsByOrganizationIdAndHashColor(UUID organizationId, String hashColor);
+  List<CategorySummary> findAllByOrganizationIdAndHashColor(UUID organizationId, String hashColor);
 }
