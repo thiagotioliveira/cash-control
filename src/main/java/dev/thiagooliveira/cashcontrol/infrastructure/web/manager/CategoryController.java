@@ -33,7 +33,7 @@ public class CategoryController {
   @GetMapping
   public String index(Model model) {
     var categories = categoryService.get(securityContext.getUser().organizationId());
-      model.addAttribute("menu", MenuDataModel.categories());
+    model.addAttribute("menu", MenuDataModel.categories());
     model.addAttribute("categories", new CategoryListModel(categories));
     model.addAttribute("category", new CategoryActionSheetModel("Nova Categoria"));
     return "protected/categories/category-list";

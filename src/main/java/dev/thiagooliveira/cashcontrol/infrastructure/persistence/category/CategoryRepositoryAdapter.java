@@ -17,7 +17,7 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
 
   @Override
   public List<CategorySummary> findAllByOrganizationId(UUID organizationId) {
-    return this.repository.findAllByOrganizationId(organizationId).stream()
+    return this.repository.findAllByOrganizationIdOrderByNameAscTypeAsc(organizationId).stream()
         .map(CategoryEntity::toDomain)
         .toList();
   }

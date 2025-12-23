@@ -9,13 +9,12 @@ import dev.thiagooliveira.cashcontrol.domain.user.security.SecurityContext;
 import dev.thiagooliveira.cashcontrol.infrastructure.exception.InfrastructureException;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.mapper.MonthlyCategoryMapper;
 import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.mapper.MonthlyIncomeExpensesMapper;
+import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.MenuDataModel;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Optional;
 import java.util.UUID;
-
-import dev.thiagooliveira.cashcontrol.infrastructure.web.manager.model.MenuDataModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,7 +89,7 @@ public class ReportController {
     }
     String title = String.format("%s (%s)", accountName, YearMonth.from(localDate));
     model.addAttribute("title", title);
-      model.addAttribute("menu", MenuDataModel.reports());
+    model.addAttribute("menu", MenuDataModel.reports());
     model.addAttribute(
         "monthlyIncomeExpenses",
         monthlyIncomeExpensesMapper.toMonthlyIncomeExpensesData(transactions));

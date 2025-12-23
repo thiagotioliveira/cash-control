@@ -15,5 +15,5 @@ public interface CategoryJpaRepository extends JpaRepository<CategoryEntity, UUI
 
   List<CategoryEntity> findAllByOrganizationIdAndHashColor(UUID organizationId, String hashColor);
 
-  List<CategoryEntity> findAllByOrganizationId(UUID organizationId);
+  List<CategoryEntity> findAllByOrganizationIdOrderByNameAscTypeAsc(UUID organizationId);
 }
