@@ -3,19 +3,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <!-- App Bottom Menu -->
 <div class="appBottomMenu">
-    <a href="/protected/" class="item" th:classappend="${menu.active} == 'HOME' ? ' active' : ''">
+    <a href="/protected/" class="item" th:classappend="${menu != null && menu.active == 'HOME' ? ' active' : ''}">
         <div class="col">
             <ion-icon name="home-outline"></ion-icon>
             <strong>Home</strong>
         </div>
     </a>
-    <a href="/protected/categories" class="item" th:classappend="${menu.active} == 'CATEGORIES' ? ' active' : ''">
+    <a href="/protected/categories" class="item" th:classappend="${menu != null && menu.active == 'CATEGORIES' ? ' active' : ''}">
         <div class="col">
             <ion-icon name="folder-outline"></ion-icon>
             <strong>Categorias</strong>
         </div>
     </a>
-    <a href="/protected/reports" class="item" th:classappend="${menu.active} == 'REPORTS' ? ' active' : ''">
+    <a href="/protected/reports" class="item" th:classappend="${menu != null && menu.active == 'REPORTS' ? ' active' : ''}">
         <div class="col">
             <ion-icon name="pie-chart-outline"></ion-icon>
             <strong>Relatórios</strong>
